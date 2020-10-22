@@ -1,0 +1,338 @@
+<!DOCTYPE HTML>
+<html lang="en" class="sidebar-visible no-js light">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>use-isnan - RSLint docs</title>
+        
+        
+
+
+        <!-- Custom HTML head -->
+        
+
+
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff" />
+
+        
+        <link rel="icon" href="../../favicon.svg">
+        
+        
+        <link rel="shortcut icon" href="../../favicon.png">
+        
+        <link rel="stylesheet" href="../../css/variables.css">
+        <link rel="stylesheet" href="../../css/general.css">
+        <link rel="stylesheet" href="../../css/chrome.css">
+        
+        <link rel="stylesheet" href="../../css/print.css" media="print">
+        
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../../FontAwesome/css/font-awesome.css">
+        
+        <link rel="stylesheet" href="../../fonts/fonts.css">
+        
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../../highlight.css">
+        <link rel="stylesheet" href="../../tomorrow-night.css">
+        <link rel="stylesheet" href="../../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        
+
+        
+    </head>
+    <body>
+        <!-- Provide site root to javascript -->
+        <script type="text/javascript">
+            var path_to_root = "../../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script type="text/javascript">
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script type="text/javascript">
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('no-js')
+            html.classList.remove('light')
+            html.classList.add(theme);
+            html.classList.add('js');
+        </script>
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script type="text/javascript">
+            var html = document.querySelector('html');
+            var sidebar = 'hidden';
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            }
+            html.classList.remove('sidebar-visible');
+            html.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../../index.html"><strong aria-hidden="true">1.</strong> RSLint</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../user/config.html"><strong aria-hidden="true">1.1.</strong> Configuration</a></li><li class="chapter-item expanded "><a href="../../user/directives.html"><strong aria-hidden="true">1.2.</strong> Directives</a></li><li class="chapter-item expanded "><a href="../../user/autofix.html"><strong aria-hidden="true">1.3.</strong> Autofix</a></li></ol></li><li class="chapter-item expanded "><a href="../../dev/index.html"><strong aria-hidden="true">2.</strong> Dev Docs</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../dev/project_layout.html"><strong aria-hidden="true">2.1.</strong> Project Layout</a></li><li class="chapter-item expanded "><a href="../../dev/rules.html"><strong aria-hidden="true">2.2.</strong> Rules</a></li><li class="chapter-item expanded "><a href="../../dev/syntax.html"><strong aria-hidden="true">2.3.</strong> Syntax</a></li><li class="chapter-item expanded "><a href="../../dev/docgen.html"><strong aria-hidden="true">2.4.</strong> Docgen</a></li></ol></li><li class="chapter-item expanded "><a href="../../rules/index.html"><strong aria-hidden="true">3.</strong> Rules</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../rules/errors/index.html"><strong aria-hidden="true">3.1.</strong> errors</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../../rules/errors/for-direction.html"><strong aria-hidden="true">3.1.1.</strong> for-direction</a></li><li class="chapter-item expanded "><a href="../../rules/errors/getter-return.html"><strong aria-hidden="true">3.1.2.</strong> getter-return</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-async-promise-executor.html"><strong aria-hidden="true">3.1.3.</strong> no-async-promise-executor</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-await-in-loop.html"><strong aria-hidden="true">3.1.4.</strong> no-await-in-loop</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-compare-neg-zero.html"><strong aria-hidden="true">3.1.5.</strong> no-compare-neg-zero</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-cond-assign.html"><strong aria-hidden="true">3.1.6.</strong> no-cond-assign</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-confusing-arrow.html"><strong aria-hidden="true">3.1.7.</strong> no-confusing-arrow</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-constant-condition.html"><strong aria-hidden="true">3.1.8.</strong> no-constant-condition</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-debugger.html"><strong aria-hidden="true">3.1.9.</strong> no-debugger</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-dupe-keys.html"><strong aria-hidden="true">3.1.10.</strong> no-dupe-keys</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-duplicate-cases.html"><strong aria-hidden="true">3.1.11.</strong> no-duplicate-cases</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-empty.html"><strong aria-hidden="true">3.1.12.</strong> no-empty</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-extra-boolean-cast.html"><strong aria-hidden="true">3.1.13.</strong> no-extra-boolean-cast</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-extra-semi.html"><strong aria-hidden="true">3.1.14.</strong> no-extra-semi</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-inner-declarations.html"><strong aria-hidden="true">3.1.15.</strong> no-inner-declarations</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-irregular-whitespace.html"><strong aria-hidden="true">3.1.16.</strong> no-irregular-whitespace</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-new-symbol.html"><strong aria-hidden="true">3.1.17.</strong> no-new-symbol</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-prototype-builtins.html"><strong aria-hidden="true">3.1.18.</strong> no-prototype-builtins</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-setter-return.html"><strong aria-hidden="true">3.1.19.</strong> no-setter-return</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-sparse-arrays.html"><strong aria-hidden="true">3.1.20.</strong> no-sparse-arrays</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-unexpected-multiline.html"><strong aria-hidden="true">3.1.21.</strong> no-unexpected-multiline</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-unsafe-finally.html"><strong aria-hidden="true">3.1.22.</strong> no-unsafe-finally</a></li><li class="chapter-item expanded "><a href="../../rules/errors/no-unsafe-negation.html"><strong aria-hidden="true">3.1.23.</strong> no-unsafe-negation</a></li><li class="chapter-item expanded "><a href="../../rules/errors/use-isnan.html" class="active"><strong aria-hidden="true">3.1.24.</strong> use-isnan</a></li><li class="chapter-item expanded "><a href="../../rules/errors/valid-typeof.html"><strong aria-hidden="true">3.1.25.</strong> valid-typeof</a></li></ol></li></ol></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+        </nav>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                
+                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky bordered">
+                    <div class="left-buttons">
+                        <button id="sidebar-toggle" class="icon-button" type="button" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </button>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light (default)</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                        
+                    </div>
+
+                    <h1 class="menu-title">RSLint docs</h1>
+
+                    <div class="right-buttons">
+                        
+                        <a href="../../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        
+                        
+                    </div>
+                </div>
+
+                
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" name="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+                
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script type="text/javascript">
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <!--
+ generated docs file, do not edit by hand, see xtask/docgen 
+-->
+<h1><a class="header" href="#use-isnan" id="use-isnan">use-isnan</a></h1>
+<p>Disallow incorrect comparisons against <code>NaN</code>.</p>
+<p><code>NaN</code> is a special <code>Number</code> value used to represent &quot;not a number&quot; results in calculations.
+This value is specified in the IEEE Standard for Binary Floating-Point-Arithmetic.</p>
+<p>In JavaScript, <code>NaN</code> is unique, it is not equal to anything, including itself! therefore
+any comparisons to it will either always yield <code>true</code> or <code>false</code>. Therefore you should
+use <code>isNaN(/* num */)</code> instead to test if a value is <code>NaN</code>. This rule is aimed at removing this footgun.</p>
+<h2><a class="header" href="#invalid-code-examples" id="invalid-code-examples">Invalid Code Examples</a></h2>
+<pre><code class="language-js">if (foo == NaN) {
+    // unreachable
+}
+
+if (NaN != NaN) {
+    // always runs
+}
+</code></pre>
+<h2><a class="header" href="#correct-code-examples" id="correct-code-examples">Correct Code Examples</a></h2>
+<pre><code class="language-js">if (isNaN(foo)) {
+    /* */
+}
+
+if (!isNaN(foo)) {
+    /* */
+}
+</code></pre>
+<h2><a class="header" href="#config" id="config">Config</a></h2>
+<table><thead><tr><th>Name</th><th>Type</th><th>Description</th></tr></thead><tbody>
+<tr><td><code>enforceForSwitchCase</code></td><td>bool</td><td>Switch statements use <code>===</code> internally to match an expression, therefore <code>switch (NaN)</code> and <code>case NaN</code> will never match.<br>This rule disables uses like that which are always incorrect (true by default)</td></tr>
+<tr><td><code>enforceForIndexOf</code></td><td>bool</td><td>Index functions like <code>indexOf</code> and <code>lastIndexOf</code> use <code>===</code> internally, therefore matching them against <code>NaN</code> will always<br>yield <code>-1</code>. This option disallows using <code>indexOf(NaN)</code> and <code>lastIndexOf(NaN)</code> (false by default)</td></tr>
+</tbody></table>
+<details>
+ <summary> More incorrect examples </summary>
+<pre><code class="language-js">123 == NaN;
+</code></pre>
+<pre><code class="language-js">123 === NaN;
+</code></pre>
+<pre><code class="language-js">NaN === &quot;abc&quot;;
+</code></pre>
+<pre><code class="language-js">NaN == &quot;abc&quot;;
+</code></pre>
+<pre><code class="language-js">123 != NaN;
+</code></pre>
+<pre><code class="language-js">123 !== NaN;
+</code></pre>
+<pre><code class="language-js">NaN !== &quot;abc&quot;;
+</code></pre>
+<pre><code class="language-js">NaN != &quot;abc&quot;;
+</code></pre>
+<pre><code class="language-js">NaN &lt; &quot;abc&quot;;
+</code></pre>
+<pre><code class="language-js">&quot;abc&quot; &lt; NaN;
+</code></pre>
+<pre><code class="language-js">NaN &gt; &quot;abc&quot;;
+</code></pre>
+<pre><code class="language-js">&quot;abc&quot; &gt; NaN;
+</code></pre>
+<pre><code class="language-js">NaN &lt;= &quot;abc&quot;;
+</code></pre>
+<pre><code class="language-js">&quot;abc&quot; &lt;= NaN;
+</code></pre>
+<pre><code class="language-js">NaN &gt;= &quot;abc&quot;;
+</code></pre>
+<pre><code class="language-js">&quot;abc&quot; &gt;= NaN;
+</code></pre>
+</details><br>
+<details>
+ <summary> More correct examples </summary>
+<pre><code class="language-js">var x = NaN;
+</code></pre>
+<pre><code class="language-js">isNaN(NaN) === true;
+</code></pre>
+<pre><code class="language-js">isNaN(123) !== true;
+</code></pre>
+<pre><code class="language-js">Number.isNaN(NaN) === true;
+</code></pre>
+<pre><code class="language-js">Number.isNaN(123) !== true;
+</code></pre>
+<pre><code class="language-js">foo(NaN + 1);
+</code></pre>
+<pre><code class="language-js">foo(1 + NaN);
+</code></pre>
+<pre><code class="language-js">foo(NaN - 1)
+</code></pre>
+<pre><code class="language-js">foo(1 - NaN)
+</code></pre>
+<pre><code class="language-js">foo(NaN * 2)
+</code></pre>
+<pre><code class="language-js">foo(2 * NaN)
+</code></pre>
+<pre><code class="language-js">foo(NaN / 2)
+</code></pre>
+<pre><code class="language-js">foo(2 / NaN)
+</code></pre>
+<pre><code class="language-js">var x; if (x = NaN) { }
+</code></pre>
+<pre><code class="language-js">foo.indexOf(NaN)
+</code></pre>
+<pre><code class="language-js">foo.lastIndexOf(NaN)
+</code></pre>
+</details>
+<p><a href="https://github.com/RDambrosio016/RSLint/tree/master/crates/rslint_core/src/groups/errors/use_isnan.rs">Source</a></p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                        
+                            <a rel="prev" href="../../rules/errors/no-unsafe-negation.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+                        
+
+                        
+                            <a rel="next" href="../../rules/errors/valid-typeof.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+                        
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                
+                    <a rel="prev" href="../../rules/errors/no-unsafe-negation.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+                
+
+                
+                    <a rel="next" href="../../rules/errors/valid-typeof.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+                
+            </nav>
+
+        </div>
+
+        
+
+        
+
+        
+
+        
+        <script type="text/javascript">
+            window.playground_copyable = true;
+        </script>
+        
+
+        
+
+        
+        <script src="../../elasticlunr.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../mark.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../searcher.js" type="text/javascript" charset="utf-8"></script>
+        
+
+        <script src="../../clipboard.min.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../highlight.js" type="text/javascript" charset="utf-8"></script>
+        <script src="../../book.js" type="text/javascript" charset="utf-8"></script>
+
+        <!-- Custom JS scripts -->
+        
+
+        
+
+    </body>
+</html>
