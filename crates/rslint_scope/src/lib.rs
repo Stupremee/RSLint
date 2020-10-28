@@ -90,7 +90,9 @@ impl<'ddlog> Visit<'ddlog, Stmt> for ScopeAnalyzer {
         match stmt {
             Stmt::BlockStmt(_) => {}
             Stmt::EmptyStmt(_) => {}
-            Stmt::ExprStmt(_) => {}
+            Stmt::ExprStmt(expr) => {
+                expr.expr().map(|expr| self.visit(scope, expr));
+            }
             Stmt::IfStmt(_) => {}
             Stmt::DoWhileStmt(_) => {}
             Stmt::WhileStmt(_) => {}

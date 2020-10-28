@@ -6,8 +6,9 @@ use differential_datalog::{
     DDlog, DeltaMap,
 };
 use rslint_core::rule_prelude::BigInt;
-use rslint_scoping_ddlog::{api::HDDlog, relid2name, Relations};
+use rslint_scoping_ddlog::{api::HDDlog, relid2name, Relations, RELIDMAP};
 use std::{
+    collections::{BTreeMap, BTreeSet},
     marker::PhantomData,
     mem,
     sync::{Arc, Mutex, MutexGuard},
@@ -30,7 +31,12 @@ impl Datalog {
                 updates: Vec::with_capacity(100),
                 scope_id: 0,
                 function_id: 0,
+                statement_id: 0,
                 expression_id: 0,
+                accum: RELIDMAP
+                    .iter()
+                    .map(|(rel, _)| (*rel as RelId, BTreeSet::new()))
+                    .collect(),
             })),
         };
         this.update(init_state);
@@ -50,7 +56,7 @@ impl Datalog {
         Ok(())
     }
 
-    fn update(&mut self, mut delta: DeltaMap<DDValue>) {
+    fn update(&mut self, delta: DeltaMap<DDValue>) {
         // let out_of_scope_vars = delta.clear_rel(Relations::OutOfScopeVar as RelId);
         // for (var, weight) in out_of_scope_vars {
         //     let var = unsafe { Value::OutOfScopeVar::from_ddvalue(var).0 };
@@ -70,6 +76,43 @@ impl Datalog {
         //         weight => unreachable!("invalid weight: {}", weight),
         //     }
         // }
+
+        let mut datalog = self.datalog.lock().unwrap();
+        for (rel, updates) in delta {
+            let rel = datalog.accum.get_mut(&rel).unwrap();
+
+            for (value, weight) in updates {
+                match weight {
+                    1 => {
+                        rel.insert(value);
+                    }
+                    -1 => {
+                        rel.remove(&value);
+                    }
+
+                    _ => unreachable!("invalid weight: {}", weight),
+                }
+            }
+        }
+
+        #[cfg(debug_assertions)]
+        {
+            println!("==   current db state    ==");
+            for (rel, values) in datalog.accum.iter() {
+                let name = relid2name(*rel).unwrap();
+
+                if !values.is_empty() {
+                    println!("Relation {}", name);
+
+                    for val in values.iter() {
+                        println!(">> {}", val);
+                    }
+
+                    println!();
+                }
+            }
+            println!("== end current db state  ==\n\n");
+        }
     }
 }
 
@@ -80,7 +123,10 @@ pub struct DatalogInner {
     updates: Vec<Update<DDValue>>,
     scope_id: u32,
     function_id: u32,
+    statement_id: u32,
     expression_id: u32,
+    // Only for testing, keeps a record of every single ddlog-sided value
+    accum: BTreeMap<RelId, BTreeSet<DDValue>>,
 }
 
 impl DatalogInner {
@@ -93,6 +139,12 @@ impl DatalogInner {
     fn inc_function(&mut self) -> u32 {
         let temp = self.function_id;
         self.function_id += 1;
+        temp
+    }
+
+    fn inc_statement(&mut self) -> u32 {
+        let temp = self.statement_id;
+        self.statement_id += 1;
         temp
     }
 
@@ -139,9 +191,11 @@ impl<'ddlog> DatalogTransaction<'ddlog> {
 
     pub fn scope(&self) -> DatalogScope<'_> {
         let mut datalog = self.datalog.lock().unwrap();
+
+        let parent = datalog.scope_id;
         let scope_id = datalog.inc_scope();
         datalog.push_scope(InputScope {
-            parent: 0,
+            parent,
             child: scope_id,
         });
 
@@ -164,7 +218,7 @@ impl<'ddlog> DatalogTransaction<'ddlog> {
         {
             println!("== start transaction ==");
             dump_delta(&delta);
-            println!("==  end transaction  ==");
+            println!("==  end transaction  ==\n\n");
         }
 
         Ok(delta)
@@ -225,22 +279,31 @@ pub trait DatalogBuilder<'ddlog> {
         pattern: Option<Intern<Pattern>>,
         value: Option<ExprId>,
     ) -> DatalogScope<'ddlog> {
+        let scope = self.scope();
         {
-            let mut datalog = self.datalog_mut();
-            let expr_id = datalog.inc_expression();
+            let mut datalog = scope.datalog_mut();
+            let stmt_id = datalog.inc_statement();
 
-            datalog.insert(
-                Relations::LetDecl as RelId,
-                LetDecl {
-                    expr_id,
-                    scope: self.current_id(),
-                    pattern: pattern.into(),
-                    value: value.into(),
-                },
-            );
+            datalog
+                .insert(
+                    Relations::LetDecl as RelId,
+                    LetDecl {
+                        stmt_id,
+                        pattern: pattern.into(),
+                        value: value.into(),
+                    },
+                )
+                .insert(
+                    Relations::Statement as RelId,
+                    Statement {
+                        id: stmt_id,
+                        kind: StmtKind::StmtLetDecl,
+                        scope: self.current_id(),
+                    },
+                );
         }
 
-        self.scope()
+        scope
     }
 
     fn decl_const(
@@ -248,22 +311,31 @@ pub trait DatalogBuilder<'ddlog> {
         pattern: Option<Intern<Pattern>>,
         value: Option<ExprId>,
     ) -> DatalogScope<'ddlog> {
+        let scope = self.scope();
         {
-            let mut datalog = self.datalog_mut();
-            let expr_id = datalog.inc_expression();
+            let mut datalog = scope.datalog_mut();
+            let stmt_id = datalog.inc_statement();
 
-            datalog.insert(
-                Relations::ConstDecl as RelId,
-                ConstDecl {
-                    expr_id,
-                    scope: self.current_id(),
-                    pattern: pattern.into(),
-                    value: value.into(),
-                },
-            );
+            datalog
+                .insert(
+                    Relations::ConstDecl as RelId,
+                    ConstDecl {
+                        stmt_id,
+                        pattern: pattern.into(),
+                        value: value.into(),
+                    },
+                )
+                .insert(
+                    Relations::Statement as RelId,
+                    Statement {
+                        id: stmt_id,
+                        kind: StmtKind::StmtConstDecl,
+                        scope: self.current_id(),
+                    },
+                );
         }
 
-        self.scope()
+        scope
     }
 
     fn decl_var(
@@ -271,25 +343,35 @@ pub trait DatalogBuilder<'ddlog> {
         pattern: Option<Intern<Pattern>>,
         value: Option<ExprId>,
     ) -> DatalogScope<'ddlog> {
+        let scope = self.scope();
         {
-            let mut datalog = self.datalog_mut();
-            let expr_id = datalog.inc_expression();
+            let mut datalog = scope.datalog_mut();
+            let stmt_id = datalog.inc_statement();
 
-            datalog.insert(
-                Relations::VarDecl as RelId,
-                VarDecl {
-                    expr_id,
-                    // TODO: Carry along the id of the closest var scoping
-                    //       terminator through scopes/functions?
-                    effective_scope: self.current_id(),
-                    decl_scope: self.current_id(),
-                    pattern: pattern.into(),
-                    value: value.into(),
-                },
-            );
+            datalog
+                .insert(
+                    Relations::VarDecl as RelId,
+                    VarDecl {
+                        stmt_id,
+                        // TODO: Carry along the id of the closest var scoping
+                        //       terminator through scopes/functions? This may
+                        //       be trivial to do within ddlog itself
+                        effective_scope: scope.current_id(),
+                        pattern: pattern.into(),
+                        value: value.into(),
+                    },
+                )
+                .insert(
+                    Relations::Statement as RelId,
+                    Statement {
+                        id: stmt_id,
+                        kind: StmtKind::StmtVarDecl,
+                        scope: self.current_id(),
+                    },
+                );
         }
 
-        self.scope()
+        scope
     }
 
     fn number(&self, number: f64) -> ExprId {
@@ -311,6 +393,7 @@ pub trait DatalogBuilder<'ddlog> {
                     kind: ExprKind::ExprLit {
                         kind: LitKind::LitNumber,
                     },
+                    scope: self.current_id(),
                 },
             );
 
@@ -336,6 +419,7 @@ pub trait DatalogBuilder<'ddlog> {
                     kind: ExprKind::ExprLit {
                         kind: LitKind::LitBigInt,
                     },
+                    scope: self.current_id(),
                 },
             );
 
@@ -361,6 +445,7 @@ pub trait DatalogBuilder<'ddlog> {
                     kind: ExprKind::ExprLit {
                         kind: LitKind::LitString,
                     },
+                    scope: self.current_id(),
                 },
             );
 
@@ -378,6 +463,7 @@ pub trait DatalogBuilder<'ddlog> {
                 kind: ExprKind::ExprLit {
                     kind: LitKind::LitNull,
                 },
+                scope: self.current_id(),
             },
         );
 
@@ -400,6 +486,7 @@ pub trait DatalogBuilder<'ddlog> {
                     kind: ExprKind::ExprLit {
                         kind: LitKind::LitBool,
                     },
+                    scope: self.current_id(),
                 },
             );
 
@@ -423,6 +510,7 @@ pub trait DatalogBuilder<'ddlog> {
                 Expression {
                     id,
                     kind: ExprKind::NameRef,
+                    scope: self.current_id(),
                 },
             );
 
@@ -493,6 +581,10 @@ fn dump_delta(delta: &DeltaMap<DDValue>) {
 
         for (val, weight) in changes.iter() {
             println!(">> {} {:+}", val, weight);
+        }
+
+        if !changes.is_empty() {
+            println!();
         }
     }
 }

@@ -19,10 +19,12 @@ digraph {
     17 [label=INPUT_FunctionArg];
     18 [label=INPUT_InputScope];
     19 [label=INPUT_LetDecl];
-    20 [label=INPUT_VarDecl];
-    21 [label=InputScope];
-    22 [label=LetDecl];
-    23 [label=VarDecl];
+    20 [label=INPUT_Statement];
+    21 [label=INPUT_VarDecl];
+    22 [label=InputScope];
+    23 [label=LetDecl];
+    24 [label=Statement];
+    25 [label=VarDecl];
     0 -> 9;
     1 -> 10;
     2 -> 11;
@@ -32,7 +34,8 @@ digraph {
     6 -> 15;
     7 -> 16;
     8 -> 17;
-    21 -> 18;
-    22 -> 19;
-    23 -> 20;
+    22 -> 18;
+    23 -> 19;
+    24 -> 20;
+    25 -> 21;
 }

@@ -197,7 +197,7 @@ impl TryFrom<&RelIdentifier> for Relations {
 }
 
 
-decl_update_deserializer!(UpdateSerializer,(0, ::types::ConstDecl), (1, ::types::ExprBigInt), (2, ::types::ExprBool), (3, ::types::ExprNameRef), (4, ::types::ExprNumber), (5, ::types::ExprString), (6, ::types::Expression), (7, ::types::Function), (8, ::types::FunctionArg), (9, ::types::ConstDecl), (10, ::types::ExprBigInt), (11, ::types::ExprBool), (12, ::types::ExprNameRef), (13, ::types::ExprNumber), (14, ::types::ExprString), (15, ::types::Expression), (16, ::types::Function), (17, ::types::FunctionArg), (18, ::types::InputScope), (19, ::types::LetDecl), (20, ::types::VarDecl), (21, ::types::InputScope), (22, ::types::LetDecl), (23, ::types::VarDecl));
+decl_update_deserializer!(UpdateSerializer,(0, ::types::ConstDecl), (1, ::types::ExprBigInt), (2, ::types::ExprBool), (3, ::types::ExprNameRef), (4, ::types::ExprNumber), (5, ::types::ExprString), (6, ::types::Expression), (7, ::types::Function), (8, ::types::FunctionArg), (9, ::types::ConstDecl), (10, ::types::ExprBigInt), (11, ::types::ExprBool), (12, ::types::ExprNameRef), (13, ::types::ExprNumber), (14, ::types::ExprString), (15, ::types::Expression), (16, ::types::Function), (17, ::types::FunctionArg), (18, ::types::InputScope), (19, ::types::LetDecl), (20, ::types::Statement), (21, ::types::VarDecl), (22, ::types::InputScope), (23, ::types::LetDecl), (24, ::types::Statement), (25, ::types::VarDecl));
 impl TryFrom<&str> for Relations {
     type Error = ();
     fn try_from(rname: &str) -> ::std::result::Result<Self, ()> {
@@ -222,9 +222,11 @@ impl TryFrom<&str> for Relations {
         "INPUT_FunctionArg" => Ok(Relations::INPUT_FunctionArg),
         "INPUT_InputScope" => Ok(Relations::INPUT_InputScope),
         "INPUT_LetDecl" => Ok(Relations::INPUT_LetDecl),
+        "INPUT_Statement" => Ok(Relations::INPUT_Statement),
         "INPUT_VarDecl" => Ok(Relations::INPUT_VarDecl),
         "InputScope" => Ok(Relations::InputScope),
         "LetDecl" => Ok(Relations::LetDecl),
+        "Statement" => Ok(Relations::Statement),
         "VarDecl" => Ok(Relations::VarDecl),
         "__Null" => Ok(Relations::__Null),
              _  => Err(())
@@ -245,6 +247,7 @@ impl Relations {
         Relations::INPUT_FunctionArg => true,
         Relations::INPUT_InputScope => true,
         Relations::INPUT_LetDecl => true,
+        Relations::INPUT_Statement => true,
         Relations::INPUT_VarDecl => true,
             _  => false
         }
@@ -264,6 +267,7 @@ impl Relations {
         Relations::FunctionArg => true,
         Relations::InputScope => true,
         Relations::LetDecl => true,
+        Relations::Statement => true,
         Relations::VarDecl => true,
             _  => false
         }
@@ -293,11 +297,13 @@ impl TryFrom<RelId> for Relations {
         17 => Ok(Relations::INPUT_FunctionArg),
         18 => Ok(Relations::INPUT_InputScope),
         19 => Ok(Relations::INPUT_LetDecl),
-        20 => Ok(Relations::INPUT_VarDecl),
-        21 => Ok(Relations::InputScope),
-        22 => Ok(Relations::LetDecl),
-        23 => Ok(Relations::VarDecl),
-        24 => Ok(Relations::__Null),
+        20 => Ok(Relations::INPUT_Statement),
+        21 => Ok(Relations::INPUT_VarDecl),
+        22 => Ok(Relations::InputScope),
+        23 => Ok(Relations::LetDecl),
+        24 => Ok(Relations::Statement),
+        25 => Ok(Relations::VarDecl),
+        26 => Ok(Relations::__Null),
              _  => Err(())
          }
     }
@@ -324,11 +330,13 @@ pub fn relid2name(rid: RelId) -> Option<&'static str> {
         17 => Some(&"INPUT_FunctionArg"),
         18 => Some(&"INPUT_InputScope"),
         19 => Some(&"INPUT_LetDecl"),
-        20 => Some(&"INPUT_VarDecl"),
-        21 => Some(&"InputScope"),
-        22 => Some(&"LetDecl"),
-        23 => Some(&"VarDecl"),
-        24 => Some(&"__Null"),
+        20 => Some(&"INPUT_Statement"),
+        21 => Some(&"INPUT_VarDecl"),
+        22 => Some(&"InputScope"),
+        23 => Some(&"LetDecl"),
+        24 => Some(&"Statement"),
+        25 => Some(&"VarDecl"),
+        26 => Some(&"__Null"),
        _  => None
    }
 }
@@ -337,7 +345,7 @@ pub fn relid2cname(rid: RelId) -> Option<&'static ::std::ffi::CStr> {
 }   /// A map of `RelId`s to their name as an `&'static str`
 pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(25, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(27, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::ConstDecl, "ConstDecl");
         map.insert(Relations::ExprBigInt, "ExprBigInt");
         map.insert(Relations::ExprBool, "ExprBool");
@@ -358,9 +366,11 @@ pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'stat
         map.insert(Relations::INPUT_FunctionArg, "INPUT_FunctionArg");
         map.insert(Relations::INPUT_InputScope, "INPUT_InputScope");
         map.insert(Relations::INPUT_LetDecl, "INPUT_LetDecl");
+        map.insert(Relations::INPUT_Statement, "INPUT_Statement");
         map.insert(Relations::INPUT_VarDecl, "INPUT_VarDecl");
         map.insert(Relations::InputScope, "InputScope");
         map.insert(Relations::LetDecl, "LetDecl");
+        map.insert(Relations::Statement, "Statement");
         map.insert(Relations::VarDecl, "VarDecl");
         map.insert(Relations::__Null, "__Null");
         map
@@ -368,7 +378,7 @@ pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'stat
     /// A map of `RelId`s to their name as an `&'static CStr`
 pub static RELIDMAPC: ::once_cell::sync::Lazy<::fnv::FnvHashMap<RelId, &'static ::std::ffi::CStr>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(25, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(27, ::fnv::FnvBuildHasher::default());
         map.insert(0, ::std::ffi::CStr::from_bytes_with_nul(b"ConstDecl\0").expect("Unreachable: A null byte was specifically inserted"));
         map.insert(1, ::std::ffi::CStr::from_bytes_with_nul(b"ExprBigInt\0").expect("Unreachable: A null byte was specifically inserted"));
         map.insert(2, ::std::ffi::CStr::from_bytes_with_nul(b"ExprBool\0").expect("Unreachable: A null byte was specifically inserted"));
@@ -389,17 +399,19 @@ pub static RELIDMAPC: ::once_cell::sync::Lazy<::fnv::FnvHashMap<RelId, &'static 
         map.insert(17, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_FunctionArg\0").expect("Unreachable: A null byte was specifically inserted"));
         map.insert(18, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_InputScope\0").expect("Unreachable: A null byte was specifically inserted"));
         map.insert(19, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_LetDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(20, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(21, ::std::ffi::CStr::from_bytes_with_nul(b"InputScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(22, ::std::ffi::CStr::from_bytes_with_nul(b"LetDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(23, ::std::ffi::CStr::from_bytes_with_nul(b"VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(24, ::std::ffi::CStr::from_bytes_with_nul(b"__Null\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(20, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Statement\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(21, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(22, ::std::ffi::CStr::from_bytes_with_nul(b"InputScope\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(23, ::std::ffi::CStr::from_bytes_with_nul(b"LetDecl\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(24, ::std::ffi::CStr::from_bytes_with_nul(b"Statement\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(25, ::std::ffi::CStr::from_bytes_with_nul(b"VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(26, ::std::ffi::CStr::from_bytes_with_nul(b"__Null\0").expect("Unreachable: A null byte was specifically inserted"));
         map
     });
     /// A map of input `Relations`s to their name as an `&'static str`
 pub static INPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(12, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(13, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::ConstDecl, "ConstDecl");
         map.insert(Relations::ExprBigInt, "ExprBigInt");
         map.insert(Relations::ExprBool, "ExprBool");
@@ -411,13 +423,14 @@ pub static INPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, 
         map.insert(Relations::FunctionArg, "FunctionArg");
         map.insert(Relations::InputScope, "InputScope");
         map.insert(Relations::LetDecl, "LetDecl");
+        map.insert(Relations::Statement, "Statement");
         map.insert(Relations::VarDecl, "VarDecl");
         map
     });
     /// A map of output `Relations`s to their name as an `&'static str`
 pub static OUTPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(12, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(13, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::INPUT_ConstDecl, "INPUT_ConstDecl");
         map.insert(Relations::INPUT_ExprBigInt, "INPUT_ExprBigInt");
         map.insert(Relations::INPUT_ExprBool, "INPUT_ExprBool");
@@ -429,6 +442,7 @@ pub static OUTPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations,
         map.insert(Relations::INPUT_FunctionArg, "INPUT_FunctionArg");
         map.insert(Relations::INPUT_InputScope, "INPUT_InputScope");
         map.insert(Relations::INPUT_LetDecl, "INPUT_LetDecl");
+        map.insert(Relations::INPUT_Statement, "INPUT_Statement");
         map.insert(Relations::INPUT_VarDecl, "INPUT_VarDecl");
         map
     });
@@ -534,6 +548,9 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         Relations::INPUT_LetDecl => {
             Ok(<::types::LetDecl>::from_record(_rec)?.into_ddvalue())
         },
+        Relations::INPUT_Statement => {
+            Ok(<::types::Statement>::from_record(_rec)?.into_ddvalue())
+        },
         Relations::INPUT_VarDecl => {
             Ok(<::types::VarDecl>::from_record(_rec)?.into_ddvalue())
         },
@@ -542,6 +559,9 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         },
         Relations::LetDecl => {
             Ok(<::types::LetDecl>::from_record(_rec)?.into_ddvalue())
+        },
+        Relations::Statement => {
+            Ok(<::types::Statement>::from_record(_rec)?.into_ddvalue())
         },
         Relations::VarDecl => {
             Ok(<::types::VarDecl>::from_record(_rec)?.into_ddvalue())
@@ -565,7 +585,7 @@ pub fn idxkey_from_record(idx: Indexes, _rec: &differential_datalog::record::Rec
 }
 pub fn indexes2arrid(idx: Indexes) -> ArrId {
     match idx {
-        Indexes::__Null_by_none => ( 24, 0),
+        Indexes::__Null_by_none => ( 26, 0),
     }
 }
 #[derive(Copy,Clone,Debug,PartialEq,Eq,Hash)]
@@ -590,11 +610,13 @@ pub enum Relations {
     INPUT_FunctionArg = 17,
     INPUT_InputScope = 18,
     INPUT_LetDecl = 19,
-    INPUT_VarDecl = 20,
-    InputScope = 21,
-    LetDecl = 22,
-    VarDecl = 23,
-    __Null = 24
+    INPUT_Statement = 20,
+    INPUT_VarDecl = 21,
+    InputScope = 22,
+    LetDecl = 23,
+    Statement = 24,
+    VarDecl = 25,
+    __Null = 26
 }
 #[derive(Copy,Clone,Debug,PartialEq,Eq,Hash)]
 pub enum Indexes {
@@ -1074,6 +1096,49 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                                 ],
                             change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
                         };
+    let Statement = Relation {
+                        name:         "Statement".to_string(),
+                        input:        true,
+                        distinct:     false,
+                        caching_mode: CachingMode::Set,
+                        key_func:     None,
+                        id:           Relations::Statement as RelId,
+                        rules:        vec![
+                            ],
+                        arrangements: vec![
+                            ],
+                        change_cb:    None
+                    };
+    let INPUT_Statement = Relation {
+                              name:         "INPUT_Statement".to_string(),
+                              input:        false,
+                              distinct:     false,
+                              caching_mode: CachingMode::Set,
+                              key_func:     None,
+                              id:           Relations::INPUT_Statement as RelId,
+                              rules:        vec![
+                                  /* INPUT_Statement[x] :- Statement[(x: Statement)]. */
+                                  Rule::CollectionRule {
+                                      description: "INPUT_Statement[x] :- Statement[(x: Statement)].".to_string(),
+                                      rel: Relations::Statement as RelId,
+                                      xform: Some(XFormCollection::FilterMap{
+                                                      description: "head of INPUT_Statement[x] :- Statement[(x: Statement)]." .to_string(),
+                                                      fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
+                                                      {
+                                                          let ref x = match *unsafe {<::types::Statement>::from_ddvalue_ref(&__v) } {
+                                                              ref x => (*x).clone(),
+                                                              _ => return None
+                                                          };
+                                                          Some(((*x).clone()).into_ddvalue())
+                                                      }
+                                                      __f},
+                                                      next: Box::new(None)
+                                                  })
+                                  }],
+                              arrangements: vec![
+                                  ],
+                              change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
+                          };
     let VarDecl = Relation {
                       name:         "VarDecl".to_string(),
                       input:        true,
@@ -1166,6 +1231,8 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
             ProgNode::Rel{rel: INPUT_InputScope},
             ProgNode::Rel{rel: LetDecl},
             ProgNode::Rel{rel: INPUT_LetDecl},
+            ProgNode::Rel{rel: Statement},
+            ProgNode::Rel{rel: INPUT_Statement},
             ProgNode::Rel{rel: VarDecl},
             ProgNode::Rel{rel: INPUT_VarDecl},
             ProgNode::Rel{rel: __Null}

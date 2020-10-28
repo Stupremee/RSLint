@@ -1,24 +1,28 @@
 typedef Scope = u32
 typedef FuncId = u32
+typedef StmtId = u32
 typedef ExprId = u32
 typedef Name = istring
 
-typedef Pattern = SinglePattern { name: Name }
-typedef IPattern = Intern<Pattern>
+typedef StmtKind = StmtVarDecl | StmtLetDecl | StmtConstDecl | StmtExpr { expr_id: ExprId }
 
 typedef ExprKind = ExprLit { kind: LitKind } | NameRef
 typedef LitKind = LitNumber | LitBigInt | LitString | LitNull | LitBool
+
+typedef Pattern = SinglePattern { name: Name }
+typedef IPattern = Intern<Pattern>
 
 input relation InputScope(parent: Scope, child: Scope)
 
 input relation Function(id: FuncId, name: Option<Name>, scope: Scope)
 input relation FunctionArg(parent_func: FuncId, pattern: IPattern)
 
-input relation VarDecl(expr_id: ExprId, effective_scope: Scope, decl_scope: Scope, pattern: Option<IPattern>, value: Option<ExprId>)
-input relation ConstDecl(expr_id: ExprId, scope: Scope, pattern: Option<IPattern>, value: Option<ExprId>)
-input relation LetDecl(expr_id: ExprId, scope: Scope, pattern: Option<IPattern>, value: Option<ExprId>)
+input relation Statement(id: StmtId, kind: StmtKind, scope: Scope)
+input relation VarDecl(stmt_id: StmtId, effective_scope: Scope, pattern: Option<IPattern>, value: Option<ExprId>)
+input relation LetDecl(stmt_id: StmtId, pattern: Option<IPattern>, value: Option<ExprId>)
+input relation ConstDecl(stmt_id: StmtId, pattern: Option<IPattern>, value: Option<ExprId>)
 
-input relation Expression(id: ExprId, kind: ExprKind)
+input relation Expression(id: ExprId, kind: ExprKind, scope: Scope)
 input relation ExprNumber(id: ExprId, value: double)
 input relation ExprBigInt(id: ExprId, value: bigint)
 input relation ExprString(id: ExprId, value: istring)
