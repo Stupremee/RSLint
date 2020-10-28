@@ -25,7 +25,7 @@ pub struct Datalog {
 impl Datalog {
     pub fn new() -> DatalogResult<Self> {
         let (hddlog, init_state) = HDDlog::run(2, false, |_: usize, _: &Record, _: isize| {})?;
-        let mut this = Self {
+        let this = Self {
             datalog: Arc::new(Mutex::new(DatalogInner {
                 hddlog,
                 updates: Vec::with_capacity(100),
@@ -44,7 +44,7 @@ impl Datalog {
         Ok(this)
     }
 
-    pub fn transaction<F>(&mut self, transaction: F) -> DatalogResult<()>
+    pub fn transaction<F>(&self, transaction: F) -> DatalogResult<()>
     where
         F: for<'trans> FnOnce(&mut DatalogTransaction<'trans>) -> DatalogResult<()>,
     {
@@ -56,7 +56,7 @@ impl Datalog {
         Ok(())
     }
 
-    fn update(&mut self, delta: DeltaMap<DDValue>) {
+    fn update(&self, delta: DeltaMap<DDValue>) {
         // let out_of_scope_vars = delta.clear_rel(Relations::OutOfScopeVar as RelId);
         // for (var, weight) in out_of_scope_vars {
         //     let var = unsafe { Value::OutOfScopeVar::from_ddvalue(var).0 };
@@ -113,6 +113,12 @@ impl Datalog {
             }
             println!("== end current db state  ==\n\n");
         }
+    }
+}
+
+impl Default for Datalog {
+    fn default() -> Self {
+        Self::new().unwrap()
     }
 }
 

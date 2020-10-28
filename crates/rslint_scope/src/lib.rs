@@ -13,7 +13,6 @@ use rslint_core::{
     CstRule, Rule, RuleCtx,
 };
 use serde::{Deserialize, Serialize};
-use std::sync::{Arc, Mutex};
 use types::{
     internment::{self, Intern},
     ExprId, Pattern as DatalogPattern,
@@ -23,42 +22,29 @@ use visit::Visit;
 #[derive(Debug, Clone, Deserialize, Serialize)]
 pub struct ScopeAnalyzer {
     #[serde(skip)]
-    datalog: Arc<Mutex<Option<Datalog>>>,
+    datalog: Datalog,
 }
 
 impl ScopeAnalyzer {
     pub fn new() -> DatalogResult<Self> {
         Ok(Self {
-            datalog: Arc::new(Mutex::new(Some(Datalog::new()?))),
+            datalog: Datalog::new()?,
         })
     }
 
     pub fn analyze(&self, syntax: &SyntaxNode) -> DatalogResult<()> {
-        let mut lock = self.datalog.lock().unwrap();
-        let mut datalog = lock.take().unwrap();
+        let analyzer = AnalyzerInner;
 
-        datalog.transaction(|trans| {
+        self.datalog.transaction(|trans| {
             let scope = trans.scope();
             for stmt in syntax.children().filter_map(|node| node.try_to::<Stmt>()) {
-                (&*self).visit(&scope, stmt);
+                analyzer.visit(&scope, stmt);
             }
 
             Ok(())
         })?;
 
-        *lock = Some(datalog);
-
         Ok(())
-    }
-
-    fn visit_pattern(&self, pattern: Pattern) -> Intern<DatalogPattern> {
-        match pattern {
-            Pattern::SinglePattern(single) => internment::intern(&DatalogPattern {
-                name: internment::intern(&single.text()),
-            }),
-
-            _ => todo!(),
-        }
     }
 }
 
@@ -83,7 +69,21 @@ impl CstRule for ScopeAnalyzer {
     }
 }
 
-impl<'ddlog> Visit<'ddlog, Stmt> for ScopeAnalyzer {
+struct AnalyzerInner;
+
+impl AnalyzerInner {
+    fn visit_pattern(&self, pattern: Pattern) -> Intern<DatalogPattern> {
+        match pattern {
+            Pattern::SinglePattern(single) => internment::intern(&DatalogPattern {
+                name: internment::intern(&single.text()),
+            }),
+
+            _ => todo!(),
+        }
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, Stmt> for AnalyzerInner {
     type Output = Option<DatalogScope<'ddlog>>;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, stmt: Stmt) -> Self::Output {
@@ -114,7 +114,7 @@ impl<'ddlog> Visit<'ddlog, Stmt> for ScopeAnalyzer {
     }
 }
 
-impl<'ddlog> Visit<'ddlog, Decl> for ScopeAnalyzer {
+impl<'ddlog> Visit<'ddlog, Decl> for AnalyzerInner {
     type Output = Option<DatalogScope<'ddlog>>;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, decl: Decl) -> Self::Output {
@@ -129,7 +129,7 @@ impl<'ddlog> Visit<'ddlog, Decl> for ScopeAnalyzer {
     }
 }
 
-impl<'ddlog> Visit<'ddlog, FnDecl> for ScopeAnalyzer {
+impl<'ddlog> Visit<'ddlog, FnDecl> for AnalyzerInner {
     type Output = ();
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, func: FnDecl) -> Self::Output {
@@ -157,7 +157,7 @@ impl<'ddlog> Visit<'ddlog, FnDecl> for ScopeAnalyzer {
     }
 }
 
-impl<'ddlog> Visit<'ddlog, VarDecl> for ScopeAnalyzer {
+impl<'ddlog> Visit<'ddlog, VarDecl> for AnalyzerInner {
     type Output = DatalogScope<'ddlog>;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, var: VarDecl) -> Self::Output {
@@ -181,7 +181,7 @@ impl<'ddlog> Visit<'ddlog, VarDecl> for ScopeAnalyzer {
     }
 }
 
-impl<'ddlog> Visit<'ddlog, Expr> for ScopeAnalyzer {
+impl<'ddlog> Visit<'ddlog, Expr> for AnalyzerInner {
     type Output = ExprId;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, expr: Expr) -> Self::Output {
@@ -196,7 +196,7 @@ impl<'ddlog> Visit<'ddlog, Expr> for ScopeAnalyzer {
     }
 }
 
-impl<'ddlog> Visit<'ddlog, Literal> for ScopeAnalyzer {
+impl<'ddlog> Visit<'ddlog, Literal> for AnalyzerInner {
     type Output = ExprId;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, literal: Literal) -> Self::Output {
@@ -214,7 +214,7 @@ impl<'ddlog> Visit<'ddlog, Literal> for ScopeAnalyzer {
     }
 }
 
-impl<'ddlog> Visit<'ddlog, NameRef> for ScopeAnalyzer {
+impl<'ddlog> Visit<'ddlog, NameRef> for AnalyzerInner {
     type Output = ExprId;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, name: NameRef) -> Self::Output {
