@@ -7,6 +7,7 @@ Developer flags that are used by RSLint developers to debug RSLint.
     -Z help     -- Shows this message
     -Z tokenize -- Tokenizes the input files and dumps the tokens
     -Z dumpast  -- Parses the input files and prints the parsed AST
+    -Z datalog  -- Use experimental ddlog-based scope analysis
 
 Run with 'rslint -Z <FLAG> <FILES>'.";
 
@@ -45,11 +46,12 @@ pub(crate) struct Options {
 }
 
 arg_enum! {
-    #[derive(Debug, PartialEq, Eq)]
+    #[derive(Debug, Copy, Clone, PartialEq, Eq)]
     enum DevFlag {
         Help,
         Tokenize,
         DumpAst,
+        Datalog,
     }
 }
 
@@ -91,6 +93,9 @@ fn main() {
             opt.dirty,
             opt.formatter,
             opt.no_global_config,
+            opt.dev_flag
+                .map(|flag| flag == DevFlag::Datalog)
+                .unwrap_or_default(),
         ),
     }
 }

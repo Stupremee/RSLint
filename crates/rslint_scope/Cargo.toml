@@ -1,0 +1,18 @@
+[package]
+name = "rslint_scope"
+version = "0.1.0"
+authors = ["RSLint developers"]
+edition = "2018"
+license = "MIT"
+description = "Scope analysis of JS programs"
+
+[dependencies]
+rslint_core = { path = "../rslint_core", version = "0.2.2" }
+types = { path = "./rslint_scoping_ddlog/types" }
+differential_datalog = { path = "./rslint_scoping_ddlog/differential_datalog" }
+serde = { version = "1.0.115", features = ["derive"] }
+typetag = "0.1.5"
+
+[dependencies.rslint_scoping]
+path = "./rslint_scoping_ddlog"
+default-features = false
