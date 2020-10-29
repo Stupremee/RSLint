@@ -2,4 +2,4 @@
 * text=auto eol=lf
 
 # Give ddlog files syntax highlighting
-*.ddlog linguist-language=prolog
+*.dl linguist-language=prolog

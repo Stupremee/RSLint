@@ -3,19 +3,22 @@ mod visit;
 
 pub use datalog::{
     Datalog, DatalogBuilder, DatalogFunction, DatalogResult, DatalogScope, DatalogTransaction,
+    DerivedFacts,
 };
 
 use rslint_core::{
     rule_prelude::{
-        ast::{Decl, Expr, FnDecl, Literal, LiteralKind, NameRef, Pattern, Stmt, VarDecl},
-        AstNode, SyntaxNode, SyntaxNodeExt,
+        ast::{
+            Decl, Expr, FnDecl, Literal, LiteralKind, NameRef, Pattern, ReturnStmt, Stmt, VarDecl,
+        },
+        AstNode, SyntaxNode, SyntaxNodeExt, TextRange,
     },
     CstRule, Rule, RuleCtx,
 };
 use serde::{Deserialize, Serialize};
 use types::{
     internment::{self, Intern},
-    ExprId, Pattern as DatalogPattern,
+    ExprId, InvalidNameUse, Pattern as DatalogPattern,
 };
 use visit::Visit;
 
@@ -32,10 +35,10 @@ impl ScopeAnalyzer {
         })
     }
 
-    pub fn analyze(&self, syntax: &SyntaxNode) -> DatalogResult<()> {
+    pub fn analyze(&self, syntax: &SyntaxNode, ctx: &mut RuleCtx) -> DatalogResult<()> {
         let analyzer = AnalyzerInner;
 
-        self.datalog.transaction(|trans| {
+        let facts = self.datalog.transaction(|trans| {
             let scope = trans.scope();
             for stmt in syntax.children().filter_map(|node| node.try_to::<Stmt>()) {
                 analyzer.visit(&scope, stmt);
@@ -43,6 +46,20 @@ impl ScopeAnalyzer {
 
             Ok(())
         })?;
+
+        for InvalidNameUse { name, span, .. } in facts.invalid_name_uses {
+            let error = ctx
+                .err(
+                    "datalog-scoping",
+                    format!("cannot find value `{}` in this scope", name),
+                )
+                .primary(
+                    TextRange::new(span.start.into(), span.end.into()),
+                    "not found in this scope".to_owned(),
+                );
+
+            ctx.add_err(error);
+        }
 
         Ok(())
     }
@@ -60,8 +77,8 @@ impl Rule for ScopeAnalyzer {
 
 #[typetag::serde]
 impl CstRule for ScopeAnalyzer {
-    fn check_root(&self, root: &SyntaxNode, _ctx: &mut RuleCtx) -> Option<()> {
-        if let Err(err) = self.analyze(root) {
+    fn check_root(&self, root: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
+        if let Err(err) = self.analyze(root, ctx) {
             eprintln!("Datalog error: {:?}", err);
         }
 
@@ -88,7 +105,15 @@ impl<'ddlog> Visit<'ddlog, Stmt> for AnalyzerInner {
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, stmt: Stmt) -> Self::Output {
         match stmt {
-            Stmt::BlockStmt(_) => {}
+            Stmt::BlockStmt(block) => {
+                let mut scope = scope.scope();
+                for stmt in block.stmts() {
+                    if let Some(new_scope) = self.visit(&scope, stmt) {
+                        scope = new_scope;
+                    }
+                }
+                // TODO: How to connect blocks with the downstream nodes?
+            }
             Stmt::EmptyStmt(_) => {}
             Stmt::ExprStmt(expr) => {
                 expr.expr().map(|expr| self.visit(scope, expr));
@@ -100,7 +125,7 @@ impl<'ddlog> Visit<'ddlog, Stmt> for AnalyzerInner {
             Stmt::ForInStmt(_) => {}
             Stmt::ContinueStmt(_) => {}
             Stmt::BreakStmt(_) => {}
-            Stmt::ReturnStmt(_) => {}
+            Stmt::ReturnStmt(ret) => self.visit(scope, ret),
             Stmt::WithStmt(_) => {}
             Stmt::LabelledStmt(_) => {}
             Stmt::SwitchStmt(_) => {}
@@ -161,17 +186,18 @@ impl<'ddlog> Visit<'ddlog, VarDecl> for AnalyzerInner {
     type Output = DatalogScope<'ddlog>;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, var: VarDecl) -> Self::Output {
-        let mut last_scope = None;
+        let (mut last_scope, span) = (None, var.syntax().trimmed_range());
+
         for decl in var.declared() {
             let pattern = decl.pattern().map(|pat| self.visit_pattern(pat));
             let value = self.visit(scope, decl.value());
 
             last_scope = Some(if var.is_let() {
-                scope.decl_let(pattern, value)
+                scope.decl_let(pattern, value, span)
             } else if var.is_const() {
-                scope.decl_const(pattern, value)
+                scope.decl_const(pattern, value, span)
             } else if var.is_var() {
-                scope.decl_var(pattern, value)
+                scope.decl_var(pattern, value, span)
             } else {
                 unreachable!("a variable declaration was neither `let`, `const` or `var`");
             });
@@ -200,16 +226,17 @@ impl<'ddlog> Visit<'ddlog, Literal> for AnalyzerInner {
     type Output = ExprId;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, literal: Literal) -> Self::Output {
-        match literal.kind() {
-            LiteralKind::Number(number) => scope.number(number),
-            LiteralKind::BigInt(bigint) => scope.bigint(bigint),
-            LiteralKind::String => scope.string(literal.inner_string_text().unwrap().to_string()),
-            LiteralKind::Null => scope.null(),
-            LiteralKind::Bool(boolean) => scope.boolean(boolean),
+        let span = literal.syntax().trimmed_range();
 
-            // FIXME: This is here so things can function before everything is 100%
-            //        translatable into datalog, mostly for my sanity
-            LiteralKind::Regex => 0,
+        match literal.kind() {
+            LiteralKind::Number(number) => scope.number(number, span),
+            LiteralKind::BigInt(bigint) => scope.bigint(bigint, span),
+            LiteralKind::String => {
+                scope.string(literal.inner_string_text().unwrap().to_string(), span)
+            }
+            LiteralKind::Null => scope.null(span),
+            LiteralKind::Bool(boolean) => scope.boolean(boolean, span),
+            LiteralKind::Regex => scope.regex(span),
         }
     }
 }
@@ -218,6 +245,15 @@ impl<'ddlog> Visit<'ddlog, NameRef> for AnalyzerInner {
     type Output = ExprId;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, name: NameRef) -> Self::Output {
-        scope.name_ref(name.to_string())
+        scope.name_ref(name.to_string(), name.syntax().trimmed_range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, ReturnStmt> for AnalyzerInner {
+    type Output = ();
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, ret: ReturnStmt) -> Self::Output {
+        let value = ret.value().map(|val| self.visit(scope, val));
+        scope.ret(value, ret.syntax().text_range());
     }
 }

@@ -5,17 +5,38 @@ use differential_datalog::{
     record::Record,
     DDlog, DeltaMap,
 };
-use rslint_core::rule_prelude::BigInt;
-use rslint_scoping_ddlog::{api::HDDlog, relid2name, Relations, RELIDMAP};
+use rslint_core::rule_prelude::{BigInt, TextRange};
+use rslint_scoping_ddlog::{api::HDDlog, relid2name, Relations};
 use std::{
-    collections::{BTreeMap, BTreeSet},
     marker::PhantomData,
     mem,
     sync::{Arc, Mutex, MutexGuard},
 };
-use types::{internment::Intern, *};
+use types::{internment::Intern, Span as DatalogSpan, *};
 
 pub type DatalogResult<T> = Result<T, String>;
+
+#[derive(Debug, Clone)]
+pub struct DerivedFacts {
+    pub invalid_name_uses: Vec<InvalidNameUse>,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+enum Weight {
+    Insert,
+    Delete,
+}
+
+impl From<isize> for Weight {
+    fn from(weight: isize) -> Self {
+        match weight {
+            1 => Self::Insert,
+            -1 => Self::Delete,
+
+            invalid => unreachable!("invalid weight given: {}", invalid),
+        }
+    }
+}
 
 #[derive(Debug, Clone)]
 pub struct Datalog {
@@ -33,10 +54,6 @@ impl Datalog {
                 function_id: 0,
                 statement_id: 0,
                 expression_id: 0,
-                accum: RELIDMAP
-                    .iter()
-                    .map(|(rel, _)| (*rel as RelId, BTreeSet::new()))
-                    .collect(),
             })),
         };
         this.update(init_state);
@@ -44,75 +61,32 @@ impl Datalog {
         Ok(this)
     }
 
-    pub fn transaction<F>(&self, transaction: F) -> DatalogResult<()>
+    pub fn transaction<F>(&self, transaction: F) -> DatalogResult<DerivedFacts>
     where
         F: for<'trans> FnOnce(&mut DatalogTransaction<'trans>) -> DatalogResult<()>,
     {
         let mut trans = DatalogTransaction::new(self.datalog.clone())?;
         transaction(&mut trans)?;
         let delta = trans.commit()?;
-        self.update(delta);
 
-        Ok(())
+        Ok(self.update(delta))
     }
 
-    fn update(&self, delta: DeltaMap<DDValue>) {
-        // let out_of_scope_vars = delta.clear_rel(Relations::OutOfScopeVar as RelId);
-        // for (var, weight) in out_of_scope_vars {
-        //     let var = unsafe { Value::OutOfScopeVar::from_ddvalue(var).0 };
-        //
-        //     match weight {
-        //         1 => self.out_of_scope_vars.push(var),
-        //         -1 => {
-        //             let idx = self
-        //                 .out_of_scope_vars
-        //                 .iter()
-        //                 .position(|v| v == &var)
-        //                 .unwrap();
-        //
-        //             self.out_of_scope_vars.remove(idx);
-        //         }
-        //
-        //         weight => unreachable!("invalid weight: {}", weight),
-        //     }
-        // }
-
-        let mut datalog = self.datalog.lock().unwrap();
-        for (rel, updates) in delta {
-            let rel = datalog.accum.get_mut(&rel).unwrap();
-
-            for (value, weight) in updates {
-                match weight {
-                    1 => {
-                        rel.insert(value);
-                    }
-                    -1 => {
-                        rel.remove(&value);
-                    }
-
-                    _ => unreachable!("invalid weight: {}", weight),
+    fn update(&self, mut delta: DeltaMap<DDValue>) -> DerivedFacts {
+        let relation = delta.clear_rel(Relations::InvalidNameUse as RelId);
+        let mut invalid_name_uses = Vec::with_capacity(relation.len());
+        for (usage, weight) in relation.into_iter() {
+            match Weight::from(weight) {
+                Weight::Insert => {
+                    // Safety: This must be an instance of `InvalidNameUse` since it comes
+                    //         from the `InvalidNameUse` relation
+                    invalid_name_uses.push(unsafe { InvalidNameUse::from_ddvalue(usage) });
                 }
+                Weight::Delete => {}
             }
         }
 
-        #[cfg(debug_assertions)]
-        {
-            println!("==   current db state    ==");
-            for (rel, values) in datalog.accum.iter() {
-                let name = relid2name(*rel).unwrap();
-
-                if !values.is_empty() {
-                    println!("Relation {}", name);
-
-                    for val in values.iter() {
-                        println!(">> {}", val);
-                    }
-
-                    println!();
-                }
-            }
-            println!("== end current db state  ==\n\n");
-        }
+        DerivedFacts { invalid_name_uses }
     }
 }
 
@@ -131,8 +105,6 @@ pub struct DatalogInner {
     function_id: u32,
     statement_id: u32,
     expression_id: u32,
-    // Only for testing, keeps a record of every single ddlog-sided value
-    accum: BTreeMap<RelId, BTreeSet<DDValue>>,
 }
 
 impl DatalogInner {
@@ -284,6 +256,7 @@ pub trait DatalogBuilder<'ddlog> {
         &self,
         pattern: Option<Intern<Pattern>>,
         value: Option<ExprId>,
+        span: TextRange,
     ) -> DatalogScope<'ddlog> {
         let scope = self.scope();
         {
@@ -305,6 +278,7 @@ pub trait DatalogBuilder<'ddlog> {
                         id: stmt_id,
                         kind: StmtKind::StmtLetDecl,
                         scope: self.current_id(),
+                        span: into_span(span),
                     },
                 );
         }
@@ -316,6 +290,7 @@ pub trait DatalogBuilder<'ddlog> {
         &self,
         pattern: Option<Intern<Pattern>>,
         value: Option<ExprId>,
+        span: TextRange,
     ) -> DatalogScope<'ddlog> {
         let scope = self.scope();
         {
@@ -337,6 +312,7 @@ pub trait DatalogBuilder<'ddlog> {
                         id: stmt_id,
                         kind: StmtKind::StmtConstDecl,
                         scope: self.current_id(),
+                        span: into_span(span),
                     },
                 );
         }
@@ -348,6 +324,7 @@ pub trait DatalogBuilder<'ddlog> {
         &self,
         pattern: Option<Intern<Pattern>>,
         value: Option<ExprId>,
+        span: TextRange,
     ) -> DatalogScope<'ddlog> {
         let scope = self.scope();
         {
@@ -373,6 +350,7 @@ pub trait DatalogBuilder<'ddlog> {
                         id: stmt_id,
                         kind: StmtKind::StmtVarDecl,
                         scope: self.current_id(),
+                        span: into_span(span),
                     },
                 );
         }
@@ -380,7 +358,7 @@ pub trait DatalogBuilder<'ddlog> {
         scope
     }
 
-    fn number(&self, number: f64) -> ExprId {
+    fn number(&self, number: f64, span: TextRange) -> ExprId {
         let mut datalog = self.datalog_mut();
         let id = datalog.inc_expression();
 
@@ -400,13 +378,14 @@ pub trait DatalogBuilder<'ddlog> {
                         kind: LitKind::LitNumber,
                     },
                     scope: self.current_id(),
+                    span: into_span(span),
                 },
             );
 
         id
     }
 
-    fn bigint(&self, bigint: BigInt) -> ExprId {
+    fn bigint(&self, bigint: BigInt, span: TextRange) -> ExprId {
         let mut datalog = self.datalog_mut();
         let id = datalog.inc_expression();
 
@@ -426,13 +405,14 @@ pub trait DatalogBuilder<'ddlog> {
                         kind: LitKind::LitBigInt,
                     },
                     scope: self.current_id(),
+                    span: into_span(span),
                 },
             );
 
         id
     }
 
-    fn string(&self, string: String) -> ExprId {
+    fn string(&self, string: String, span: TextRange) -> ExprId {
         let mut datalog = self.datalog_mut();
         let id = datalog.inc_expression();
 
@@ -452,13 +432,14 @@ pub trait DatalogBuilder<'ddlog> {
                         kind: LitKind::LitString,
                     },
                     scope: self.current_id(),
+                    span: into_span(span),
                 },
             );
 
         id
     }
 
-    fn null(&self) -> ExprId {
+    fn null(&self, span: TextRange) -> ExprId {
         let mut datalog = self.datalog_mut();
         let id = datalog.inc_expression();
 
@@ -470,13 +451,14 @@ pub trait DatalogBuilder<'ddlog> {
                     kind: LitKind::LitNull,
                 },
                 scope: self.current_id(),
+                span: into_span(span),
             },
         );
 
         id
     }
 
-    fn boolean(&self, boolean: bool) -> ExprId {
+    fn boolean(&self, boolean: bool, span: TextRange) -> ExprId {
         let mut datalog = self.datalog_mut();
         let id = datalog.inc_expression();
 
@@ -493,13 +475,34 @@ pub trait DatalogBuilder<'ddlog> {
                         kind: LitKind::LitBool,
                     },
                     scope: self.current_id(),
+                    span: into_span(span),
                 },
             );
 
         id
     }
 
-    fn name_ref(&self, name: String) -> ExprId {
+    // TODO: Do we need to take in the regex literal?
+    fn regex(&self, span: TextRange) -> ExprId {
+        let mut datalog = self.datalog_mut();
+        let id = datalog.inc_expression();
+
+        datalog.insert(
+            Relations::Expression as RelId,
+            Expression {
+                id,
+                kind: ExprKind::ExprLit {
+                    kind: LitKind::LitRegex,
+                },
+                scope: self.current_id(),
+                span: into_span(span),
+            },
+        );
+
+        id
+    }
+
+    fn name_ref(&self, name: String, span: TextRange) -> ExprId {
         let mut datalog = self.datalog_mut();
         let id = datalog.inc_expression();
 
@@ -517,10 +520,41 @@ pub trait DatalogBuilder<'ddlog> {
                     id,
                     kind: ExprKind::NameRef,
                     scope: self.current_id(),
+                    span: into_span(span),
                 },
             );
 
         id
+    }
+
+    fn ret(&self, value: Option<ExprId>, span: TextRange) {
+        let mut datalog = self.datalog_mut();
+        let stmt_id = datalog.inc_statement();
+
+        datalog
+            .insert(
+                Relations::Return as RelId,
+                Return {
+                    stmt_id,
+                    value: value.into(),
+                },
+            )
+            .insert(
+                Relations::Statement as RelId,
+                Statement {
+                    id: stmt_id,
+                    kind: StmtKind::StmtReturn,
+                    scope: self.current_id(),
+                    span: into_span(span),
+                },
+            );
+    }
+}
+
+fn into_span(span: TextRange) -> DatalogSpan {
+    DatalogSpan {
+        start: span.start().into(),
+        end: span.end().into(),
     }
 }
 

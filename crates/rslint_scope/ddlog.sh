@@ -7,8 +7,8 @@ RED="\033[0;31m"
 NO_COLOR="\033[0m"
 
 # ddlog directories
-DDLOG_INPUT_FILE="ddlog/rslint_scoping.ddlog"
-DDLOG_LIBRARY_DIR="rslint_scoping_ddlog"
+DDLOG_INPUT_FILE="ddlog/rslint_scoping.dl"
+DDLOG_LIBRARY_DIR="ddlog"
 DDLOG_OUTPUT_DIR="."
 
 error() {
@@ -168,6 +168,8 @@ ddlog -i $DDLOG_INPUT_FILE \
       --omit-workspace \
       $extra_args
 
+mv rslint_scoping_ddlog generated
+
 exit_code=$?
 if [ $exit_code -ne 0 ]; then
     failure "failed\n"
@@ -177,7 +179,7 @@ else
 fi
 
 if ( [ "$subcommand" = "compile" ] || [ -z "$subcommand" ] ) && [ "$no_check" != "true" ]; then
-    cd rslint_scoping_ddlog
+    cd generated
 
     printf "checking generated code... "
     cargo --quiet check

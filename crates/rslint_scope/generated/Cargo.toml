@@ -64,3 +64,4 @@ name = "rslint_scoping_ddlog"
 # crate-type = ["rlib", "staticlib"]
 
 crate-type = ["rlib", "staticlib"]
+

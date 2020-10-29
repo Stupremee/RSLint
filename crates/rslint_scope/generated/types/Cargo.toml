@@ -42,4 +42,4 @@ path = "lib.rs"
 
 
 [dependencies.arc-interner]
-version = "0.1"
+version="0.1"
