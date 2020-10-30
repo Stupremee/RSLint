@@ -1013,7 +1013,19 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                        rules:        vec![
                            ],
                        arrangements: vec![
-                           ],
+                           Arrangement::Map{
+                              name: r###"(Function{.id=(_0: bit<32>), .name=(_: ddlog_std::Option<Name>), .scope=(_: bit<32>)}: Function) /*join*/"###.to_string(),
+                               afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
+                               {
+                                   let __cloned = __v.clone();
+                                   match unsafe {< ::types::Function>::from_ddvalue(__v) } {
+                                       ::types::Function{id: ref _0, name: _, scope: _} => Some(((*_0).clone()).into_ddvalue()),
+                                       _ => None
+                                   }.map(|x|(x,__cloned))
+                               }
+                               __f},
+                               queryable: false
+                           }],
                        change_cb:    None
                    };
     let INPUT_Function = Relation {
@@ -1233,19 +1245,7 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                       rules:        vec![
                           ],
                       arrangements: vec![
-                          Arrangement::Map{
-                             name: r###"(LetDecl{.stmt_id=(_0: bit<32>), .pattern=(ddlog_std::Some{.x=(_: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl) /*join*/"###.to_string(),
-                              afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
-                              {
-                                  let __cloned = __v.clone();
-                                  match unsafe {< ::types::LetDecl>::from_ddvalue(__v) } {
-                                      ::types::LetDecl{stmt_id: ref _0, pattern: ::types::ddlog_std::Option::Some{x: _}, value: _} => Some(((*_0).clone()).into_ddvalue()),
-                                      _ => None
-                                  }.map(|x|(x,__cloned))
-                              }
-                              __f},
-                              queryable: false
-                          }],
+                          ],
                       change_cb:    None
                   };
     let INPUT_LetDecl = Relation {
@@ -1343,6 +1343,18 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                                 }
                                 __f},
                                 queryable: false
+                            },
+                            Arrangement::Set{
+                                name: r###"(Statement{.id=(_0: bit<32>), .kind=(_: StmtKind), .scope=(_1: bit<32>), .span=(_: Span)}: Statement) /*semijoin*/"###.to_string(),
+                                fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
+                                {
+                                    match unsafe {< ::types::Statement>::from_ddvalue(__v) } {
+                                        ::types::Statement{id: ref _0, kind: _, scope: ref _1, span: _} => Some((::types::ddlog_std::tuple2((*_0).clone(), (*_1).clone())).into_ddvalue()),
+                                        _ => None
+                                    }
+                                }
+                                __f},
+                                distinct: false
                             }],
                         change_cb:    None
                     };
@@ -1386,19 +1398,7 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                       rules:        vec![
                           ],
                       arrangements: vec![
-                          Arrangement::Map{
-                             name: r###"(VarDecl{.stmt_id=(_0: bit<32>), .effective_scope=(_: bit<32>), .pattern=(ddlog_std::Some{.x=(_: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: VarDecl) /*join*/"###.to_string(),
-                              afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
-                              {
-                                  let __cloned = __v.clone();
-                                  match unsafe {< ::types::VarDecl>::from_ddvalue(__v) } {
-                                      ::types::VarDecl{stmt_id: ref _0, effective_scope: _, pattern: ::types::ddlog_std::Option::Some{x: _}, value: _} => Some(((*_0).clone()).into_ddvalue()),
-                                      _ => None
-                                  }.map(|x|(x,__cloned))
-                              }
-                              __f},
-                              queryable: false
-                          }],
+                          ],
                       change_cb:    None
                   };
     let NameInScope = Relation {
@@ -1409,89 +1409,149 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                           key_func:     None,
                           id:           Relations::NameInScope as RelId,
                           rules:        vec![
-                              /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- VarDecl[(VarDecl{.stmt_id=(stmt: bit<32>), .effective_scope=(scope: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: VarDecl)], Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(_: bit<32>), .span=(_: Span)}: Statement)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))). */
-                              Rule::ArrangementRule {
-                                  description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- VarDecl[(VarDecl{.stmt_id=(stmt: bit<32>), .effective_scope=(scope: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: VarDecl)], Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(_: bit<32>), .span=(_: Span)}: Statement)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))).".to_string(),
-                                  arr: ( Relations::VarDecl as RelId, 0),
-                                  xform: XFormArrangement::Join{
-                                             description: "VarDecl[(VarDecl{.stmt_id=(stmt: bit<32>), .effective_scope=(scope: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: VarDecl)], Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(_: bit<32>), .span=(_: Span)}: Statement)]".to_string(),
-                                             ffun: None,
-                                             arrangement: (Relations::Statement as RelId,0),
-                                             jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,__v2: &DDValue) -> Option<DDValue>
-                                             {
-                                                 let (ref stmt, ref scope, ref pat) = match *unsafe {<::types::VarDecl>::from_ddvalue_ref(__v1) } {
-                                                     ::types::VarDecl{stmt_id: ref stmt, effective_scope: ref scope, pattern: ::types::ddlog_std::Option::Some{x: ref pat}, value: _} => ((*stmt).clone(), (*scope).clone(), (*pat).clone()),
-                                                     _ => return None
-                                                 };
-                                                 let () = match *unsafe {<::types::Statement>::from_ddvalue_ref(__v2) } {
-                                                     ::types::Statement{id: _, kind: _, scope: _, span: _} => (),
-                                                     _ => return None
-                                                 };
-                                                 let ref name: ::types::internment::Intern<String> = match (*::types::internment::ival(pat)).clone() {
-                                                     ::types::Pattern{name: name} => name,
-                                                     _ => return None
-                                                 };
-                                                 Some(((::types::NameInScope{name: (*name).clone(), scope: (*scope).clone(), declared_in: (::types::ddlog_std::Either::Right{r: (*stmt).clone()})})).into_ddvalue())
-                                             }
-                                             __f},
-                                             next: Box::new(None)
-                                         }
+                              /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- LetDecl[(LetDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)]. */
+                              Rule::CollectionRule {
+                                  description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- LetDecl[(LetDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)].".to_string(),
+                                  rel: Relations::LetDecl as RelId,
+                                  xform: Some(XFormCollection::Arrange {
+                                                  description: "arrange LetDecl[(LetDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl)] by (stmt)" .to_string(),
+                                                  afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
+                                                  {
+                                                      let (ref stmt, ref pat) = match *unsafe {<::types::LetDecl>::from_ddvalue_ref(&__v) } {
+                                                          ::types::LetDecl{stmt_id: ref stmt, pattern: ::types::ddlog_std::Option::Some{x: ref pat}, value: _} => ((*stmt).clone(), (*pat).clone()),
+                                                          _ => return None
+                                                      };
+                                                      let ref name: ::types::internment::Intern<String> = match (*::types::internment::ival(pat)).clone() {
+                                                          ::types::Pattern{name: name} => name,
+                                                          _ => return None
+                                                      };
+                                                      Some((((*stmt).clone()).into_ddvalue(), (::types::ddlog_std::tuple2((*stmt).clone(), (*name).clone())).into_ddvalue()))
+                                                  }
+                                                  __f},
+                                                  next: Box::new(XFormArrangement::Join{
+                                                                     description: "LetDecl[(LetDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)]".to_string(),
+                                                                     ffun: None,
+                                                                     arrangement: (Relations::Statement as RelId,0),
+                                                                     jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,__v2: &DDValue) -> Option<DDValue>
+                                                                     {
+                                                                         let ::types::ddlog_std::tuple2(ref stmt, ref name) = *unsafe {<::types::ddlog_std::tuple2<u32, ::types::internment::Intern<String>>>::from_ddvalue_ref( __v1 ) };
+                                                                         let ref scope = match *unsafe {<::types::Statement>::from_ddvalue_ref(__v2) } {
+                                                                             ::types::Statement{id: _, kind: _, scope: ref scope, span: _} => (*scope).clone(),
+                                                                             _ => return None
+                                                                         };
+                                                                         Some(((::types::NameInScope{name: (*name).clone(), scope: (*scope).clone(), declared_in: (::types::ddlog_std::Either::Right{r: (*stmt).clone()})})).into_ddvalue())
+                                                                     }
+                                                                     __f},
+                                                                     next: Box::new(None)
+                                                                 })
+                                              })
                               },
-                              /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- LetDecl[(LetDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl)], Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))). */
-                              Rule::ArrangementRule {
-                                  description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- LetDecl[(LetDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl)], Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))).".to_string(),
-                                  arr: ( Relations::LetDecl as RelId, 0),
-                                  xform: XFormArrangement::Join{
-                                             description: "LetDecl[(LetDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl)], Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)]".to_string(),
-                                             ffun: None,
-                                             arrangement: (Relations::Statement as RelId,0),
-                                             jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,__v2: &DDValue) -> Option<DDValue>
-                                             {
-                                                 let (ref stmt, ref pat) = match *unsafe {<::types::LetDecl>::from_ddvalue_ref(__v1) } {
-                                                     ::types::LetDecl{stmt_id: ref stmt, pattern: ::types::ddlog_std::Option::Some{x: ref pat}, value: _} => ((*stmt).clone(), (*pat).clone()),
-                                                     _ => return None
-                                                 };
-                                                 let ref scope = match *unsafe {<::types::Statement>::from_ddvalue_ref(__v2) } {
-                                                     ::types::Statement{id: _, kind: _, scope: ref scope, span: _} => (*scope).clone(),
-                                                     _ => return None
-                                                 };
-                                                 let ref name: ::types::internment::Intern<String> = match (*::types::internment::ival(pat)).clone() {
-                                                     ::types::Pattern{name: name} => name,
-                                                     _ => return None
-                                                 };
-                                                 Some(((::types::NameInScope{name: (*name).clone(), scope: (*scope).clone(), declared_in: (::types::ddlog_std::Either::Right{r: (*stmt).clone()})})).into_ddvalue())
-                                             }
-                                             __f},
-                                             next: Box::new(None)
-                                         }
+                              /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- ConstDecl[(ConstDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: ConstDecl)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)]. */
+                              Rule::CollectionRule {
+                                  description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- ConstDecl[(ConstDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: ConstDecl)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)].".to_string(),
+                                  rel: Relations::ConstDecl as RelId,
+                                  xform: Some(XFormCollection::Arrange {
+                                                  description: "arrange ConstDecl[(ConstDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: ConstDecl)] by (stmt)" .to_string(),
+                                                  afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
+                                                  {
+                                                      let (ref stmt, ref pat) = match *unsafe {<::types::ConstDecl>::from_ddvalue_ref(&__v) } {
+                                                          ::types::ConstDecl{stmt_id: ref stmt, pattern: ::types::ddlog_std::Option::Some{x: ref pat}, value: _} => ((*stmt).clone(), (*pat).clone()),
+                                                          _ => return None
+                                                      };
+                                                      let ref name: ::types::internment::Intern<String> = match (*::types::internment::ival(pat)).clone() {
+                                                          ::types::Pattern{name: name} => name,
+                                                          _ => return None
+                                                      };
+                                                      Some((((*stmt).clone()).into_ddvalue(), (::types::ddlog_std::tuple2((*stmt).clone(), (*name).clone())).into_ddvalue()))
+                                                  }
+                                                  __f},
+                                                  next: Box::new(XFormArrangement::Join{
+                                                                     description: "ConstDecl[(ConstDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: ConstDecl)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)]".to_string(),
+                                                                     ffun: None,
+                                                                     arrangement: (Relations::Statement as RelId,0),
+                                                                     jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,__v2: &DDValue) -> Option<DDValue>
+                                                                     {
+                                                                         let ::types::ddlog_std::tuple2(ref stmt, ref name) = *unsafe {<::types::ddlog_std::tuple2<u32, ::types::internment::Intern<String>>>::from_ddvalue_ref( __v1 ) };
+                                                                         let ref scope = match *unsafe {<::types::Statement>::from_ddvalue_ref(__v2) } {
+                                                                             ::types::Statement{id: _, kind: _, scope: ref scope, span: _} => (*scope).clone(),
+                                                                             _ => return None
+                                                                         };
+                                                                         Some(((::types::NameInScope{name: (*name).clone(), scope: (*scope).clone(), declared_in: (::types::ddlog_std::Either::Right{r: (*stmt).clone()})})).into_ddvalue())
+                                                                     }
+                                                                     __f},
+                                                                     next: Box::new(None)
+                                                                 })
+                                              })
                               },
-                              /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- LetDecl[(LetDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl)], Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))). */
-                              Rule::ArrangementRule {
-                                  description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- LetDecl[(LetDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl)], Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))).".to_string(),
-                                  arr: ( Relations::LetDecl as RelId, 0),
-                                  xform: XFormArrangement::Join{
-                                             description: "LetDecl[(LetDecl{.stmt_id=(stmt: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: LetDecl)], Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)]".to_string(),
-                                             ffun: None,
-                                             arrangement: (Relations::Statement as RelId,0),
-                                             jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,__v2: &DDValue) -> Option<DDValue>
-                                             {
-                                                 let (ref stmt, ref pat) = match *unsafe {<::types::LetDecl>::from_ddvalue_ref(__v1) } {
-                                                     ::types::LetDecl{stmt_id: ref stmt, pattern: ::types::ddlog_std::Option::Some{x: ref pat}, value: _} => ((*stmt).clone(), (*pat).clone()),
-                                                     _ => return None
-                                                 };
-                                                 let ref scope = match *unsafe {<::types::Statement>::from_ddvalue_ref(__v2) } {
-                                                     ::types::Statement{id: _, kind: _, scope: ref scope, span: _} => (*scope).clone(),
-                                                     _ => return None
-                                                 };
-                                                 let ref name: ::types::internment::Intern<String> = match (*::types::internment::ival(pat)).clone() {
-                                                     ::types::Pattern{name: name} => name,
-                                                     _ => return None
-                                                 };
-                                                 Some(((::types::NameInScope{name: (*name).clone(), scope: (*scope).clone(), declared_in: (::types::ddlog_std::Either::Right{r: (*stmt).clone()})})).into_ddvalue())
-                                             }
-                                             __f},
-                                             next: Box::new(None)
-                                         }
+                              /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- VarDecl[(VarDecl{.stmt_id=(stmt: bit<32>), .effective_scope=(scope: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: VarDecl)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)]. */
+                              Rule::CollectionRule {
+                                  description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=stmt}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- VarDecl[(VarDecl{.stmt_id=(stmt: bit<32>), .effective_scope=(scope: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: VarDecl)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)].".to_string(),
+                                  rel: Relations::VarDecl as RelId,
+                                  xform: Some(XFormCollection::Arrange {
+                                                  description: "arrange VarDecl[(VarDecl{.stmt_id=(stmt: bit<32>), .effective_scope=(scope: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: VarDecl)] by (stmt, scope)" .to_string(),
+                                                  afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
+                                                  {
+                                                      let (ref stmt, ref scope, ref pat) = match *unsafe {<::types::VarDecl>::from_ddvalue_ref(&__v) } {
+                                                          ::types::VarDecl{stmt_id: ref stmt, effective_scope: ref scope, pattern: ::types::ddlog_std::Option::Some{x: ref pat}, value: _} => ((*stmt).clone(), (*scope).clone(), (*pat).clone()),
+                                                          _ => return None
+                                                      };
+                                                      let ref name: ::types::internment::Intern<String> = match (*::types::internment::ival(pat)).clone() {
+                                                          ::types::Pattern{name: name} => name,
+                                                          _ => return None
+                                                      };
+                                                      Some(((::types::ddlog_std::tuple2((*stmt).clone(), (*scope).clone())).into_ddvalue(), (::types::ddlog_std::tuple3((*stmt).clone(), (*scope).clone(), (*name).clone())).into_ddvalue()))
+                                                  }
+                                                  __f},
+                                                  next: Box::new(XFormArrangement::Semijoin{
+                                                                     description: "VarDecl[(VarDecl{.stmt_id=(stmt: bit<32>), .effective_scope=(scope: bit<32>), .pattern=(ddlog_std::Some{.x=(pat: internment::Intern<Pattern>)}: ddlog_std::Option<IPattern>), .value=(_: ddlog_std::Option<ExprId>)}: VarDecl)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Statement[(Statement{.id=(stmt: bit<32>), .kind=(_: StmtKind), .scope=(scope: bit<32>), .span=(_: Span)}: Statement)]".to_string(),
+                                                                     ffun: None,
+                                                                     arrangement: (Relations::Statement as RelId,1),
+                                                                     jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,___v2: &()) -> Option<DDValue>
+                                                                     {
+                                                                         let ::types::ddlog_std::tuple3(ref stmt, ref scope, ref name) = *unsafe {<::types::ddlog_std::tuple3<u32, u32, ::types::internment::Intern<String>>>::from_ddvalue_ref( __v1 ) };
+                                                                         Some(((::types::NameInScope{name: (*name).clone(), scope: (*scope).clone(), declared_in: (::types::ddlog_std::Either::Right{r: (*stmt).clone()})})).into_ddvalue())
+                                                                     }
+                                                                     __f},
+                                                                     next: Box::new(None)
+                                                                 })
+                                              })
+                              },
+                              /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Left{.l=func}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- FunctionArg[(FunctionArg{.parent_func=(func: bit<32>), .pattern=(pat: internment::Intern<Pattern>)}: FunctionArg)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Function[(Function{.id=(func: bit<32>), .name=(_: ddlog_std::Option<Name>), .scope=(scope: bit<32>)}: Function)]. */
+                              Rule::CollectionRule {
+                                  description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Left{.l=func}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- FunctionArg[(FunctionArg{.parent_func=(func: bit<32>), .pattern=(pat: internment::Intern<Pattern>)}: FunctionArg)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Function[(Function{.id=(func: bit<32>), .name=(_: ddlog_std::Option<Name>), .scope=(scope: bit<32>)}: Function)].".to_string(),
+                                  rel: Relations::FunctionArg as RelId,
+                                  xform: Some(XFormCollection::Arrange {
+                                                  description: "arrange FunctionArg[(FunctionArg{.parent_func=(func: bit<32>), .pattern=(pat: internment::Intern<Pattern>)}: FunctionArg)] by (func)" .to_string(),
+                                                  afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
+                                                  {
+                                                      let (ref func, ref pat) = match *unsafe {<::types::FunctionArg>::from_ddvalue_ref(&__v) } {
+                                                          ::types::FunctionArg{parent_func: ref func, pattern: ref pat} => ((*func).clone(), (*pat).clone()),
+                                                          _ => return None
+                                                      };
+                                                      let ref name: ::types::internment::Intern<String> = match (*::types::internment::ival(pat)).clone() {
+                                                          ::types::Pattern{name: name} => name,
+                                                          _ => return None
+                                                      };
+                                                      Some((((*func).clone()).into_ddvalue(), (::types::ddlog_std::tuple2((*func).clone(), (*name).clone())).into_ddvalue()))
+                                                  }
+                                                  __f},
+                                                  next: Box::new(XFormArrangement::Join{
+                                                                     description: "FunctionArg[(FunctionArg{.parent_func=(func: bit<32>), .pattern=(pat: internment::Intern<Pattern>)}: FunctionArg)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Function[(Function{.id=(func: bit<32>), .name=(_: ddlog_std::Option<Name>), .scope=(scope: bit<32>)}: Function)]".to_string(),
+                                                                     ffun: None,
+                                                                     arrangement: (Relations::Function as RelId,0),
+                                                                     jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,__v2: &DDValue) -> Option<DDValue>
+                                                                     {
+                                                                         let ::types::ddlog_std::tuple2(ref func, ref name) = *unsafe {<::types::ddlog_std::tuple2<u32, ::types::internment::Intern<String>>>::from_ddvalue_ref( __v1 ) };
+                                                                         let ref scope = match *unsafe {<::types::Function>::from_ddvalue_ref(__v2) } {
+                                                                             ::types::Function{id: _, name: _, scope: ref scope} => (*scope).clone(),
+                                                                             _ => return None
+                                                                         };
+                                                                         Some(((::types::NameInScope{name: (*name).clone(), scope: (*scope).clone(), declared_in: (::types::ddlog_std::Either::Left{l: (*func).clone()})})).into_ddvalue())
+                                                                     }
+                                                                     __f},
+                                                                     next: Box::new(None)
+                                                                 })
+                                              })
                               },
                               /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=declared_in}: NameInScope)] :- NameInScope[(NameInScope{.name=(name: internment::Intern<string>), .scope=(interum: bit<32>), .declared_in=(declared_in: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)], ChildScope[(ChildScope{.parent=(interum: bit<32>), .child=(scope: bit<32>)}: ChildScope)]. */
                               Rule::ArrangementRule {

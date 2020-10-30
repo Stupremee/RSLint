@@ -6,11 +6,8 @@ autobins = false
 build = "src/build.rs"
 
 [features]
-default = ["command-line"]
-flatbuf = ["flatbuffers", "differential_datalog/flatbuf", "types/flatbuf"]
+default = []
 profile = ["cpuprofiler"]
-ovsdb = ["ddlog_ovsdb_adapter", "types/ovsdb"]
-command-line = ["cmd_parser", "rustop"]
 nested_ts_32 = ["differential_datalog/nested_ts_32"]
 
 [target.'cfg(not(windows))'.build-dependencies]
@@ -18,14 +15,6 @@ libtool = "0.1"
 
 [dependencies.differential_datalog]
 path = "./differential_datalog"
-
-[dependencies.cmd_parser]
-path = "./cmd_parser"
-optional = true
-
-[dependencies.ddlog_ovsdb_adapter]
-path = "./ovsdb"
-optional = true
 
 [dependencies.types]
 path = "./types"
@@ -41,19 +30,8 @@ once_cell = "1.4.1"
 libc = "0.2"
 num-traits = "0.2"
 num = { version = "0.3", features = ["serde"] }
-rustop = { version = "1.0.2", optional = true }
 serde = { version = "1.0", features = ["derive"] }
 timely = "0.11"
-
-# FlatBuffers dependency enabled by the `flatbuf` feature.
-# flatbuffers crate version must be in sync with the flatc compiler and Java
-# libraries: flatbuffers "0.6" <-> FlatBuffers "1.11.0".
-flatbuffers = { version = "0.6", optional = true }
-
-[[bin]]
-name = "rslint_scoping_cli"
-path = "src/main.rs"
-required-features = ["command-line"]
 
 # [lib] section must be in the end
 
@@ -64,4 +42,3 @@ name = "rslint_scoping_ddlog"
 # crate-type = ["rlib", "staticlib"]
 
 crate-type = ["rlib", "staticlib"]
-

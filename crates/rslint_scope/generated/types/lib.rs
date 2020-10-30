@@ -116,6 +116,24 @@ pub mod ddlog_std;
 pub mod internment;
 pub mod debug;
 pub mod log;
+use rslint_core::rule_prelude::TextRange;
+use std::ops::Range;
+
+impl rslint_core::rule_prelude::Span for Span {
+    fn as_range(&self) -> Range<usize> {
+        self.start as usize..self.end as usize
+    }
+}
+
+impl From<TextRange> for Span {
+    fn from(range: TextRange) -> Self {
+        Self {
+            start: range.start().into(),
+            end: range.end().into(),
+        }
+    }
+}
+
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct ChildScope {
     pub parent: crate::Scope,
@@ -823,4 +841,7 @@ impl ::std::fmt::Debug for VarDecl {
 ::differential_datalog::decl_ddval_convert!{crate::Statement}
 ::differential_datalog::decl_ddval_convert!{crate::VarDecl}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<crate::internment::Intern<String>, u32>}
+::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<u32, crate::internment::Intern<String>>}
+::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<u32, u32>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple3<crate::internment::Intern<String>, u32, crate::Span>}
+::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple3<u32, u32, crate::internment::Intern<String>>}

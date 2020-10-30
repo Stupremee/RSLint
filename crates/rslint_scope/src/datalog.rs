@@ -278,7 +278,7 @@ pub trait DatalogBuilder<'ddlog> {
                         id: stmt_id,
                         kind: StmtKind::StmtLetDecl,
                         scope: self.current_id(),
-                        span: into_span(span),
+                        span: span.into(),
                     },
                 );
         }
@@ -312,7 +312,7 @@ pub trait DatalogBuilder<'ddlog> {
                         id: stmt_id,
                         kind: StmtKind::StmtConstDecl,
                         scope: self.current_id(),
-                        span: into_span(span),
+                        span: span.into(),
                     },
                 );
         }
@@ -350,7 +350,7 @@ pub trait DatalogBuilder<'ddlog> {
                         id: stmt_id,
                         kind: StmtKind::StmtVarDecl,
                         scope: self.current_id(),
-                        span: into_span(span),
+                        span: span.into(),
                     },
                 );
         }
@@ -378,7 +378,7 @@ pub trait DatalogBuilder<'ddlog> {
                         kind: LitKind::LitNumber,
                     },
                     scope: self.current_id(),
-                    span: into_span(span),
+                    span: span.into(),
                 },
             );
 
@@ -405,7 +405,7 @@ pub trait DatalogBuilder<'ddlog> {
                         kind: LitKind::LitBigInt,
                     },
                     scope: self.current_id(),
-                    span: into_span(span),
+                    span: span.into(),
                 },
             );
 
@@ -432,7 +432,7 @@ pub trait DatalogBuilder<'ddlog> {
                         kind: LitKind::LitString,
                     },
                     scope: self.current_id(),
-                    span: into_span(span),
+                    span: span.into(),
                 },
             );
 
@@ -451,7 +451,7 @@ pub trait DatalogBuilder<'ddlog> {
                     kind: LitKind::LitNull,
                 },
                 scope: self.current_id(),
-                span: into_span(span),
+                span: span.into(),
             },
         );
 
@@ -475,7 +475,7 @@ pub trait DatalogBuilder<'ddlog> {
                         kind: LitKind::LitBool,
                     },
                     scope: self.current_id(),
-                    span: into_span(span),
+                    span: span.into(),
                 },
             );
 
@@ -495,7 +495,7 @@ pub trait DatalogBuilder<'ddlog> {
                     kind: LitKind::LitRegex,
                 },
                 scope: self.current_id(),
-                span: into_span(span),
+                span: span.into(),
             },
         );
 
@@ -520,7 +520,7 @@ pub trait DatalogBuilder<'ddlog> {
                     id,
                     kind: ExprKind::NameRef,
                     scope: self.current_id(),
-                    span: into_span(span),
+                    span: span.into(),
                 },
             );
 
@@ -545,16 +545,9 @@ pub trait DatalogBuilder<'ddlog> {
                     id: stmt_id,
                     kind: StmtKind::StmtReturn,
                     scope: self.current_id(),
-                    span: into_span(span),
+                    span: span.into(),
                 },
             );
-    }
-}
-
-fn into_span(span: TextRange) -> DatalogSpan {
-    DatalogSpan {
-        start: span.start().into(),
-        end: span.end().into(),
     }
 }
 

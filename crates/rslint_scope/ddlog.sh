@@ -168,6 +168,7 @@ ddlog -i $DDLOG_INPUT_FILE \
       --omit-workspace \
       $extra_args
 
+rm -rf generated
 mv rslint_scoping_ddlog generated
 
 exit_code=$?

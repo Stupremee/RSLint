@@ -53,10 +53,7 @@ impl ScopeAnalyzer {
                     "datalog-scoping",
                     format!("cannot find value `{}` in this scope", name),
                 )
-                .primary(
-                    TextRange::new(span.start.into(), span.end.into()),
-                    "not found in this scope".to_owned(),
-                );
+                .primary(span, "not found in this scope".to_owned());
 
             ctx.add_err(error);
         }
