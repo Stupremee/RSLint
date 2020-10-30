@@ -1,8 +1,11 @@
 use crate::{glue::fs2, project_root};
 use anyhow::{Context, Result};
 use cargo_toml::Manifest;
-use serde::Serialize;
-use std::{fs, path::Path, process::Command};
+use std::{
+    fs,
+    path::{Component, Path, Prefix},
+    process::{Command, Stdio},
+};
 use toml::Value;
 
 const SCOPES_DIR: &str = "crates/rslint_scope";
@@ -10,59 +13,83 @@ const SCOPES_DIR: &str = "crates/rslint_scope";
 pub fn build_datalog(debug: bool, check: bool) -> Result<()> {
     let scopes_dir = project_root().join(SCOPES_DIR);
 
-    /*
     let mut cmd = if cfg!(windows) {
-        // let has_wsl = Command::new("wsl").arg("--help").output().is_ok();
-        // if has_wsl {
-        //     let mut cmd = Command::new("wsl");
-        //     cmd.args(&["--", "exec", "\"$BASH\"", "&&", "ddlog"]);
-        //     cmd
-        // } else {
-        //     eprintln!("wsl was not found, ddlog was not run");
-        //     return Ok(());
-        // }
-        eprintln!("windows is currently unsupported, run from within wsl");
-        return Ok(());
+        let has_wsl = Command::new("wsl")
+            .arg("--help")
+            .stdin(Stdio::null())
+            .stderr(Stdio::null())
+            .status()
+            .map(|s| s.code() == Some(-1))
+            .unwrap_or_default();
+
+        if has_wsl {
+            let mut cmd = Command::new("wsl");
+            cmd.args(&["/usr/bin/env", "bash", "--login", "-ic"]);
+
+            let mut ddlog_args = format!(
+                "\"~/.local/bin/ddlog -i {} --action={} --output-dir={} --omit-profile --omit-workspace",
+                unixify(&scopes_dir.join("ddlog/rslint_scoping.dl")),
+                if check { "validate" } else { "compile" },
+                unixify(&scopes_dir),
+            );
+
+            if debug {
+                ddlog_args.push_str(" --output-internal-relations --output-input-relations=INPUT_");
+            }
+
+            ddlog_args.push('\"');
+            cmd.arg(ddlog_args);
+
+            cmd
+        } else {
+            eprintln!("wsl was not found, ddlog was not run");
+            return Ok(());
+        }
     } else {
-        Command::new("ddlog")
+        let mut cmd = Command::new("ddlog");
+        cmd.args(&[
+            "-i",
+            &scopes_dir
+                .join("ddlog/rslint_scoping.dl")
+                .display()
+                .to_string(),
+            &format!("--action={}", if check { "validate" } else { "compile" }),
+            &format!("--output-dir={}", scopes_dir.display()),
+            "--omit-profile",
+            "--omit-workspace",
+        ]);
+
+        if debug {
+            cmd.args(&[
+                "--output-internal-relations",
+                "--output-input-relations=INPUT_",
+            ]);
+        }
+
+        cmd
     };
 
-    cmd.args(&[
-        "--action",
-        if check { "validate" } else { "compile" },
-        "--output-dir",
-    ])
-    .arg(&scopes_dir)
-    .args(&["--omit-profile", "--omit-workspace"]);
+    dbg!(&cmd);
 
-    if debug {
-        cmd.args(&[
-            "--output-internal-relations",
-            "--output-input-relations",
-            "INPUT_",
-        ]);
-    }
+    let _status = cmd
+        .spawn()
+        .context("failed to run ddlog")?
+        .wait()
+        .context("failed to run ddlog")?;
 
-    let status = dbg!(cmd.status()).context("failed to run ddlog")?;
-    if !status.success() {
-        eprintln!("ddlog exited with error code {:?}", status.code());
+    let ddlog_dir = scopes_dir.join("rslint_scoping_ddlog");
+    let generated_dir = scopes_dir.join("generated");
+    if !ddlog_dir.exists() {
+        eprintln!("could not find generated code, exiting");
         return Ok(());
     }
-    */
 
-    // let ddlog_dir = scopes_dir.join("rslint_scoping_ddlog");
-    let generated_dir = scopes_dir.join("generated");
-    // if !ddlog_dir.exists() {
-    //     eprintln!("could not find generated code, exiting");
-    //     return Ok(());
-    // }
-    //
-    // if generated_dir.exists() {
-    //     fs2::remove_dir_all(&generated_dir).context("failed to remove the old generated code")?;
-    // }
-    //
-    // fs::rename(&ddlog_dir, &generated_dir)
-    //     .context("failed to rename the generated code's folder")?;
+    if generated_dir.exists() {
+        fs2::remove_dir_all(&generated_dir).context("failed to remove the old generated code")?;
+    }
+
+    fs::rename(&ddlog_dir, &generated_dir)
+        .context("failed to rename the generated code's folder")?;
 
     edit_generated_code(&generated_dir)?;
 
@@ -156,4 +183,41 @@ fn write_toml(name: &str, path: &Path, manifest: &Manifest) -> Result<()> {
             path.display(),
         )
     })
+}
+
+fn unixify(path: &Path) -> String {
+    let mut buf = String::new();
+    let mut comps = path
+        .components()
+        .into_iter()
+        .collect::<Vec<_>>()
+        .into_iter();
+
+    while let Some(seg) = comps.next() {
+        match seg {
+            Component::Prefix(prefix) => match prefix.kind() {
+                Prefix::VerbatimDisk(disk) | Prefix::Disk(disk) => {
+                    buf.push_str("/mnt/");
+                    buf.push((disk as char).to_ascii_lowercase());
+                }
+
+                Prefix::Verbatim(_)
+                | Prefix::VerbatimUNC(_, _)
+                | Prefix::DeviceNS(_)
+                | Prefix::UNC(_, _) => buf.push_str("/mnt"),
+            },
+            Component::RootDir => continue,
+            Component::CurDir => buf.push('.'),
+            Component::ParentDir => buf.push_str(".."),
+            Component::Normal(path) => {
+                buf.push_str(path.to_str().unwrap());
+            }
+        }
+
+        if comps.len() != 0 {
+            buf.push('/');
+        }
+    }
+
+    buf
 }
