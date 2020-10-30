@@ -69,47 +69,49 @@ pub fn build_datalog(debug: bool, check: bool) -> Result<()> {
     Ok(())
 }
 
+const LIBRARY_DEPS: &[&str] = &["ddlog_ovsdb_adapter", "cmd_parser", "rustop", "flatbuffers"];
+const LIBRARY_FEATURES: &[&str] = &["ovsdb", "flatbuf", "command-line"];
+
+const TYPES_DEPS: &[&str] = &["ddlog_ovsdb_adapter", "flatbuffers"];
+const TYPES_FEATURES: &[&str] = &["ovsdb", "flatbuf"];
+
+const EXTRA_LIBS: &[&str] = &["distributed_datalog", "ovsdb", "cmd_parser", ".cargo"];
+const EXTRA_FILES: &[&str] = &["src/main.rs", "ddlog_ovsdb_test.c", "ddlog.h"];
+
 fn edit_generated_code(generated_dir: &Path) -> Result<()> {
-    // Remove extra libraries
-    for lib in ["distributed_datalog", "ovsdb", "cmd_parser"]
-        .iter()
-        .copied()
-    {
-        fs2::remove_dir_all(generated_dir.join(lib)).ok();
-    }
-
-    fs2::remove_dir_all(generated_dir.join(".cargo")).ok();
-    fs2::remove_file(generated_dir.join("src/main.rs")).ok();
-    fs2::remove_file(generated_dir.join("ddlog_ovsdb_test.c")).ok();
-    fs2::remove_file(generated_dir.join("ddlog.h")).ok();
-
     // Edit generated/Cargo.toml
     let library_path = generated_dir.join("Cargo.toml");
-    let library_dependencies = ["ddlog_ovsdb_adapter", "cmd_parser", "rustop", "flatbuffers"];
-    let library_features = ["ovsdb", "flatbuf", "command-line"];
     let mut library_toml = edit_toml(
         "generated/Cargo.toml",
         &library_path,
-        &library_dependencies,
-        &library_features,
+        LIBRARY_DEPS,
+        LIBRARY_FEATURES,
     )?;
 
-    // Remove the binary builds
     library_toml.bin.clear();
+    library_toml.features.get_mut("default").map(Vec::clear);
 
     write_toml("generated/Cargo.toml", &library_path, &library_toml)?;
 
     // Edit generated/types/Cargo.toml
     let types_path = generated_dir.join("types/Cargo.toml");
-    let types_dependencies = ["ddlog_ovsdb_adapter", "flatbuffers"];
-    let types_features = ["ovsdb", "flatbuf"];
     let types_toml = edit_toml(
         "generated/types/Cargo.toml",
         &types_path,
-        &types_dependencies,
-        &types_features,
+        TYPES_DEPS,
+        TYPES_FEATURES,
     )?;
     write_toml("generated/types/Cargo.toml", &types_path, &types_toml)?;
+
+    // Remove extra libraries
+    for lib in EXTRA_LIBS.iter().copied() {
+        fs2::remove_dir_all(generated_dir.join(lib)).ok();
+    }
+
+    // Remove extra files
+    for file in EXTRA_FILES.iter().copied() {
+        fs2::remove_file(generated_dir.join(file)).ok();
+    }
 
     Ok(())
 }
@@ -120,8 +122,9 @@ fn edit_toml(
     dependencies: &[&str],
     features: &[&str],
 ) -> Result<Manifest> {
-    let mut manifest = Manifest::from_path(path)
-        .with_context(|| format!("failed to load manifest for {}", name))?;
+    let failed_manifest = || format!("failed to load manifest for {} at {}", name, path.display());
+    let contents = fs2::read_to_string(path).with_context(failed_manifest)?;
+    let mut manifest = Manifest::from_str(&contents).with_context(failed_manifest)?;
 
     // Remove extra dependencies
     for dep in dependencies.iter().copied() {
@@ -133,19 +136,22 @@ fn edit_toml(
         manifest.features.remove(feature);
     }
 
+    if let Some(lib) = manifest.lib.as_mut() {
+        lib.crate_type = vec!["lib".to_owned()];
+    }
+
     Ok(manifest)
 }
 
 fn write_toml(name: &str, path: &Path, manifest: &Manifest) -> Result<()> {
-    fs2::write(
-        path,
-        // FIXME: cargo_toml is broken, make it not
-        toml::to_string_pretty(&manifest)
-            .with_context(|| format!("failed to render toml for {}", name))?,
-    )
-    .with_context(|| {
+    let failed_toml = || format!("failed to render toml for {}", name);
+    let toml = toml::to_string(&Value::try_from(manifest).with_context(failed_toml)?)
+        .with_context(failed_toml)?
+        .replace("[profile]", "");
+
+    fs2::write(path, toml).with_context(|| {
         format!(
-            "failed to write edited manifest for {} at {}",
+            "failed to write edited manifest for {} to {}",
             name,
             path.display(),
         )

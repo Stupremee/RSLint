@@ -196,135 +196,167 @@ impl TryFrom<&RelIdentifier> for Relations {
     }
 }
 
-
-decl_update_deserializer!(UpdateSerializer,(0, ::types::ChildScope), (1, ::types::ConstDecl), (2, ::types::ExprBigInt), (3, ::types::ExprBool), (4, ::types::ExprNameRef), (5, ::types::ExprNumber), (6, ::types::ExprString), (7, ::types::Expression), (8, ::types::Function), (9, ::types::FunctionArg), (10, ::types::ConstDecl), (11, ::types::ExprBigInt), (12, ::types::ExprBool), (13, ::types::ExprNameRef), (14, ::types::ExprNumber), (15, ::types::ExprString), (16, ::types::Expression), (17, ::types::Function), (18, ::types::FunctionArg), (19, ::types::InputScope), (20, ::types::LetDecl), (21, ::types::Return), (22, ::types::Statement), (23, ::types::VarDecl), (24, ::types::InputScope), (25, ::types::InvalidNameUse), (26, ::types::LetDecl), (27, ::types::NameInScope), (28, ::types::Return), (29, ::types::Statement), (30, ::types::VarDecl));
+decl_update_deserializer!(
+    UpdateSerializer,
+    (0, ::types::ChildScope),
+    (1, ::types::ConstDecl),
+    (2, ::types::ExprBigInt),
+    (3, ::types::ExprBool),
+    (4, ::types::ExprNameRef),
+    (5, ::types::ExprNumber),
+    (6, ::types::ExprString),
+    (7, ::types::Expression),
+    (8, ::types::Function),
+    (9, ::types::FunctionArg),
+    (10, ::types::ConstDecl),
+    (11, ::types::ExprBigInt),
+    (12, ::types::ExprBool),
+    (13, ::types::ExprNameRef),
+    (14, ::types::ExprNumber),
+    (15, ::types::ExprString),
+    (16, ::types::Expression),
+    (17, ::types::Function),
+    (18, ::types::FunctionArg),
+    (19, ::types::InputScope),
+    (20, ::types::LetDecl),
+    (21, ::types::Return),
+    (22, ::types::Statement),
+    (23, ::types::VarDecl),
+    (24, ::types::InputScope),
+    (25, ::types::InvalidNameUse),
+    (26, ::types::LetDecl),
+    (27, ::types::NameInScope),
+    (28, ::types::Return),
+    (29, ::types::Statement),
+    (30, ::types::VarDecl)
+);
 impl TryFrom<&str> for Relations {
     type Error = ();
     fn try_from(rname: &str) -> ::std::result::Result<Self, ()> {
-         match rname {
-        "ChildScope" => Ok(Relations::ChildScope),
-        "ConstDecl" => Ok(Relations::ConstDecl),
-        "ExprBigInt" => Ok(Relations::ExprBigInt),
-        "ExprBool" => Ok(Relations::ExprBool),
-        "ExprNameRef" => Ok(Relations::ExprNameRef),
-        "ExprNumber" => Ok(Relations::ExprNumber),
-        "ExprString" => Ok(Relations::ExprString),
-        "Expression" => Ok(Relations::Expression),
-        "Function" => Ok(Relations::Function),
-        "FunctionArg" => Ok(Relations::FunctionArg),
-        "INPUT_ConstDecl" => Ok(Relations::INPUT_ConstDecl),
-        "INPUT_ExprBigInt" => Ok(Relations::INPUT_ExprBigInt),
-        "INPUT_ExprBool" => Ok(Relations::INPUT_ExprBool),
-        "INPUT_ExprNameRef" => Ok(Relations::INPUT_ExprNameRef),
-        "INPUT_ExprNumber" => Ok(Relations::INPUT_ExprNumber),
-        "INPUT_ExprString" => Ok(Relations::INPUT_ExprString),
-        "INPUT_Expression" => Ok(Relations::INPUT_Expression),
-        "INPUT_Function" => Ok(Relations::INPUT_Function),
-        "INPUT_FunctionArg" => Ok(Relations::INPUT_FunctionArg),
-        "INPUT_InputScope" => Ok(Relations::INPUT_InputScope),
-        "INPUT_LetDecl" => Ok(Relations::INPUT_LetDecl),
-        "INPUT_Return" => Ok(Relations::INPUT_Return),
-        "INPUT_Statement" => Ok(Relations::INPUT_Statement),
-        "INPUT_VarDecl" => Ok(Relations::INPUT_VarDecl),
-        "InputScope" => Ok(Relations::InputScope),
-        "InvalidNameUse" => Ok(Relations::InvalidNameUse),
-        "LetDecl" => Ok(Relations::LetDecl),
-        "NameInScope" => Ok(Relations::NameInScope),
-        "Return" => Ok(Relations::Return),
-        "Statement" => Ok(Relations::Statement),
-        "VarDecl" => Ok(Relations::VarDecl),
-        "__Null" => Ok(Relations::__Null),
-             _  => Err(())
-         }
+        match rname {
+            "ChildScope" => Ok(Relations::ChildScope),
+            "ConstDecl" => Ok(Relations::ConstDecl),
+            "ExprBigInt" => Ok(Relations::ExprBigInt),
+            "ExprBool" => Ok(Relations::ExprBool),
+            "ExprNameRef" => Ok(Relations::ExprNameRef),
+            "ExprNumber" => Ok(Relations::ExprNumber),
+            "ExprString" => Ok(Relations::ExprString),
+            "Expression" => Ok(Relations::Expression),
+            "Function" => Ok(Relations::Function),
+            "FunctionArg" => Ok(Relations::FunctionArg),
+            "INPUT_ConstDecl" => Ok(Relations::INPUT_ConstDecl),
+            "INPUT_ExprBigInt" => Ok(Relations::INPUT_ExprBigInt),
+            "INPUT_ExprBool" => Ok(Relations::INPUT_ExprBool),
+            "INPUT_ExprNameRef" => Ok(Relations::INPUT_ExprNameRef),
+            "INPUT_ExprNumber" => Ok(Relations::INPUT_ExprNumber),
+            "INPUT_ExprString" => Ok(Relations::INPUT_ExprString),
+            "INPUT_Expression" => Ok(Relations::INPUT_Expression),
+            "INPUT_Function" => Ok(Relations::INPUT_Function),
+            "INPUT_FunctionArg" => Ok(Relations::INPUT_FunctionArg),
+            "INPUT_InputScope" => Ok(Relations::INPUT_InputScope),
+            "INPUT_LetDecl" => Ok(Relations::INPUT_LetDecl),
+            "INPUT_Return" => Ok(Relations::INPUT_Return),
+            "INPUT_Statement" => Ok(Relations::INPUT_Statement),
+            "INPUT_VarDecl" => Ok(Relations::INPUT_VarDecl),
+            "InputScope" => Ok(Relations::InputScope),
+            "InvalidNameUse" => Ok(Relations::InvalidNameUse),
+            "LetDecl" => Ok(Relations::LetDecl),
+            "NameInScope" => Ok(Relations::NameInScope),
+            "Return" => Ok(Relations::Return),
+            "Statement" => Ok(Relations::Statement),
+            "VarDecl" => Ok(Relations::VarDecl),
+            "__Null" => Ok(Relations::__Null),
+            _ => Err(()),
+        }
     }
 }
 impl Relations {
     pub fn is_output(&self) -> bool {
         match self {
-        Relations::ChildScope => true,
-        Relations::INPUT_ConstDecl => true,
-        Relations::INPUT_ExprBigInt => true,
-        Relations::INPUT_ExprBool => true,
-        Relations::INPUT_ExprNameRef => true,
-        Relations::INPUT_ExprNumber => true,
-        Relations::INPUT_ExprString => true,
-        Relations::INPUT_Expression => true,
-        Relations::INPUT_Function => true,
-        Relations::INPUT_FunctionArg => true,
-        Relations::INPUT_InputScope => true,
-        Relations::INPUT_LetDecl => true,
-        Relations::INPUT_Return => true,
-        Relations::INPUT_Statement => true,
-        Relations::INPUT_VarDecl => true,
-        Relations::InvalidNameUse => true,
-        Relations::NameInScope => true,
-            _  => false
+            Relations::ChildScope => true,
+            Relations::INPUT_ConstDecl => true,
+            Relations::INPUT_ExprBigInt => true,
+            Relations::INPUT_ExprBool => true,
+            Relations::INPUT_ExprNameRef => true,
+            Relations::INPUT_ExprNumber => true,
+            Relations::INPUT_ExprString => true,
+            Relations::INPUT_Expression => true,
+            Relations::INPUT_Function => true,
+            Relations::INPUT_FunctionArg => true,
+            Relations::INPUT_InputScope => true,
+            Relations::INPUT_LetDecl => true,
+            Relations::INPUT_Return => true,
+            Relations::INPUT_Statement => true,
+            Relations::INPUT_VarDecl => true,
+            Relations::InvalidNameUse => true,
+            Relations::NameInScope => true,
+            _ => false,
         }
     }
 }
 impl Relations {
     pub fn is_input(&self) -> bool {
         match self {
-        Relations::ConstDecl => true,
-        Relations::ExprBigInt => true,
-        Relations::ExprBool => true,
-        Relations::ExprNameRef => true,
-        Relations::ExprNumber => true,
-        Relations::ExprString => true,
-        Relations::Expression => true,
-        Relations::Function => true,
-        Relations::FunctionArg => true,
-        Relations::InputScope => true,
-        Relations::LetDecl => true,
-        Relations::Return => true,
-        Relations::Statement => true,
-        Relations::VarDecl => true,
-            _  => false
+            Relations::ConstDecl => true,
+            Relations::ExprBigInt => true,
+            Relations::ExprBool => true,
+            Relations::ExprNameRef => true,
+            Relations::ExprNumber => true,
+            Relations::ExprString => true,
+            Relations::Expression => true,
+            Relations::Function => true,
+            Relations::FunctionArg => true,
+            Relations::InputScope => true,
+            Relations::LetDecl => true,
+            Relations::Return => true,
+            Relations::Statement => true,
+            Relations::VarDecl => true,
+            _ => false,
         }
     }
 }
 impl TryFrom<RelId> for Relations {
     type Error = ();
     fn try_from(rid: RelId) -> ::std::result::Result<Self, ()> {
-         match rid {
-        0 => Ok(Relations::ChildScope),
-        1 => Ok(Relations::ConstDecl),
-        2 => Ok(Relations::ExprBigInt),
-        3 => Ok(Relations::ExprBool),
-        4 => Ok(Relations::ExprNameRef),
-        5 => Ok(Relations::ExprNumber),
-        6 => Ok(Relations::ExprString),
-        7 => Ok(Relations::Expression),
-        8 => Ok(Relations::Function),
-        9 => Ok(Relations::FunctionArg),
-        10 => Ok(Relations::INPUT_ConstDecl),
-        11 => Ok(Relations::INPUT_ExprBigInt),
-        12 => Ok(Relations::INPUT_ExprBool),
-        13 => Ok(Relations::INPUT_ExprNameRef),
-        14 => Ok(Relations::INPUT_ExprNumber),
-        15 => Ok(Relations::INPUT_ExprString),
-        16 => Ok(Relations::INPUT_Expression),
-        17 => Ok(Relations::INPUT_Function),
-        18 => Ok(Relations::INPUT_FunctionArg),
-        19 => Ok(Relations::INPUT_InputScope),
-        20 => Ok(Relations::INPUT_LetDecl),
-        21 => Ok(Relations::INPUT_Return),
-        22 => Ok(Relations::INPUT_Statement),
-        23 => Ok(Relations::INPUT_VarDecl),
-        24 => Ok(Relations::InputScope),
-        25 => Ok(Relations::InvalidNameUse),
-        26 => Ok(Relations::LetDecl),
-        27 => Ok(Relations::NameInScope),
-        28 => Ok(Relations::Return),
-        29 => Ok(Relations::Statement),
-        30 => Ok(Relations::VarDecl),
-        31 => Ok(Relations::__Null),
-             _  => Err(())
-         }
+        match rid {
+            0 => Ok(Relations::ChildScope),
+            1 => Ok(Relations::ConstDecl),
+            2 => Ok(Relations::ExprBigInt),
+            3 => Ok(Relations::ExprBool),
+            4 => Ok(Relations::ExprNameRef),
+            5 => Ok(Relations::ExprNumber),
+            6 => Ok(Relations::ExprString),
+            7 => Ok(Relations::Expression),
+            8 => Ok(Relations::Function),
+            9 => Ok(Relations::FunctionArg),
+            10 => Ok(Relations::INPUT_ConstDecl),
+            11 => Ok(Relations::INPUT_ExprBigInt),
+            12 => Ok(Relations::INPUT_ExprBool),
+            13 => Ok(Relations::INPUT_ExprNameRef),
+            14 => Ok(Relations::INPUT_ExprNumber),
+            15 => Ok(Relations::INPUT_ExprString),
+            16 => Ok(Relations::INPUT_Expression),
+            17 => Ok(Relations::INPUT_Function),
+            18 => Ok(Relations::INPUT_FunctionArg),
+            19 => Ok(Relations::INPUT_InputScope),
+            20 => Ok(Relations::INPUT_LetDecl),
+            21 => Ok(Relations::INPUT_Return),
+            22 => Ok(Relations::INPUT_Statement),
+            23 => Ok(Relations::INPUT_VarDecl),
+            24 => Ok(Relations::InputScope),
+            25 => Ok(Relations::InvalidNameUse),
+            26 => Ok(Relations::LetDecl),
+            27 => Ok(Relations::NameInScope),
+            28 => Ok(Relations::Return),
+            29 => Ok(Relations::Statement),
+            30 => Ok(Relations::VarDecl),
+            31 => Ok(Relations::__Null),
+            _ => Err(()),
+        }
     }
 }
 pub fn relid2name(rid: RelId) -> Option<&'static str> {
-   match rid {
+    match rid {
         0 => Some(&"ChildScope"),
         1 => Some(&"ConstDecl"),
         2 => Some(&"ExprBigInt"),
@@ -357,15 +389,17 @@ pub fn relid2name(rid: RelId) -> Option<&'static str> {
         29 => Some(&"Statement"),
         30 => Some(&"VarDecl"),
         31 => Some(&"__Null"),
-       _  => None
-   }
+        _ => None,
+    }
 }
 pub fn relid2cname(rid: RelId) -> Option<&'static ::std::ffi::CStr> {
     RELIDMAPC.get(&rid).copied()
-}   /// A map of `RelId`s to their name as an `&'static str`
+}
+/// A map of `RelId`s to their name as an `&'static str`
 pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(32, ::fnv::FnvBuildHasher::default());
+        let mut map =
+            ::fnv::FnvHashMap::with_capacity_and_hasher(32, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::ChildScope, "ChildScope");
         map.insert(Relations::ConstDecl, "ConstDecl");
         map.insert(Relations::ExprBigInt, "ExprBigInt");
@@ -400,48 +434,178 @@ pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'stat
         map.insert(Relations::__Null, "__Null");
         map
     });
-    /// A map of `RelId`s to their name as an `&'static CStr`
+/// A map of `RelId`s to their name as an `&'static CStr`
 pub static RELIDMAPC: ::once_cell::sync::Lazy<::fnv::FnvHashMap<RelId, &'static ::std::ffi::CStr>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(32, ::fnv::FnvBuildHasher::default());
-        map.insert(0, ::std::ffi::CStr::from_bytes_with_nul(b"ChildScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(1, ::std::ffi::CStr::from_bytes_with_nul(b"ConstDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(2, ::std::ffi::CStr::from_bytes_with_nul(b"ExprBigInt\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(3, ::std::ffi::CStr::from_bytes_with_nul(b"ExprBool\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(4, ::std::ffi::CStr::from_bytes_with_nul(b"ExprNameRef\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(5, ::std::ffi::CStr::from_bytes_with_nul(b"ExprNumber\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(6, ::std::ffi::CStr::from_bytes_with_nul(b"ExprString\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(7, ::std::ffi::CStr::from_bytes_with_nul(b"Expression\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(8, ::std::ffi::CStr::from_bytes_with_nul(b"Function\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(9, ::std::ffi::CStr::from_bytes_with_nul(b"FunctionArg\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(10, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ConstDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(11, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprBigInt\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(12, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprBool\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(13, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprNameRef\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(14, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprNumber\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(15, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprString\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(16, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Expression\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(17, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Function\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(18, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_FunctionArg\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(19, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_InputScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(20, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_LetDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(21, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Return\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(22, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Statement\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(23, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(24, ::std::ffi::CStr::from_bytes_with_nul(b"InputScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(25, ::std::ffi::CStr::from_bytes_with_nul(b"InvalidNameUse\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(26, ::std::ffi::CStr::from_bytes_with_nul(b"LetDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(27, ::std::ffi::CStr::from_bytes_with_nul(b"NameInScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(28, ::std::ffi::CStr::from_bytes_with_nul(b"Return\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(29, ::std::ffi::CStr::from_bytes_with_nul(b"Statement\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(30, ::std::ffi::CStr::from_bytes_with_nul(b"VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(31, ::std::ffi::CStr::from_bytes_with_nul(b"__Null\0").expect("Unreachable: A null byte was specifically inserted"));
+        let mut map =
+            ::fnv::FnvHashMap::with_capacity_and_hasher(32, ::fnv::FnvBuildHasher::default());
+        map.insert(
+            0,
+            ::std::ffi::CStr::from_bytes_with_nul(b"ChildScope\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            1,
+            ::std::ffi::CStr::from_bytes_with_nul(b"ConstDecl\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            2,
+            ::std::ffi::CStr::from_bytes_with_nul(b"ExprBigInt\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            3,
+            ::std::ffi::CStr::from_bytes_with_nul(b"ExprBool\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            4,
+            ::std::ffi::CStr::from_bytes_with_nul(b"ExprNameRef\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            5,
+            ::std::ffi::CStr::from_bytes_with_nul(b"ExprNumber\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            6,
+            ::std::ffi::CStr::from_bytes_with_nul(b"ExprString\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            7,
+            ::std::ffi::CStr::from_bytes_with_nul(b"Expression\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            8,
+            ::std::ffi::CStr::from_bytes_with_nul(b"Function\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            9,
+            ::std::ffi::CStr::from_bytes_with_nul(b"FunctionArg\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            10,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ConstDecl\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            11,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprBigInt\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            12,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprBool\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            13,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprNameRef\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            14,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprNumber\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            15,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprString\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            16,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Expression\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            17,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Function\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            18,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_FunctionArg\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            19,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_InputScope\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            20,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_LetDecl\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            21,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Return\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            22,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Statement\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            23,
+            ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_VarDecl\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            24,
+            ::std::ffi::CStr::from_bytes_with_nul(b"InputScope\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            25,
+            ::std::ffi::CStr::from_bytes_with_nul(b"InvalidNameUse\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            26,
+            ::std::ffi::CStr::from_bytes_with_nul(b"LetDecl\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            27,
+            ::std::ffi::CStr::from_bytes_with_nul(b"NameInScope\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            28,
+            ::std::ffi::CStr::from_bytes_with_nul(b"Return\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            29,
+            ::std::ffi::CStr::from_bytes_with_nul(b"Statement\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            30,
+            ::std::ffi::CStr::from_bytes_with_nul(b"VarDecl\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
+        map.insert(
+            31,
+            ::std::ffi::CStr::from_bytes_with_nul(b"__Null\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
         map
     });
-    /// A map of input `Relations`s to their name as an `&'static str`
+/// A map of input `Relations`s to their name as an `&'static str`
 pub static INPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(14, ::fnv::FnvBuildHasher::default());
+        let mut map =
+            ::fnv::FnvHashMap::with_capacity_and_hasher(14, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::ConstDecl, "ConstDecl");
         map.insert(Relations::ExprBigInt, "ExprBigInt");
         map.insert(Relations::ExprBool, "ExprBool");
@@ -458,10 +622,11 @@ pub static INPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, 
         map.insert(Relations::VarDecl, "VarDecl");
         map
     });
-    /// A map of output `Relations`s to their name as an `&'static str`
+/// A map of output `Relations`s to their name as an `&'static str`
 pub static OUTPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(17, ::fnv::FnvBuildHasher::default());
+        let mut map =
+            ::fnv::FnvHashMap::with_capacity_and_hasher(17, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::ChildScope, "ChildScope");
         map.insert(Relations::INPUT_ConstDecl, "INPUT_ConstDecl");
         map.insert(Relations::INPUT_ExprBigInt, "INPUT_ExprBigInt");
@@ -484,161 +649,117 @@ pub static OUTPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations,
 impl TryFrom<&str> for Indexes {
     type Error = ();
     fn try_from(iname: &str) -> ::std::result::Result<Self, ()> {
-         match iname {
-        "__Null_by_none" => Ok(Indexes::__Null_by_none),
-             _  => Err(())
-         }
+        match iname {
+            "__Null_by_none" => Ok(Indexes::__Null_by_none),
+            _ => Err(()),
+        }
     }
 }
 impl TryFrom<IdxId> for Indexes {
     type Error = ();
     fn try_from(iid: IdxId) -> ::core::result::Result<Self, ()> {
-         match iid {
-        0 => Ok(Indexes::__Null_by_none),
-             _  => Err(())
-         }
+        match iid {
+            0 => Ok(Indexes::__Null_by_none),
+            _ => Err(()),
+        }
     }
 }
 pub fn indexid2name(iid: IdxId) -> Option<&'static str> {
-   match iid {
+    match iid {
         0 => Some(&"__Null_by_none"),
-       _  => None
-   }
+        _ => None,
+    }
 }
 pub fn indexid2cname(iid: IdxId) -> Option<&'static ::std::ffi::CStr> {
     IDXIDMAPC.get(&iid).copied()
-}   /// A map of `Indexes` to their name as an `&'static str`
+}
+/// A map of `Indexes` to their name as an `&'static str`
 pub static IDXIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Indexes, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(1, ::fnv::FnvBuildHasher::default());
+        let mut map =
+            ::fnv::FnvHashMap::with_capacity_and_hasher(1, ::fnv::FnvBuildHasher::default());
         map.insert(Indexes::__Null_by_none, "__Null_by_none");
         map
     });
-    /// A map of `IdxId`s to their name as an `&'static CStr`
+/// A map of `IdxId`s to their name as an `&'static CStr`
 pub static IDXIDMAPC: ::once_cell::sync::Lazy<::fnv::FnvHashMap<IdxId, &'static ::std::ffi::CStr>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(1, ::fnv::FnvBuildHasher::default());
-        map.insert(0, ::std::ffi::CStr::from_bytes_with_nul(b"__Null_by_none\0").expect("Unreachable: A null byte was specifically inserted"));
+        let mut map =
+            ::fnv::FnvHashMap::with_capacity_and_hasher(1, ::fnv::FnvBuildHasher::default());
+        map.insert(
+            0,
+            ::std::ffi::CStr::from_bytes_with_nul(b"__Null_by_none\0")
+                .expect("Unreachable: A null byte was specifically inserted"),
+        );
         map
     });
-pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::Record) -> ::std::result::Result<DDValue, String> {
+pub fn relval_from_record(
+    rel: Relations,
+    _rec: &differential_datalog::record::Record,
+) -> ::std::result::Result<DDValue, String> {
     match rel {
-        Relations::ChildScope => {
-            Ok(<::types::ChildScope>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::ConstDecl => {
-            Ok(<::types::ConstDecl>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::ExprBigInt => {
-            Ok(<::types::ExprBigInt>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::ExprBool => {
-            Ok(<::types::ExprBool>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::ExprNameRef => {
-            Ok(<::types::ExprNameRef>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::ExprNumber => {
-            Ok(<::types::ExprNumber>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::ExprString => {
-            Ok(<::types::ExprString>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::Expression => {
-            Ok(<::types::Expression>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::Function => {
-            Ok(<::types::Function>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::FunctionArg => {
-            Ok(<::types::FunctionArg>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_ConstDecl => {
-            Ok(<::types::ConstDecl>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_ExprBigInt => {
-            Ok(<::types::ExprBigInt>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_ExprBool => {
-            Ok(<::types::ExprBool>::from_record(_rec)?.into_ddvalue())
-        },
+        Relations::ChildScope => Ok(<::types::ChildScope>::from_record(_rec)?.into_ddvalue()),
+        Relations::ConstDecl => Ok(<::types::ConstDecl>::from_record(_rec)?.into_ddvalue()),
+        Relations::ExprBigInt => Ok(<::types::ExprBigInt>::from_record(_rec)?.into_ddvalue()),
+        Relations::ExprBool => Ok(<::types::ExprBool>::from_record(_rec)?.into_ddvalue()),
+        Relations::ExprNameRef => Ok(<::types::ExprNameRef>::from_record(_rec)?.into_ddvalue()),
+        Relations::ExprNumber => Ok(<::types::ExprNumber>::from_record(_rec)?.into_ddvalue()),
+        Relations::ExprString => Ok(<::types::ExprString>::from_record(_rec)?.into_ddvalue()),
+        Relations::Expression => Ok(<::types::Expression>::from_record(_rec)?.into_ddvalue()),
+        Relations::Function => Ok(<::types::Function>::from_record(_rec)?.into_ddvalue()),
+        Relations::FunctionArg => Ok(<::types::FunctionArg>::from_record(_rec)?.into_ddvalue()),
+        Relations::INPUT_ConstDecl => Ok(<::types::ConstDecl>::from_record(_rec)?.into_ddvalue()),
+        Relations::INPUT_ExprBigInt => Ok(<::types::ExprBigInt>::from_record(_rec)?.into_ddvalue()),
+        Relations::INPUT_ExprBool => Ok(<::types::ExprBool>::from_record(_rec)?.into_ddvalue()),
         Relations::INPUT_ExprNameRef => {
             Ok(<::types::ExprNameRef>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_ExprNumber => {
-            Ok(<::types::ExprNumber>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_ExprString => {
-            Ok(<::types::ExprString>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_Expression => {
-            Ok(<::types::Expression>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_Function => {
-            Ok(<::types::Function>::from_record(_rec)?.into_ddvalue())
-        },
+        }
+        Relations::INPUT_ExprNumber => Ok(<::types::ExprNumber>::from_record(_rec)?.into_ddvalue()),
+        Relations::INPUT_ExprString => Ok(<::types::ExprString>::from_record(_rec)?.into_ddvalue()),
+        Relations::INPUT_Expression => Ok(<::types::Expression>::from_record(_rec)?.into_ddvalue()),
+        Relations::INPUT_Function => Ok(<::types::Function>::from_record(_rec)?.into_ddvalue()),
         Relations::INPUT_FunctionArg => {
             Ok(<::types::FunctionArg>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_InputScope => {
-            Ok(<::types::InputScope>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_LetDecl => {
-            Ok(<::types::LetDecl>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_Return => {
-            Ok(<::types::Return>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_Statement => {
-            Ok(<::types::Statement>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::INPUT_VarDecl => {
-            Ok(<::types::VarDecl>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::InputScope => {
-            Ok(<::types::InputScope>::from_record(_rec)?.into_ddvalue())
-        },
+        }
+        Relations::INPUT_InputScope => Ok(<::types::InputScope>::from_record(_rec)?.into_ddvalue()),
+        Relations::INPUT_LetDecl => Ok(<::types::LetDecl>::from_record(_rec)?.into_ddvalue()),
+        Relations::INPUT_Return => Ok(<::types::Return>::from_record(_rec)?.into_ddvalue()),
+        Relations::INPUT_Statement => Ok(<::types::Statement>::from_record(_rec)?.into_ddvalue()),
+        Relations::INPUT_VarDecl => Ok(<::types::VarDecl>::from_record(_rec)?.into_ddvalue()),
+        Relations::InputScope => Ok(<::types::InputScope>::from_record(_rec)?.into_ddvalue()),
         Relations::InvalidNameUse => {
             Ok(<::types::InvalidNameUse>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::LetDecl => {
-            Ok(<::types::LetDecl>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::NameInScope => {
-            Ok(<::types::NameInScope>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::Return => {
-            Ok(<::types::Return>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::Statement => {
-            Ok(<::types::Statement>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::VarDecl => {
-            Ok(<::types::VarDecl>::from_record(_rec)?.into_ddvalue())
-        },
-        Relations::__Null => {
-            Ok(<()>::from_record(_rec)?.into_ddvalue())
         }
+        Relations::LetDecl => Ok(<::types::LetDecl>::from_record(_rec)?.into_ddvalue()),
+        Relations::NameInScope => Ok(<::types::NameInScope>::from_record(_rec)?.into_ddvalue()),
+        Relations::Return => Ok(<::types::Return>::from_record(_rec)?.into_ddvalue()),
+        Relations::Statement => Ok(<::types::Statement>::from_record(_rec)?.into_ddvalue()),
+        Relations::VarDecl => Ok(<::types::VarDecl>::from_record(_rec)?.into_ddvalue()),
+        Relations::__Null => Ok(<()>::from_record(_rec)?.into_ddvalue()),
     }
 }
-pub fn relkey_from_record(rel: Relations, _rec: &differential_datalog::record::Record) -> ::std::result::Result<DDValue, String> {
+pub fn relkey_from_record(
+    rel: Relations,
+    _rec: &differential_datalog::record::Record,
+) -> ::std::result::Result<DDValue, String> {
     match rel {
-        _ => Err(format!("relation {:?} does not have a primary key", rel))
+        _ => Err(format!("relation {:?} does not have a primary key", rel)),
     }
 }
-pub fn idxkey_from_record(idx: Indexes, _rec: &differential_datalog::record::Record) -> ::std::result::Result<DDValue, String> {
+pub fn idxkey_from_record(
+    idx: Indexes,
+    _rec: &differential_datalog::record::Record,
+) -> ::std::result::Result<DDValue, String> {
     match idx {
-        Indexes::__Null_by_none => {
-            Ok(<()>::from_record(_rec)?.into_ddvalue())
-        }
+        Indexes::__Null_by_none => Ok(<()>::from_record(_rec)?.into_ddvalue()),
     }
 }
 pub fn indexes2arrid(idx: Indexes) -> ArrId {
     match idx {
-        Indexes::__Null_by_none => ( 31, 0),
+        Indexes::__Null_by_none => (31, 0),
     }
 }
-#[derive(Copy,Clone,Debug,PartialEq,Eq,Hash)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Relations {
     ChildScope = 0,
     ConstDecl = 1,
@@ -671,142 +792,145 @@ pub enum Relations {
     Return = 28,
     Statement = 29,
     VarDecl = 30,
-    __Null = 31
+    __Null = 31,
 }
-#[derive(Copy,Clone,Debug,PartialEq,Eq,Hash)]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Indexes {
-    __Null_by_none = 0
+    __Null_by_none = 0,
 }
 pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
     let ConstDecl = Relation {
-                        name:         "ConstDecl".to_string(),
-                        input:        true,
-                        distinct:     false,
-                        caching_mode: CachingMode::Set,
-                        key_func:     None,
-                        id:           Relations::ConstDecl as RelId,
-                        rules:        vec![
-                            ],
-                        arrangements: vec![
-                            ],
-                        change_cb:    None
-                    };
+        name: "ConstDecl".to_string(),
+        input: true,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::ConstDecl as RelId,
+        rules: vec![],
+        arrangements: vec![],
+        change_cb: None,
+    };
     let INPUT_ConstDecl = Relation {
-                              name:         "INPUT_ConstDecl".to_string(),
-                              input:        false,
-                              distinct:     false,
-                              caching_mode: CachingMode::Set,
-                              key_func:     None,
-                              id:           Relations::INPUT_ConstDecl as RelId,
-                              rules:        vec![
-                                  /* INPUT_ConstDecl[x] :- ConstDecl[(x: ConstDecl)]. */
-                                  Rule::CollectionRule {
-                                      description: "INPUT_ConstDecl[x] :- ConstDecl[(x: ConstDecl)].".to_string(),
-                                      rel: Relations::ConstDecl as RelId,
-                                      xform: Some(XFormCollection::FilterMap{
-                                                      description: "head of INPUT_ConstDecl[x] :- ConstDecl[(x: ConstDecl)]." .to_string(),
-                                                      fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                      {
-                                                          let ref x = match *unsafe {<::types::ConstDecl>::from_ddvalue_ref(&__v) } {
-                                                              ref x => (*x).clone(),
-                                                              _ => return None
-                                                          };
-                                                          Some(((*x).clone()).into_ddvalue())
-                                                      }
-                                                      __f},
-                                                      next: Box::new(None)
-                                                  })
-                                  }],
-                              arrangements: vec![
-                                  ],
-                              change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                          };
+        name: "INPUT_ConstDecl".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_ConstDecl as RelId,
+        rules: vec![
+            /* INPUT_ConstDecl[x] :- ConstDecl[(x: ConstDecl)]. */
+            Rule::CollectionRule {
+                description: "INPUT_ConstDecl[x] :- ConstDecl[(x: ConstDecl)].".to_string(),
+                rel: Relations::ConstDecl as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_ConstDecl[x] :- ConstDecl[(x: ConstDecl)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::ConstDecl>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let ExprBigInt = Relation {
-                         name:         "ExprBigInt".to_string(),
-                         input:        true,
-                         distinct:     false,
-                         caching_mode: CachingMode::Set,
-                         key_func:     None,
-                         id:           Relations::ExprBigInt as RelId,
-                         rules:        vec![
-                             ],
-                         arrangements: vec![
-                             ],
-                         change_cb:    None
-                     };
+        name: "ExprBigInt".to_string(),
+        input: true,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::ExprBigInt as RelId,
+        rules: vec![],
+        arrangements: vec![],
+        change_cb: None,
+    };
     let INPUT_ExprBigInt = Relation {
-                               name:         "INPUT_ExprBigInt".to_string(),
-                               input:        false,
-                               distinct:     false,
-                               caching_mode: CachingMode::Set,
-                               key_func:     None,
-                               id:           Relations::INPUT_ExprBigInt as RelId,
-                               rules:        vec![
-                                   /* INPUT_ExprBigInt[x] :- ExprBigInt[(x: ExprBigInt)]. */
-                                   Rule::CollectionRule {
-                                       description: "INPUT_ExprBigInt[x] :- ExprBigInt[(x: ExprBigInt)].".to_string(),
-                                       rel: Relations::ExprBigInt as RelId,
-                                       xform: Some(XFormCollection::FilterMap{
-                                                       description: "head of INPUT_ExprBigInt[x] :- ExprBigInt[(x: ExprBigInt)]." .to_string(),
-                                                       fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                       {
-                                                           let ref x = match *unsafe {<::types::ExprBigInt>::from_ddvalue_ref(&__v) } {
-                                                               ref x => (*x).clone(),
-                                                               _ => return None
-                                                           };
-                                                           Some(((*x).clone()).into_ddvalue())
-                                                       }
-                                                       __f},
-                                                       next: Box::new(None)
-                                                   })
-                                   }],
-                               arrangements: vec![
-                                   ],
-                               change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                           };
+        name: "INPUT_ExprBigInt".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_ExprBigInt as RelId,
+        rules: vec![
+            /* INPUT_ExprBigInt[x] :- ExprBigInt[(x: ExprBigInt)]. */
+            Rule::CollectionRule {
+                description: "INPUT_ExprBigInt[x] :- ExprBigInt[(x: ExprBigInt)].".to_string(),
+                rel: Relations::ExprBigInt as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_ExprBigInt[x] :- ExprBigInt[(x: ExprBigInt)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::ExprBigInt>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let ExprBool = Relation {
-                       name:         "ExprBool".to_string(),
-                       input:        true,
-                       distinct:     false,
-                       caching_mode: CachingMode::Set,
-                       key_func:     None,
-                       id:           Relations::ExprBool as RelId,
-                       rules:        vec![
-                           ],
-                       arrangements: vec![
-                           ],
-                       change_cb:    None
-                   };
+        name: "ExprBool".to_string(),
+        input: true,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::ExprBool as RelId,
+        rules: vec![],
+        arrangements: vec![],
+        change_cb: None,
+    };
     let INPUT_ExprBool = Relation {
-                             name:         "INPUT_ExprBool".to_string(),
-                             input:        false,
-                             distinct:     false,
-                             caching_mode: CachingMode::Set,
-                             key_func:     None,
-                             id:           Relations::INPUT_ExprBool as RelId,
-                             rules:        vec![
-                                 /* INPUT_ExprBool[x] :- ExprBool[(x: ExprBool)]. */
-                                 Rule::CollectionRule {
-                                     description: "INPUT_ExprBool[x] :- ExprBool[(x: ExprBool)].".to_string(),
-                                     rel: Relations::ExprBool as RelId,
-                                     xform: Some(XFormCollection::FilterMap{
-                                                     description: "head of INPUT_ExprBool[x] :- ExprBool[(x: ExprBool)]." .to_string(),
-                                                     fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                     {
-                                                         let ref x = match *unsafe {<::types::ExprBool>::from_ddvalue_ref(&__v) } {
-                                                             ref x => (*x).clone(),
-                                                             _ => return None
-                                                         };
-                                                         Some(((*x).clone()).into_ddvalue())
-                                                     }
-                                                     __f},
-                                                     next: Box::new(None)
-                                                 })
-                                 }],
-                             arrangements: vec![
-                                 ],
-                             change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                         };
+        name: "INPUT_ExprBool".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_ExprBool as RelId,
+        rules: vec![
+            /* INPUT_ExprBool[x] :- ExprBool[(x: ExprBool)]. */
+            Rule::CollectionRule {
+                description: "INPUT_ExprBool[x] :- ExprBool[(x: ExprBool)].".to_string(),
+                rel: Relations::ExprBool as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_ExprBool[x] :- ExprBool[(x: ExprBool)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::ExprBool>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let ExprNameRef = Relation {
                           name:         "ExprNameRef".to_string(),
                           input:        true,
@@ -833,121 +957,126 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                           change_cb:    None
                       };
     let INPUT_ExprNameRef = Relation {
-                                name:         "INPUT_ExprNameRef".to_string(),
-                                input:        false,
-                                distinct:     false,
-                                caching_mode: CachingMode::Set,
-                                key_func:     None,
-                                id:           Relations::INPUT_ExprNameRef as RelId,
-                                rules:        vec![
-                                    /* INPUT_ExprNameRef[x] :- ExprNameRef[(x: ExprNameRef)]. */
-                                    Rule::CollectionRule {
-                                        description: "INPUT_ExprNameRef[x] :- ExprNameRef[(x: ExprNameRef)].".to_string(),
-                                        rel: Relations::ExprNameRef as RelId,
-                                        xform: Some(XFormCollection::FilterMap{
-                                                        description: "head of INPUT_ExprNameRef[x] :- ExprNameRef[(x: ExprNameRef)]." .to_string(),
-                                                        fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                        {
-                                                            let ref x = match *unsafe {<::types::ExprNameRef>::from_ddvalue_ref(&__v) } {
-                                                                ref x => (*x).clone(),
-                                                                _ => return None
-                                                            };
-                                                            Some(((*x).clone()).into_ddvalue())
-                                                        }
-                                                        __f},
-                                                        next: Box::new(None)
-                                                    })
-                                    }],
-                                arrangements: vec![
-                                    ],
-                                change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                            };
+        name: "INPUT_ExprNameRef".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_ExprNameRef as RelId,
+        rules: vec![
+            /* INPUT_ExprNameRef[x] :- ExprNameRef[(x: ExprNameRef)]. */
+            Rule::CollectionRule {
+                description: "INPUT_ExprNameRef[x] :- ExprNameRef[(x: ExprNameRef)].".to_string(),
+                rel: Relations::ExprNameRef as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_ExprNameRef[x] :- ExprNameRef[(x: ExprNameRef)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::ExprNameRef>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let ExprNumber = Relation {
-                         name:         "ExprNumber".to_string(),
-                         input:        true,
-                         distinct:     false,
-                         caching_mode: CachingMode::Set,
-                         key_func:     None,
-                         id:           Relations::ExprNumber as RelId,
-                         rules:        vec![
-                             ],
-                         arrangements: vec![
-                             ],
-                         change_cb:    None
-                     };
+        name: "ExprNumber".to_string(),
+        input: true,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::ExprNumber as RelId,
+        rules: vec![],
+        arrangements: vec![],
+        change_cb: None,
+    };
     let INPUT_ExprNumber = Relation {
-                               name:         "INPUT_ExprNumber".to_string(),
-                               input:        false,
-                               distinct:     false,
-                               caching_mode: CachingMode::Set,
-                               key_func:     None,
-                               id:           Relations::INPUT_ExprNumber as RelId,
-                               rules:        vec![
-                                   /* INPUT_ExprNumber[x] :- ExprNumber[(x: ExprNumber)]. */
-                                   Rule::CollectionRule {
-                                       description: "INPUT_ExprNumber[x] :- ExprNumber[(x: ExprNumber)].".to_string(),
-                                       rel: Relations::ExprNumber as RelId,
-                                       xform: Some(XFormCollection::FilterMap{
-                                                       description: "head of INPUT_ExprNumber[x] :- ExprNumber[(x: ExprNumber)]." .to_string(),
-                                                       fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                       {
-                                                           let ref x = match *unsafe {<::types::ExprNumber>::from_ddvalue_ref(&__v) } {
-                                                               ref x => (*x).clone(),
-                                                               _ => return None
-                                                           };
-                                                           Some(((*x).clone()).into_ddvalue())
-                                                       }
-                                                       __f},
-                                                       next: Box::new(None)
-                                                   })
-                                   }],
-                               arrangements: vec![
-                                   ],
-                               change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                           };
+        name: "INPUT_ExprNumber".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_ExprNumber as RelId,
+        rules: vec![
+            /* INPUT_ExprNumber[x] :- ExprNumber[(x: ExprNumber)]. */
+            Rule::CollectionRule {
+                description: "INPUT_ExprNumber[x] :- ExprNumber[(x: ExprNumber)].".to_string(),
+                rel: Relations::ExprNumber as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_ExprNumber[x] :- ExprNumber[(x: ExprNumber)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::ExprNumber>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let ExprString = Relation {
-                         name:         "ExprString".to_string(),
-                         input:        true,
-                         distinct:     false,
-                         caching_mode: CachingMode::Set,
-                         key_func:     None,
-                         id:           Relations::ExprString as RelId,
-                         rules:        vec![
-                             ],
-                         arrangements: vec![
-                             ],
-                         change_cb:    None
-                     };
+        name: "ExprString".to_string(),
+        input: true,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::ExprString as RelId,
+        rules: vec![],
+        arrangements: vec![],
+        change_cb: None,
+    };
     let INPUT_ExprString = Relation {
-                               name:         "INPUT_ExprString".to_string(),
-                               input:        false,
-                               distinct:     false,
-                               caching_mode: CachingMode::Set,
-                               key_func:     None,
-                               id:           Relations::INPUT_ExprString as RelId,
-                               rules:        vec![
-                                   /* INPUT_ExprString[x] :- ExprString[(x: ExprString)]. */
-                                   Rule::CollectionRule {
-                                       description: "INPUT_ExprString[x] :- ExprString[(x: ExprString)].".to_string(),
-                                       rel: Relations::ExprString as RelId,
-                                       xform: Some(XFormCollection::FilterMap{
-                                                       description: "head of INPUT_ExprString[x] :- ExprString[(x: ExprString)]." .to_string(),
-                                                       fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                       {
-                                                           let ref x = match *unsafe {<::types::ExprString>::from_ddvalue_ref(&__v) } {
-                                                               ref x => (*x).clone(),
-                                                               _ => return None
-                                                           };
-                                                           Some(((*x).clone()).into_ddvalue())
-                                                       }
-                                                       __f},
-                                                       next: Box::new(None)
-                                                   })
-                                   }],
-                               arrangements: vec![
-                                   ],
-                               change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                           };
+        name: "INPUT_ExprString".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_ExprString as RelId,
+        rules: vec![
+            /* INPUT_ExprString[x] :- ExprString[(x: ExprString)]. */
+            Rule::CollectionRule {
+                description: "INPUT_ExprString[x] :- ExprString[(x: ExprString)].".to_string(),
+                rel: Relations::ExprString as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_ExprString[x] :- ExprString[(x: ExprString)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::ExprString>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let Expression = Relation {
                          name:         "Expression".to_string(),
                          input:        true,
@@ -974,35 +1103,38 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                          change_cb:    None
                      };
     let INPUT_Expression = Relation {
-                               name:         "INPUT_Expression".to_string(),
-                               input:        false,
-                               distinct:     false,
-                               caching_mode: CachingMode::Set,
-                               key_func:     None,
-                               id:           Relations::INPUT_Expression as RelId,
-                               rules:        vec![
-                                   /* INPUT_Expression[x] :- Expression[(x: Expression)]. */
-                                   Rule::CollectionRule {
-                                       description: "INPUT_Expression[x] :- Expression[(x: Expression)].".to_string(),
-                                       rel: Relations::Expression as RelId,
-                                       xform: Some(XFormCollection::FilterMap{
-                                                       description: "head of INPUT_Expression[x] :- Expression[(x: Expression)]." .to_string(),
-                                                       fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                       {
-                                                           let ref x = match *unsafe {<::types::Expression>::from_ddvalue_ref(&__v) } {
-                                                               ref x => (*x).clone(),
-                                                               _ => return None
-                                                           };
-                                                           Some(((*x).clone()).into_ddvalue())
-                                                       }
-                                                       __f},
-                                                       next: Box::new(None)
-                                                   })
-                                   }],
-                               arrangements: vec![
-                                   ],
-                               change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                           };
+        name: "INPUT_Expression".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_Expression as RelId,
+        rules: vec![
+            /* INPUT_Expression[x] :- Expression[(x: Expression)]. */
+            Rule::CollectionRule {
+                description: "INPUT_Expression[x] :- Expression[(x: Expression)].".to_string(),
+                rel: Relations::Expression as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_Expression[x] :- Expression[(x: Expression)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::Expression>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let Function = Relation {
                        name:         "Function".to_string(),
                        input:        true,
@@ -1029,78 +1161,82 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                        change_cb:    None
                    };
     let INPUT_Function = Relation {
-                             name:         "INPUT_Function".to_string(),
-                             input:        false,
-                             distinct:     false,
-                             caching_mode: CachingMode::Set,
-                             key_func:     None,
-                             id:           Relations::INPUT_Function as RelId,
-                             rules:        vec![
-                                 /* INPUT_Function[x] :- Function[(x: Function)]. */
-                                 Rule::CollectionRule {
-                                     description: "INPUT_Function[x] :- Function[(x: Function)].".to_string(),
-                                     rel: Relations::Function as RelId,
-                                     xform: Some(XFormCollection::FilterMap{
-                                                     description: "head of INPUT_Function[x] :- Function[(x: Function)]." .to_string(),
-                                                     fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                     {
-                                                         let ref x = match *unsafe {<::types::Function>::from_ddvalue_ref(&__v) } {
-                                                             ref x => (*x).clone(),
-                                                             _ => return None
-                                                         };
-                                                         Some(((*x).clone()).into_ddvalue())
-                                                     }
-                                                     __f},
-                                                     next: Box::new(None)
-                                                 })
-                                 }],
-                             arrangements: vec![
-                                 ],
-                             change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                         };
+        name: "INPUT_Function".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_Function as RelId,
+        rules: vec![
+            /* INPUT_Function[x] :- Function[(x: Function)]. */
+            Rule::CollectionRule {
+                description: "INPUT_Function[x] :- Function[(x: Function)].".to_string(),
+                rel: Relations::Function as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_Function[x] :- Function[(x: Function)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::Function>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let FunctionArg = Relation {
-                          name:         "FunctionArg".to_string(),
-                          input:        true,
-                          distinct:     false,
-                          caching_mode: CachingMode::Set,
-                          key_func:     None,
-                          id:           Relations::FunctionArg as RelId,
-                          rules:        vec![
-                              ],
-                          arrangements: vec![
-                              ],
-                          change_cb:    None
-                      };
+        name: "FunctionArg".to_string(),
+        input: true,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::FunctionArg as RelId,
+        rules: vec![],
+        arrangements: vec![],
+        change_cb: None,
+    };
     let INPUT_FunctionArg = Relation {
-                                name:         "INPUT_FunctionArg".to_string(),
-                                input:        false,
-                                distinct:     false,
-                                caching_mode: CachingMode::Set,
-                                key_func:     None,
-                                id:           Relations::INPUT_FunctionArg as RelId,
-                                rules:        vec![
-                                    /* INPUT_FunctionArg[x] :- FunctionArg[(x: FunctionArg)]. */
-                                    Rule::CollectionRule {
-                                        description: "INPUT_FunctionArg[x] :- FunctionArg[(x: FunctionArg)].".to_string(),
-                                        rel: Relations::FunctionArg as RelId,
-                                        xform: Some(XFormCollection::FilterMap{
-                                                        description: "head of INPUT_FunctionArg[x] :- FunctionArg[(x: FunctionArg)]." .to_string(),
-                                                        fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                        {
-                                                            let ref x = match *unsafe {<::types::FunctionArg>::from_ddvalue_ref(&__v) } {
-                                                                ref x => (*x).clone(),
-                                                                _ => return None
-                                                            };
-                                                            Some(((*x).clone()).into_ddvalue())
-                                                        }
-                                                        __f},
-                                                        next: Box::new(None)
-                                                    })
-                                    }],
-                                arrangements: vec![
-                                    ],
-                                change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                            };
+        name: "INPUT_FunctionArg".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_FunctionArg as RelId,
+        rules: vec![
+            /* INPUT_FunctionArg[x] :- FunctionArg[(x: FunctionArg)]. */
+            Rule::CollectionRule {
+                description: "INPUT_FunctionArg[x] :- FunctionArg[(x: FunctionArg)].".to_string(),
+                rel: Relations::FunctionArg as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_FunctionArg[x] :- FunctionArg[(x: FunctionArg)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::FunctionArg>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let InputScope = Relation {
                          name:         "InputScope".to_string(),
                          input:        true,
@@ -1206,121 +1342,124 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                          change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
                      };
     let INPUT_InputScope = Relation {
-                               name:         "INPUT_InputScope".to_string(),
-                               input:        false,
-                               distinct:     false,
-                               caching_mode: CachingMode::Set,
-                               key_func:     None,
-                               id:           Relations::INPUT_InputScope as RelId,
-                               rules:        vec![
-                                   /* INPUT_InputScope[x] :- InputScope[(x: InputScope)]. */
-                                   Rule::CollectionRule {
-                                       description: "INPUT_InputScope[x] :- InputScope[(x: InputScope)].".to_string(),
-                                       rel: Relations::InputScope as RelId,
-                                       xform: Some(XFormCollection::FilterMap{
-                                                       description: "head of INPUT_InputScope[x] :- InputScope[(x: InputScope)]." .to_string(),
-                                                       fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                       {
-                                                           let ref x = match *unsafe {<::types::InputScope>::from_ddvalue_ref(&__v) } {
-                                                               ref x => (*x).clone(),
-                                                               _ => return None
-                                                           };
-                                                           Some(((*x).clone()).into_ddvalue())
-                                                       }
-                                                       __f},
-                                                       next: Box::new(None)
-                                                   })
-                                   }],
-                               arrangements: vec![
-                                   ],
-                               change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                           };
+        name: "INPUT_InputScope".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_InputScope as RelId,
+        rules: vec![
+            /* INPUT_InputScope[x] :- InputScope[(x: InputScope)]. */
+            Rule::CollectionRule {
+                description: "INPUT_InputScope[x] :- InputScope[(x: InputScope)].".to_string(),
+                rel: Relations::InputScope as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_InputScope[x] :- InputScope[(x: InputScope)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::InputScope>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let LetDecl = Relation {
-                      name:         "LetDecl".to_string(),
-                      input:        true,
-                      distinct:     false,
-                      caching_mode: CachingMode::Set,
-                      key_func:     None,
-                      id:           Relations::LetDecl as RelId,
-                      rules:        vec![
-                          ],
-                      arrangements: vec![
-                          ],
-                      change_cb:    None
-                  };
+        name: "LetDecl".to_string(),
+        input: true,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::LetDecl as RelId,
+        rules: vec![],
+        arrangements: vec![],
+        change_cb: None,
+    };
     let INPUT_LetDecl = Relation {
-                            name:         "INPUT_LetDecl".to_string(),
-                            input:        false,
-                            distinct:     false,
-                            caching_mode: CachingMode::Set,
-                            key_func:     None,
-                            id:           Relations::INPUT_LetDecl as RelId,
-                            rules:        vec![
-                                /* INPUT_LetDecl[x] :- LetDecl[(x: LetDecl)]. */
-                                Rule::CollectionRule {
-                                    description: "INPUT_LetDecl[x] :- LetDecl[(x: LetDecl)].".to_string(),
-                                    rel: Relations::LetDecl as RelId,
-                                    xform: Some(XFormCollection::FilterMap{
-                                                    description: "head of INPUT_LetDecl[x] :- LetDecl[(x: LetDecl)]." .to_string(),
-                                                    fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                    {
-                                                        let ref x = match *unsafe {<::types::LetDecl>::from_ddvalue_ref(&__v) } {
-                                                            ref x => (*x).clone(),
-                                                            _ => return None
-                                                        };
-                                                        Some(((*x).clone()).into_ddvalue())
-                                                    }
-                                                    __f},
-                                                    next: Box::new(None)
-                                                })
-                                }],
-                            arrangements: vec![
-                                ],
-                            change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                        };
+        name: "INPUT_LetDecl".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_LetDecl as RelId,
+        rules: vec![
+            /* INPUT_LetDecl[x] :- LetDecl[(x: LetDecl)]. */
+            Rule::CollectionRule {
+                description: "INPUT_LetDecl[x] :- LetDecl[(x: LetDecl)].".to_string(),
+                rel: Relations::LetDecl as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_LetDecl[x] :- LetDecl[(x: LetDecl)].".to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x = match *unsafe { <::types::LetDecl>::from_ddvalue_ref(&__v) }
+                            {
+                                ref x => (*x).clone(),
+                                _ => return None,
+                            };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let Return = Relation {
-                     name:         "Return".to_string(),
-                     input:        true,
-                     distinct:     false,
-                     caching_mode: CachingMode::Set,
-                     key_func:     None,
-                     id:           Relations::Return as RelId,
-                     rules:        vec![
-                         ],
-                     arrangements: vec![
-                         ],
-                     change_cb:    None
-                 };
+        name: "Return".to_string(),
+        input: true,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::Return as RelId,
+        rules: vec![],
+        arrangements: vec![],
+        change_cb: None,
+    };
     let INPUT_Return = Relation {
-                           name:         "INPUT_Return".to_string(),
-                           input:        false,
-                           distinct:     false,
-                           caching_mode: CachingMode::Set,
-                           key_func:     None,
-                           id:           Relations::INPUT_Return as RelId,
-                           rules:        vec![
-                               /* INPUT_Return[x] :- Return[(x: Return)]. */
-                               Rule::CollectionRule {
-                                   description: "INPUT_Return[x] :- Return[(x: Return)].".to_string(),
-                                   rel: Relations::Return as RelId,
-                                   xform: Some(XFormCollection::FilterMap{
-                                                   description: "head of INPUT_Return[x] :- Return[(x: Return)]." .to_string(),
-                                                   fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                   {
-                                                       let ref x = match *unsafe {<::types::Return>::from_ddvalue_ref(&__v) } {
-                                                           ref x => (*x).clone(),
-                                                           _ => return None
-                                                       };
-                                                       Some(((*x).clone()).into_ddvalue())
-                                                   }
-                                                   __f},
-                                                   next: Box::new(None)
-                                               })
-                               }],
-                           arrangements: vec![
-                               ],
-                           change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                       };
+        name: "INPUT_Return".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_Return as RelId,
+        rules: vec![
+            /* INPUT_Return[x] :- Return[(x: Return)]. */
+            Rule::CollectionRule {
+                description: "INPUT_Return[x] :- Return[(x: Return)].".to_string(),
+                rel: Relations::Return as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_Return[x] :- Return[(x: Return)].".to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x = match *unsafe { <::types::Return>::from_ddvalue_ref(&__v) }
+                            {
+                                ref x => (*x).clone(),
+                                _ => return None,
+                            };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let Statement = Relation {
                         name:         "Statement".to_string(),
                         input:        true,
@@ -1359,48 +1498,49 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                         change_cb:    None
                     };
     let INPUT_Statement = Relation {
-                              name:         "INPUT_Statement".to_string(),
-                              input:        false,
-                              distinct:     false,
-                              caching_mode: CachingMode::Set,
-                              key_func:     None,
-                              id:           Relations::INPUT_Statement as RelId,
-                              rules:        vec![
-                                  /* INPUT_Statement[x] :- Statement[(x: Statement)]. */
-                                  Rule::CollectionRule {
-                                      description: "INPUT_Statement[x] :- Statement[(x: Statement)].".to_string(),
-                                      rel: Relations::Statement as RelId,
-                                      xform: Some(XFormCollection::FilterMap{
-                                                      description: "head of INPUT_Statement[x] :- Statement[(x: Statement)]." .to_string(),
-                                                      fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                      {
-                                                          let ref x = match *unsafe {<::types::Statement>::from_ddvalue_ref(&__v) } {
-                                                              ref x => (*x).clone(),
-                                                              _ => return None
-                                                          };
-                                                          Some(((*x).clone()).into_ddvalue())
-                                                      }
-                                                      __f},
-                                                      next: Box::new(None)
-                                                  })
-                                  }],
-                              arrangements: vec![
-                                  ],
-                              change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                          };
+        name: "INPUT_Statement".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_Statement as RelId,
+        rules: vec![
+            /* INPUT_Statement[x] :- Statement[(x: Statement)]. */
+            Rule::CollectionRule {
+                description: "INPUT_Statement[x] :- Statement[(x: Statement)].".to_string(),
+                rel: Relations::Statement as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_Statement[x] :- Statement[(x: Statement)]."
+                        .to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x =
+                                match *unsafe { <::types::Statement>::from_ddvalue_ref(&__v) } {
+                                    ref x => (*x).clone(),
+                                    _ => return None,
+                                };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let VarDecl = Relation {
-                      name:         "VarDecl".to_string(),
-                      input:        true,
-                      distinct:     false,
-                      caching_mode: CachingMode::Set,
-                      key_func:     None,
-                      id:           Relations::VarDecl as RelId,
-                      rules:        vec![
-                          ],
-                      arrangements: vec![
-                          ],
-                      change_cb:    None
-                  };
+        name: "VarDecl".to_string(),
+        input: true,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::VarDecl as RelId,
+        rules: vec![],
+        arrangements: vec![],
+        change_cb: None,
+    };
     let NameInScope = Relation {
                           name:         "NameInScope".to_string(),
                           input:        false,
@@ -1665,96 +1805,126 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                              change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
                          };
     let INPUT_VarDecl = Relation {
-                            name:         "INPUT_VarDecl".to_string(),
-                            input:        false,
-                            distinct:     false,
-                            caching_mode: CachingMode::Set,
-                            key_func:     None,
-                            id:           Relations::INPUT_VarDecl as RelId,
-                            rules:        vec![
-                                /* INPUT_VarDecl[x] :- VarDecl[(x: VarDecl)]. */
-                                Rule::CollectionRule {
-                                    description: "INPUT_VarDecl[x] :- VarDecl[(x: VarDecl)].".to_string(),
-                                    rel: Relations::VarDecl as RelId,
-                                    xform: Some(XFormCollection::FilterMap{
-                                                    description: "head of INPUT_VarDecl[x] :- VarDecl[(x: VarDecl)]." .to_string(),
-                                                    fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
-                                                    {
-                                                        let ref x = match *unsafe {<::types::VarDecl>::from_ddvalue_ref(&__v) } {
-                                                            ref x => (*x).clone(),
-                                                            _ => return None
-                                                        };
-                                                        Some(((*x).clone()).into_ddvalue())
-                                                    }
-                                                    __f},
-                                                    next: Box::new(None)
-                                                })
-                                }],
-                            arrangements: vec![
-                                ],
-                            change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
-                        };
+        name: "INPUT_VarDecl".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::INPUT_VarDecl as RelId,
+        rules: vec![
+            /* INPUT_VarDecl[x] :- VarDecl[(x: VarDecl)]. */
+            Rule::CollectionRule {
+                description: "INPUT_VarDecl[x] :- VarDecl[(x: VarDecl)].".to_string(),
+                rel: Relations::VarDecl as RelId,
+                xform: Some(XFormCollection::FilterMap {
+                    description: "head of INPUT_VarDecl[x] :- VarDecl[(x: VarDecl)].".to_string(),
+                    fmfun: &{
+                        fn __f(__v: DDValue) -> Option<DDValue> {
+                            let ref x = match *unsafe { <::types::VarDecl>::from_ddvalue_ref(&__v) }
+                            {
+                                ref x => (*x).clone(),
+                                _ => return None,
+                            };
+                            Some(((*x).clone()).into_ddvalue())
+                        }
+                        __f
+                    },
+                    next: Box::new(None),
+                }),
+            },
+        ],
+        arrangements: vec![],
+        change_cb: Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone()))),
+    };
     let __Null = Relation {
-                     name:         "__Null".to_string(),
-                     input:        false,
-                     distinct:     false,
-                     caching_mode: CachingMode::Set,
-                     key_func:     None,
-                     id:           Relations::__Null as RelId,
-                     rules:        vec![
-                         ],
-                     arrangements: vec![
-                         Arrangement::Map{
-                            name: r###"_ /*join*/"###.to_string(),
-                             afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
-                             {
-                                 let __cloned = __v.clone();
-                                 match unsafe {< ()>::from_ddvalue(__v) } {
-                                     _ => Some((()).into_ddvalue()),
-                                     _ => None
-                                 }.map(|x|(x,__cloned))
-                             }
-                             __f},
-                             queryable: true
-                         }],
-                     change_cb:    None
-                 };
+        name: "__Null".to_string(),
+        input: false,
+        distinct: false,
+        caching_mode: CachingMode::Set,
+        key_func: None,
+        id: Relations::__Null as RelId,
+        rules: vec![],
+        arrangements: vec![Arrangement::Map {
+            name: r###"_ /*join*/"###.to_string(),
+            afun: &{
+                fn __f(__v: DDValue) -> Option<(DDValue, DDValue)> {
+                    let __cloned = __v.clone();
+                    match unsafe { <()>::from_ddvalue(__v) } {
+                        _ => Some((()).into_ddvalue()),
+                        _ => None,
+                    }
+                    .map(|x| (x, __cloned))
+                }
+                __f
+            },
+            queryable: true,
+        }],
+        change_cb: None,
+    };
     Program {
         nodes: vec![
-            ProgNode::Rel{rel: ConstDecl},
-            ProgNode::Rel{rel: INPUT_ConstDecl},
-            ProgNode::Rel{rel: ExprBigInt},
-            ProgNode::Rel{rel: INPUT_ExprBigInt},
-            ProgNode::Rel{rel: ExprBool},
-            ProgNode::Rel{rel: INPUT_ExprBool},
-            ProgNode::Rel{rel: ExprNameRef},
-            ProgNode::Rel{rel: INPUT_ExprNameRef},
-            ProgNode::Rel{rel: ExprNumber},
-            ProgNode::Rel{rel: INPUT_ExprNumber},
-            ProgNode::Rel{rel: ExprString},
-            ProgNode::Rel{rel: INPUT_ExprString},
-            ProgNode::Rel{rel: Expression},
-            ProgNode::Rel{rel: INPUT_Expression},
-            ProgNode::Rel{rel: Function},
-            ProgNode::Rel{rel: INPUT_Function},
-            ProgNode::Rel{rel: FunctionArg},
-            ProgNode::Rel{rel: INPUT_FunctionArg},
-            ProgNode::Rel{rel: InputScope},
-            ProgNode::Rel{rel: ChildScope},
-            ProgNode::Rel{rel: INPUT_InputScope},
-            ProgNode::Rel{rel: LetDecl},
-            ProgNode::Rel{rel: INPUT_LetDecl},
-            ProgNode::Rel{rel: Return},
-            ProgNode::Rel{rel: INPUT_Return},
-            ProgNode::Rel{rel: Statement},
-            ProgNode::Rel{rel: INPUT_Statement},
-            ProgNode::Rel{rel: VarDecl},
-            ProgNode::SCC{rels: vec![RecursiveRelation{rel: NameInScope, distinct: true}]},
-            ProgNode::Rel{rel: InvalidNameUse},
-            ProgNode::Rel{rel: INPUT_VarDecl},
-            ProgNode::Rel{rel: __Null}
+            ProgNode::Rel { rel: ConstDecl },
+            ProgNode::Rel {
+                rel: INPUT_ConstDecl,
+            },
+            ProgNode::Rel { rel: ExprBigInt },
+            ProgNode::Rel {
+                rel: INPUT_ExprBigInt,
+            },
+            ProgNode::Rel { rel: ExprBool },
+            ProgNode::Rel {
+                rel: INPUT_ExprBool,
+            },
+            ProgNode::Rel { rel: ExprNameRef },
+            ProgNode::Rel {
+                rel: INPUT_ExprNameRef,
+            },
+            ProgNode::Rel { rel: ExprNumber },
+            ProgNode::Rel {
+                rel: INPUT_ExprNumber,
+            },
+            ProgNode::Rel { rel: ExprString },
+            ProgNode::Rel {
+                rel: INPUT_ExprString,
+            },
+            ProgNode::Rel { rel: Expression },
+            ProgNode::Rel {
+                rel: INPUT_Expression,
+            },
+            ProgNode::Rel { rel: Function },
+            ProgNode::Rel {
+                rel: INPUT_Function,
+            },
+            ProgNode::Rel { rel: FunctionArg },
+            ProgNode::Rel {
+                rel: INPUT_FunctionArg,
+            },
+            ProgNode::Rel { rel: InputScope },
+            ProgNode::Rel { rel: ChildScope },
+            ProgNode::Rel {
+                rel: INPUT_InputScope,
+            },
+            ProgNode::Rel { rel: LetDecl },
+            ProgNode::Rel { rel: INPUT_LetDecl },
+            ProgNode::Rel { rel: Return },
+            ProgNode::Rel { rel: INPUT_Return },
+            ProgNode::Rel { rel: Statement },
+            ProgNode::Rel {
+                rel: INPUT_Statement,
+            },
+            ProgNode::Rel { rel: VarDecl },
+            ProgNode::SCC {
+                rels: vec![RecursiveRelation {
+                    rel: NameInScope,
+                    distinct: true,
+                }],
+            },
+            ProgNode::Rel {
+                rel: InvalidNameUse,
+            },
+            ProgNode::Rel { rel: INPUT_VarDecl },
+            ProgNode::Rel { rel: __Null },
         ],
-        init_data: vec![
-        ]
+        init_data: vec![],
     }
 }

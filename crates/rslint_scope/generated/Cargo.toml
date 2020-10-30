@@ -1,44 +1,95 @@
-[package]
-name = "rslint_scoping"
-version = "0.1.0"
-edition = "2018"
-autobins = false
-build = "src/build.rs"
+bench = []
+bin = []
+example = []
+test = []
+[badges.maintenance]
+status = "none"
 
-[features]
-default = []
-profile = ["cpuprofiler"]
-nested_ts_32 = ["differential_datalog/nested_ts_32"]
-
-[target.'cfg(not(windows))'.build-dependencies]
-libtool = "0.1"
-
-[dependencies.differential_datalog]
-path = "./differential_datalog"
-
-[dependencies.types]
-path = "./types"
+[build-dependencies]
 
 [dependencies]
 abomonation = "0.7"
-time = { version = "0.2", features = ["serde"] }
-ordered-float = { version = "2.0.0", features = ["serde"] }
-cpuprofiler = { version = "0.0", optional = true }
 differential-dataflow = "0.11.0"
 fnv = "1.0.2"
-once_cell = "1.4.1"
 libc = "0.2"
 num-traits = "0.2"
-num = { version = "0.3", features = ["serde"] }
-serde = { version = "1.0", features = ["derive"] }
+once_cell = "1.4.1"
 timely = "0.11"
 
-# [lib] section must be in the end
+[dependencies.cpuprofiler]
+features = []
+optional = true
+version = "0.0"
+
+[dependencies.differential_datalog]
+features = []
+optional = false
+path = "./differential_datalog"
+
+[dependencies.num]
+features = ["serde"]
+optional = false
+version = "0.3"
+
+[dependencies.ordered-float]
+features = ["serde"]
+optional = false
+version = "2.0.0"
+
+[dependencies.serde]
+features = ["derive"]
+optional = false
+version = "1.0"
+
+[dependencies.time]
+features = ["serde"]
+optional = false
+version = "0.2"
+
+[dependencies.types]
+features = []
+optional = false
+path = "./types"
+
+[dev-dependencies]
+
+[features]
+default = []
+nested_ts_32 = ["differential_datalog/nested_ts_32"]
+profile = ["cpuprofiler"]
 
 [lib]
+bench = true
+crate-type = ["lib"]
+doc = true
+doctest = true
+harness = true
 name = "rslint_scoping_ddlog"
-# Compiler will append the crate-type attribute here as well as the
-# build profile and workspace definition
-# crate-type = ["rlib", "staticlib"]
+plugin = false
+proc-macro = false
+required-features = []
+test = true
 
-crate-type = ["rlib", "staticlib"]
+[package]
+authors = []
+autobenches = true
+autobins = false
+autoexamples = true
+autotests = true
+build = "src/build.rs"
+categories = []
+edition = "2018"
+keywords = []
+name = "rslint_scoping"
+publish = true
+version = "0.1.0"
+
+[patch]
+
+
+[target."cfg(not(windows))".build-dependencies]
+libtool = "0.1"
+
+[target."cfg(not(windows))".dependencies]
+
+[target."cfg(not(windows))".dev-dependencies]
