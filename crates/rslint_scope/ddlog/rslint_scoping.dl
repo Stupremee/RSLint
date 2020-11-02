@@ -142,6 +142,9 @@ NameInScope(name, scope, Left { stmt }) :-
     ClosestFunction(decl_scope, func),
     Function(func, _, scope).
 
+// Functions
+NameInScope(name, scope, Right { func }) :- Function(func, Some { name }, scope).
+
 // Function arguments
 NameInScope(name, scope, Right { func }) :-
     FunctionArg(func, pat),

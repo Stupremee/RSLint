@@ -10,7 +10,7 @@ use rslint_core::rule_prelude::{
     },
     AstNode, SyntaxNodeExt,
 };
-use types::{internment, ForInit, StmtId, SwitchClause, TryHandler};
+use types::{internment, ForInit, StmtId, SwitchClause, TryHandler, IMPLICIT_ARGUMENTS};
 
 impl<'ddlog> Visit<'ddlog, Stmt> for AnalyzerInner {
     type Output = (Option<StmtId>, Option<DatalogScope<'ddlog>>);
@@ -67,6 +67,9 @@ impl<'ddlog> Visit<'ddlog, FnDecl> for AnalyzerInner {
         let name = func.name().map(|name| internment::intern(&name.text()));
 
         let function = scope.decl_function(function_id, name);
+
+        // Implicitly introduce `arguments` into the function scope
+        function.argument(IMPLICIT_ARGUMENTS.clone());
 
         if let Some(params) = func.parameters() {
             for param in params.parameters() {

@@ -2506,6 +2506,24 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                                                                  })
                                               })
                               },
+                              /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=func}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- Function[(Function{.id=(func: FuncId), .name=(ddlog_std::Some{.x=(name: internment::Intern<string>)}: ddlog_std::Option<Name>), .scope=(scope: Scope)}: Function)]. */
+                              Rule::CollectionRule {
+                                  description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=func}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- Function[(Function{.id=(func: FuncId), .name=(ddlog_std::Some{.x=(name: internment::Intern<string>)}: ddlog_std::Option<Name>), .scope=(scope: Scope)}: Function)].".to_string(),
+                                  rel: Relations::Function as RelId,
+                                  xform: Some(XFormCollection::FilterMap{
+                                                  description: "head of NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=func}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- Function[(Function{.id=(func: FuncId), .name=(ddlog_std::Some{.x=(name: internment::Intern<string>)}: ddlog_std::Option<Name>), .scope=(scope: Scope)}: Function)]." .to_string(),
+                                                  fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
+                                                  {
+                                                      let (ref func, ref name, ref scope) = match *unsafe {<::types::Function>::from_ddvalue_ref(&__v) } {
+                                                          ::types::Function{id: ref func, name: ::types::ddlog_std::Option::Some{x: ref name}, scope: ref scope} => ((*func).clone(), (*name).clone(), (*scope).clone()),
+                                                          _ => return None
+                                                      };
+                                                      Some(((::types::NameInScope{name: (*name).clone(), scope: (*scope).clone(), declared_in: (::types::ddlog_std::Either::Right{r: (*func).clone()})})).into_ddvalue())
+                                                  }
+                                                  __f},
+                                                  next: Box::new(None)
+                                              })
+                              },
                               /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=func}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- FunctionArg[(FunctionArg{.parent_func=(func: FuncId), .pattern=(pat: internment::Intern<Pattern>)}: FunctionArg)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Function[(Function{.id=(func: FuncId), .name=(_: ddlog_std::Option<Name>), .scope=(scope: Scope)}: Function)]. */
                               Rule::CollectionRule {
                                   description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(ddlog_std::Right{.r=func}: ddlog_std::Either<StmtId,FuncId>)}: NameInScope)] :- FunctionArg[(FunctionArg{.parent_func=(func: FuncId), .pattern=(pat: internment::Intern<Pattern>)}: FunctionArg)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), Function[(Function{.id=(func: FuncId), .name=(_: ddlog_std::Option<Name>), .scope=(scope: Scope)}: Function)].".to_string(),

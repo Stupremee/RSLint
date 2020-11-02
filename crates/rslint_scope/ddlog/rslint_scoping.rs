@@ -1,3 +1,5 @@
+use internment::Intern;
+use once_cell::sync::Lazy;
 use rslint_parser::TextRange;
 use std::{
     cell::Cell,
@@ -106,3 +108,11 @@ impl_id_traits! {
     StmtId,
     ExprId,
 }
+
+/// The implicitly introduced `arguments` variable for function scopes,
+/// kept in a global so we only allocate & intern it once
+pub static IMPLICIT_ARGUMENTS: Lazy<Intern<Pattern>> = Lazy::new(|| {
+    Intern::new(Pattern {
+        name: Intern::new("arguments".to_owned()),
+    })
+});

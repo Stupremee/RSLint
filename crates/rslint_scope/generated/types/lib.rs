@@ -116,6 +116,8 @@ pub mod ddlog_std;
 pub mod internment;
 pub mod debug;
 pub mod log;
+use internment::Intern;
+use once_cell::sync::Lazy;
 use rslint_parser::TextRange;
 use std::{
     cell::Cell,
@@ -156,6 +158,13 @@ macro_rules! impl_id_traits {
         }
 
         $(
+            impl $ty {
+                /// Creates a new id from the given value
+                pub const fn new(id: u32) -> Self {
+                    Self { id }
+                }
+            }
+
             impl Increment for Cell<$ty> {
                 type Inner = $ty;
 
@@ -163,13 +172,6 @@ macro_rules! impl_id_traits {
                     let old = self.get();
                     self.set(old + 1);
                     old
-                }
-            }
-
-            impl $ty {
-                /// Creates a new id from the given value
-                pub const fn new(id: u32) -> Self {
-                    Self { id }
                 }
             }
 
@@ -224,6 +226,12 @@ impl_id_traits! {
     StmtId,
     ExprId,
 }
+
+pub static IMPLICIT_ARGUMENTS: Lazy<Intern<Pattern>> = Lazy::new(|| {
+    Intern::new(Pattern {
+        name: Intern::new("arguments".to_owned()),
+    })
+});
 
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct Break {
