@@ -8,14 +8,14 @@ use differential_datalog::{
 use rslint_parser::{BigInt, TextRange};
 use rslint_scoping_ddlog::{api::HDDlog, relid2name, Relations};
 use std::{
-    marker::PhantomData,
+    cell::{Cell, RefCell},
     mem,
-    sync::{Arc, Mutex, MutexGuard},
+    sync::{Arc, Mutex},
 };
 use types::{internment::Intern, *};
 
 // TODO: Work on the internment situation, I don't like
-//       having to allocate strings for stuff
+//       having to allocate strings for idents
 
 pub type DatalogResult<T> = Result<T, String>;
 
@@ -45,45 +45,32 @@ impl From<isize> for Weight {
 #[derive(Debug, Clone)]
 pub struct Datalog {
     datalog: Arc<Mutex<DatalogInner>>,
-    // Kinda hacky, but I don't know any way to lock the transaction
-    // state while also giving us the clone-ability that `Arc` provides.
-    // `Rc` is both !Send and !Sync, so that doesn't work without
-    // unsafe impls of Send/Sync on `Datalog`. Lifetimes could be used, the
-    // 'ddlog lifetime is already threaded through code so that could work
-    // combined with a `RefCell` around `Datalog.updates` to allow mutation.
-    // FIXME: Do that ^
-    transaction_lock: Arc<Mutex<()>>,
 }
 
 impl Datalog {
     pub fn new() -> DatalogResult<Self> {
         let (hddlog, init_state) = HDDlog::run(2, false, |_: usize, _: &Record, _: isize| {})?;
         let this = Self {
-            datalog: Arc::new(Mutex::new(DatalogInner {
-                hddlog,
-                updates: Vec::with_capacity(100),
-                scope_id: Scope::new(0),
-                function_id: FuncId::new(0),
-                statement_id: StmtId::new(0),
-                expression_id: ExprId::new(0),
-            })),
-            transaction_lock: Arc::new(Mutex::new(())),
+            datalog: Arc::new(Mutex::new(DatalogInner::new(hddlog))),
         };
         this.update(init_state);
 
         Ok(this)
     }
 
+    // Note: Ddlog only allows one concurrent transaction, so all calls to this function
+    //       will block until the previous completes
     pub fn transaction<F>(&self, transaction: F) -> DatalogResult<DerivedFacts>
     where
         F: for<'trans> FnOnce(&mut DatalogTransaction<'trans>) -> DatalogResult<()>,
     {
         let delta = {
-            // DDlog only allows one concurrent transaction, so this lock keeps transactions
-            // in serial
-            let __transaction_guard = self.transaction_lock.lock().unwrap();
+            let datalog = self
+                .datalog
+                .lock()
+                .expect("failed to lock datalog for transaction");
 
-            let mut trans = DatalogTransaction::new(self.datalog.clone())?;
+            let mut trans = DatalogTransaction::new(&*datalog)?;
             transaction(&mut trans)?;
             trans.commit()?
         };
@@ -122,7 +109,7 @@ impl Datalog {
 
 impl Default for Datalog {
     fn default() -> Self {
-        Self::new().unwrap()
+        Self::new().expect("failed to create ddlog instance")
     }
 }
 
@@ -130,39 +117,50 @@ impl Default for Datalog {
 #[derive(Debug)]
 pub struct DatalogInner {
     hddlog: HDDlog,
-    updates: Vec<Update<DDValue>>,
-    scope_id: Scope,
-    function_id: FuncId,
-    statement_id: StmtId,
-    expression_id: ExprId,
+    updates: RefCell<Vec<Update<DDValue>>>,
+    scope_id: Cell<Scope>,
+    function_id: Cell<FuncId>,
+    statement_id: Cell<StmtId>,
+    expression_id: Cell<ExprId>,
 }
 
 impl DatalogInner {
-    fn inc_scope(&mut self) -> Scope {
+    fn new(hddlog: HDDlog) -> Self {
+        Self {
+            hddlog,
+            updates: RefCell::new(Vec::with_capacity(100)),
+            scope_id: Cell::new(Scope::new(0)),
+            function_id: Cell::new(FuncId::new(0)),
+            statement_id: Cell::new(StmtId::new(0)),
+            expression_id: Cell::new(ExprId::new(0)),
+        }
+    }
+
+    fn inc_scope(&self) -> Scope {
         self.scope_id.inc()
     }
 
-    fn inc_function(&mut self) -> FuncId {
+    fn inc_function(&self) -> FuncId {
         self.function_id.inc()
     }
 
-    fn inc_statement(&mut self) -> StmtId {
+    fn inc_statement(&self) -> StmtId {
         self.statement_id.inc()
     }
 
-    fn inc_expression(&mut self) -> ExprId {
+    fn inc_expression(&self) -> ExprId {
         self.expression_id.inc()
     }
 
-    fn push_scope(&mut self, scope: InputScope) -> &mut Self {
+    fn push_scope(&self, scope: InputScope) -> &Self {
         self.insert(Relations::InputScope as RelId, scope)
     }
 
-    fn insert<V>(&mut self, relation: RelId, val: V) -> &mut Self
+    fn insert<V>(&self, relation: RelId, val: V) -> &Self
     where
         V: DDValConvert,
     {
-        self.updates.push(Update::Insert {
+        self.updates.borrow_mut().push(Update::Insert {
             relid: relation,
             v: val.into_ddvalue(),
         });
@@ -172,44 +170,35 @@ impl DatalogInner {
 }
 
 pub struct DatalogTransaction<'ddlog> {
-    datalog: Arc<Mutex<DatalogInner>>,
-    __lifetime: PhantomData<&'ddlog ()>,
+    datalog: &'ddlog DatalogInner,
 }
 
 impl<'ddlog> DatalogTransaction<'ddlog> {
-    fn new(datalog: Arc<Mutex<DatalogInner>>) -> DatalogResult<Self> {
-        datalog.lock().unwrap().hddlog.transaction_start()?;
+    fn new(datalog: &'ddlog DatalogInner) -> DatalogResult<Self> {
+        datalog.hddlog.transaction_start()?;
 
-        Ok(Self {
-            datalog,
-            __lifetime: PhantomData,
-        })
+        Ok(Self { datalog })
     }
 
     pub fn scope(&self) -> DatalogScope<'_> {
-        let mut datalog = self.datalog.lock().unwrap();
-
-        let parent = datalog.scope_id;
-        let scope_id = datalog.inc_scope();
-        datalog.push_scope(InputScope {
+        let parent = self.datalog.scope_id.get();
+        let scope_id = self.datalog.inc_scope();
+        self.datalog.push_scope(InputScope {
             parent,
             child: scope_id,
         });
 
         DatalogScope {
-            datalog: self.datalog.clone(),
+            datalog: self.datalog,
             scope_id,
-            __lifetime: PhantomData,
         }
     }
 
     pub fn commit(self) -> DatalogResult<DeltaMap<DDValue>> {
-        let mut datalog = self.datalog.lock().unwrap();
+        let updates = mem::take(&mut *self.datalog.updates.borrow_mut());
+        self.datalog.hddlog.apply_valupdates(updates.into_iter())?;
 
-        let updates = mem::take(&mut datalog.updates);
-        datalog.hddlog.apply_valupdates(updates.into_iter())?;
-
-        let delta = datalog.hddlog.transaction_commit_dump_changes()?;
+        let delta = self.datalog.hddlog.transaction_commit_dump_changes()?;
 
         #[cfg(debug_assertions)]
         {
@@ -225,37 +214,31 @@ impl<'ddlog> DatalogTransaction<'ddlog> {
 pub trait DatalogBuilder<'ddlog> {
     fn scope_id(&self) -> Scope;
 
-    fn datalog(&self) -> &Arc<Mutex<DatalogInner>>;
-
-    fn datalog_mut(&self) -> MutexGuard<'_, DatalogInner> {
-        self.datalog().lock().unwrap()
-    }
+    fn datalog(&self) -> &'ddlog DatalogInner;
 
     fn scope(&self) -> DatalogScope<'ddlog> {
-        let mut datalog = self.datalog_mut();
-        let new_scope_id = datalog.inc_scope();
-        datalog.push_scope(InputScope {
+        let new_scope_id = self.datalog().inc_scope();
+        self.datalog().push_scope(InputScope {
             parent: self.scope_id(),
             child: new_scope_id,
         });
 
         DatalogScope {
-            datalog: self.datalog().clone(),
+            datalog: self.datalog(),
             scope_id: new_scope_id,
-            __lifetime: PhantomData,
         }
     }
 
     fn next_function_id(&self) -> FuncId {
-        self.datalog_mut().inc_function()
+        self.datalog().inc_function()
     }
 
     fn next_expr_id(&self) -> ExprId {
-        self.datalog_mut().inc_expression()
+        self.datalog().inc_expression()
     }
 
     fn decl_function(&self, id: FuncId, name: Option<Intern<String>>) -> DatalogFunction<'ddlog> {
-        self.datalog_mut().insert(
+        self.datalog().insert(
             Relations::Function as RelId,
             Function {
                 id,
@@ -265,10 +248,9 @@ pub trait DatalogBuilder<'ddlog> {
         );
 
         DatalogFunction {
-            datalog: self.datalog().clone(),
+            datalog: self.datalog(),
             func_id: id,
             scope_id: self.scope_id(),
-            __lifetime: PhantomData,
         }
     }
 
@@ -280,7 +262,7 @@ pub trait DatalogBuilder<'ddlog> {
     ) -> (StmtId, DatalogScope<'ddlog>) {
         let scope = self.scope();
         let stmt_id = {
-            let mut datalog = scope.datalog_mut();
+            let datalog = scope.datalog();
             let stmt_id = datalog.inc_statement();
 
             datalog
@@ -316,7 +298,7 @@ pub trait DatalogBuilder<'ddlog> {
     ) -> (StmtId, DatalogScope<'ddlog>) {
         let scope = self.scope();
         let stmt_id = {
-            let mut datalog = scope.datalog_mut();
+            let datalog = scope.datalog();
             let stmt_id = datalog.inc_statement();
 
             datalog
@@ -352,7 +334,7 @@ pub trait DatalogBuilder<'ddlog> {
     ) -> (StmtId, DatalogScope<'ddlog>) {
         let scope = self.scope();
         let stmt_id = {
-            let mut datalog = scope.datalog_mut();
+            let datalog = scope.datalog();
             let stmt_id = datalog.inc_statement();
 
             datalog
@@ -381,7 +363,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn number(&self, number: f64, span: TextRange) -> ExprId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let id = datalog.inc_expression();
 
         datalog
@@ -408,7 +390,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn bigint(&self, bigint: BigInt, span: TextRange) -> ExprId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let id = datalog.inc_expression();
 
         datalog
@@ -435,7 +417,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn string(&self, string: String, span: TextRange) -> ExprId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let id = datalog.inc_expression();
 
         datalog
@@ -462,7 +444,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn null(&self, span: TextRange) -> ExprId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let id = datalog.inc_expression();
 
         datalog.insert(
@@ -481,7 +463,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn boolean(&self, boolean: bool, span: TextRange) -> ExprId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let id = datalog.inc_expression();
 
         datalog
@@ -506,7 +488,7 @@ pub trait DatalogBuilder<'ddlog> {
 
     // TODO: Do we need to take in the regex literal?
     fn regex(&self, span: TextRange) -> ExprId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let id = datalog.inc_expression();
 
         datalog.insert(
@@ -525,7 +507,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn name_ref(&self, name: String, span: TextRange) -> ExprId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let id = datalog.inc_expression();
 
         datalog
@@ -550,7 +532,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn ret(&self, value: Option<ExprId>, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -581,7 +563,7 @@ pub trait DatalogBuilder<'ddlog> {
         else_body: Option<StmtId>,
         span: TextRange,
     ) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -608,7 +590,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn brk(&self, label: Option<String>, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -633,7 +615,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn do_while(&self, body: Option<StmtId>, cond: Option<ExprId>, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -659,7 +641,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn while_stmt(&self, cond: Option<ExprId>, body: Option<StmtId>, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -692,7 +674,7 @@ pub trait DatalogBuilder<'ddlog> {
         body: Option<StmtId>,
         span: TextRange,
     ) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -726,7 +708,7 @@ pub trait DatalogBuilder<'ddlog> {
         body: Option<StmtId>,
         span: TextRange,
     ) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -753,7 +735,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn cont(&self, label: Option<String>, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -778,7 +760,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn with(&self, cond: Option<ExprId>, body: Option<StmtId>, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -804,7 +786,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn label(&self, name: Option<String>, body: Option<StmtId>, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -835,7 +817,7 @@ pub trait DatalogBuilder<'ddlog> {
         cases: Vec<(SwitchClause, Option<StmtId>)>,
         span: TextRange,
     ) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -871,7 +853,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn throw(&self, exception: Option<ExprId>, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -902,7 +884,7 @@ pub trait DatalogBuilder<'ddlog> {
         finalizer: Option<StmtId>,
         span: TextRange,
     ) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog
@@ -929,7 +911,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn debugger(&self, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog.insert(
@@ -946,7 +928,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn stmt_expr(&self, expr: Option<ExprId>, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog.insert(
@@ -965,7 +947,7 @@ pub trait DatalogBuilder<'ddlog> {
     }
 
     fn empty(&self, span: TextRange) -> StmtId {
-        let mut datalog = self.datalog_mut();
+        let datalog = self.datalog();
         let stmt_id = datalog.inc_statement();
 
         datalog.insert(
@@ -984,10 +966,9 @@ pub trait DatalogBuilder<'ddlog> {
 
 #[derive(Clone)]
 pub struct DatalogFunction<'ddlog> {
-    datalog: Arc<Mutex<DatalogInner>>,
+    datalog: &'ddlog DatalogInner,
     func_id: FuncId,
     scope_id: Scope,
-    __lifetime: PhantomData<&'ddlog ()>,
 }
 
 impl<'ddlog> DatalogFunction<'ddlog> {
@@ -996,7 +977,7 @@ impl<'ddlog> DatalogFunction<'ddlog> {
     }
 
     pub fn argument(&self, pattern: Intern<Pattern>) {
-        self.datalog_mut().insert(
+        self.datalog.insert(
             Relations::FunctionArg as RelId,
             FunctionArg {
                 parent_func: self.func_id(),
@@ -1007,8 +988,8 @@ impl<'ddlog> DatalogFunction<'ddlog> {
 }
 
 impl<'ddlog> DatalogBuilder<'ddlog> for DatalogFunction<'ddlog> {
-    fn datalog(&self) -> &Arc<Mutex<DatalogInner>> {
-        &self.datalog
+    fn datalog(&self) -> &'ddlog DatalogInner {
+        self.datalog
     }
 
     fn scope_id(&self) -> Scope {
@@ -1018,9 +999,8 @@ impl<'ddlog> DatalogBuilder<'ddlog> for DatalogFunction<'ddlog> {
 
 #[derive(Clone)]
 pub struct DatalogScope<'ddlog> {
-    datalog: Arc<Mutex<DatalogInner>>,
+    datalog: &'ddlog DatalogInner,
     scope_id: Scope,
-    __lifetime: PhantomData<&'ddlog ()>,
 }
 
 impl<'ddlog> DatalogScope<'ddlog> {
@@ -1030,8 +1010,8 @@ impl<'ddlog> DatalogScope<'ddlog> {
 }
 
 impl<'ddlog> DatalogBuilder<'ddlog> for DatalogScope<'ddlog> {
-    fn datalog(&self) -> &Arc<Mutex<DatalogInner>> {
-        &self.datalog
+    fn datalog(&self) -> &'ddlog DatalogInner {
+        self.datalog
     }
 
     fn scope_id(&self) -> Scope {

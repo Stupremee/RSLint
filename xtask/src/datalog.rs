@@ -17,7 +17,7 @@ const LIBRARY_DEPS: &[&str] = &["ddlog_ovsdb_adapter", "cmd_parser", "rustop", "
 const LIBRARY_FEATURES: &[&str] = &["ovsdb", "flatbuf", "command-line"];
 
 /// The Cargo.toml of the ddlog types library
-const TYPES_TOML: &str = "generated/Cargo.toml";
+const TYPES_TOML: &str = "generated/types/Cargo.toml";
 /// Extra dependencies of the ddlog types library
 const TYPES_DEPS: &[&str] = &["ddlog_ovsdb_adapter", "flatbuffers"];
 /// Extra features of the ddlog types library
@@ -42,6 +42,7 @@ pub fn trim_datalog() -> Result<()> {
 
 fn trim_generated_code(scopes_dir: &Path, generated_dir: &Path) -> Result<()> {
     // Edit generated/Cargo.toml
+    println!("editing {}...", LIBRARY_TOML);
     let library_path = scopes_dir.join(LIBRARY_TOML);
     let mut library_toml = edit_toml(LIBRARY_TOML, &library_path, LIBRARY_DEPS, LIBRARY_FEATURES)?;
 
@@ -51,17 +52,20 @@ fn trim_generated_code(scopes_dir: &Path, generated_dir: &Path) -> Result<()> {
     write_toml(LIBRARY_TOML, &library_path, &library_toml)?;
 
     // Edit generated/types/Cargo.toml
+    println!("editing {}...", TYPES_TOML);
     let types_path = scopes_dir.join(TYPES_TOML);
     let types_toml = edit_toml(TYPES_TOML, &types_path, TYPES_DEPS, TYPES_FEATURES)?;
     write_toml(TYPES_TOML, &types_path, &types_toml)?;
 
     // Remove extra libraries
     for lib in EXTRA_LIBS.iter().copied() {
+        println!("deleting {}...", lib);
         fs2::remove_dir_all(generated_dir.join(lib)).ok();
     }
 
     // Remove extra files
     for file in EXTRA_FILES.iter().copied() {
+        println!("removing {}...", file);
         fs2::remove_file(generated_dir.join(file)).ok();
     }
 

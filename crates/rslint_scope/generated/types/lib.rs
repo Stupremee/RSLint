@@ -117,7 +117,10 @@ pub mod internment;
 pub mod debug;
 pub mod log;
 use rslint_parser::TextRange;
-use std::ops::{Add, AddAssign, Range};
+use std::{
+    cell::Cell,
+    ops::{Add, AddAssign, Range},
+};
 
 /// Allow emitting debug messages from within datalog
 // TODO: Replace with tracing
@@ -144,18 +147,29 @@ impl From<TextRange> for Span {
 
 macro_rules! impl_id_traits {
     ($($ty:ty),* $(,)?) => {
+        /// A convenience trait to allow easily incrementing ids during ast->ddlog translation
+        pub trait Increment {
+            type Inner;
+
+            /// Increments the id by one, returning the value *before* it was incremented
+            fn inc(&self) -> Self::Inner;
+        }
+
         $(
+            impl Increment for Cell<$ty> {
+                type Inner = $ty;
+
+                fn inc(&self) -> Self::Inner {
+                    let old = self.get();
+                    self.set(old + 1);
+                    old
+                }
+            }
+
             impl $ty {
                 /// Creates a new id from the given value
                 pub const fn new(id: u32) -> Self {
                     Self { id }
-                }
-
-                /// Increments the id by one, returning the value *before* it was incremented
-                pub fn inc(&mut self) -> Self {
-                    let old = *self;
-                    *self += 1;
-                    old
                 }
             }
 
