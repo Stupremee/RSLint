@@ -15,7 +15,7 @@ impl<'ddlog> Visit<'ddlog, Expr> for AnalyzerInner {
 
             // FIXME: This is here so things can function before everything is 100%
             //        translatable into datalog, mostly for my sanity
-            _ => 0,
+            _ => ExprId::new(0),
         }
     }
 }

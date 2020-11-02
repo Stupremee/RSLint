@@ -5,7 +5,7 @@ use differential_datalog::{
     record::Record,
     DDlog, DeltaMap,
 };
-use rslint_core::rule_prelude::{BigInt, TextRange};
+use rslint_parser::{BigInt, TextRange};
 use rslint_scoping_ddlog::{api::HDDlog, relid2name, Relations};
 use std::{
     marker::PhantomData,
@@ -62,10 +62,10 @@ impl Datalog {
             datalog: Arc::new(Mutex::new(DatalogInner {
                 hddlog,
                 updates: Vec::with_capacity(100),
-                scope_id: 0,
-                function_id: 0,
-                statement_id: 0,
-                expression_id: 0,
+                scope_id: Scope::new(0),
+                function_id: FuncId::new(0),
+                statement_id: StmtId::new(0),
+                expression_id: ExprId::new(0),
             })),
             transaction_lock: Arc::new(Mutex::new(())),
         };
@@ -139,34 +139,23 @@ pub struct DatalogInner {
 
 impl DatalogInner {
     fn inc_scope(&mut self) -> Scope {
-        let temp = self.scope_id;
-        self.scope_id += 1;
-        temp
+        self.scope_id.inc()
     }
 
     fn inc_function(&mut self) -> FuncId {
-        let temp = self.function_id;
-        self.function_id += 1;
-        temp
+        self.function_id.inc()
     }
 
     fn inc_statement(&mut self) -> StmtId {
-        let temp = self.statement_id;
-        self.statement_id += 1;
-        temp
+        self.statement_id.inc()
     }
 
     fn inc_expression(&mut self) -> ExprId {
-        let temp = self.expression_id;
-        self.expression_id += 1;
-        temp
+        self.expression_id.inc()
     }
 
-    fn push_scope(&mut self, scope: InputScope) {
-        self.updates.push(Update::Insert {
-            relid: Relations::InputScope as RelId,
-            v: scope.into_ddvalue(),
-        });
+    fn push_scope(&mut self, scope: InputScope) -> &mut Self {
+        self.insert(Relations::InputScope as RelId, scope)
     }
 
     fn insert<V>(&mut self, relation: RelId, val: V) -> &mut Self
@@ -278,6 +267,7 @@ pub trait DatalogBuilder<'ddlog> {
         DatalogFunction {
             datalog: self.datalog().clone(),
             func_id: id,
+            scope_id: self.scope_id(),
             __lifetime: PhantomData,
         }
     }
@@ -287,9 +277,9 @@ pub trait DatalogBuilder<'ddlog> {
         pattern: Option<Intern<Pattern>>,
         value: Option<ExprId>,
         span: TextRange,
-    ) -> DatalogScope<'ddlog> {
+    ) -> (StmtId, DatalogScope<'ddlog>) {
         let scope = self.scope();
-        {
+        let stmt_id = {
             let mut datalog = scope.datalog_mut();
             let stmt_id = datalog.inc_statement();
 
@@ -311,9 +301,11 @@ pub trait DatalogBuilder<'ddlog> {
                         span: span.into(),
                     },
                 );
-        }
 
-        scope
+            stmt_id
+        };
+
+        (stmt_id, scope)
     }
 
     fn decl_const(
@@ -321,9 +313,9 @@ pub trait DatalogBuilder<'ddlog> {
         pattern: Option<Intern<Pattern>>,
         value: Option<ExprId>,
         span: TextRange,
-    ) -> DatalogScope<'ddlog> {
+    ) -> (StmtId, DatalogScope<'ddlog>) {
         let scope = self.scope();
-        {
+        let stmt_id = {
             let mut datalog = scope.datalog_mut();
             let stmt_id = datalog.inc_statement();
 
@@ -345,9 +337,11 @@ pub trait DatalogBuilder<'ddlog> {
                         span: span.into(),
                     },
                 );
-        }
 
-        scope
+            stmt_id
+        };
+
+        (stmt_id, scope)
     }
 
     fn decl_var(
@@ -355,9 +349,9 @@ pub trait DatalogBuilder<'ddlog> {
         pattern: Option<Intern<Pattern>>,
         value: Option<ExprId>,
         span: TextRange,
-    ) -> DatalogScope<'ddlog> {
+    ) -> (StmtId, DatalogScope<'ddlog>) {
         let scope = self.scope();
-        {
+        let stmt_id = {
             let mut datalog = scope.datalog_mut();
             let stmt_id = datalog.inc_statement();
 
@@ -379,9 +373,11 @@ pub trait DatalogBuilder<'ddlog> {
                         span: span.into(),
                     },
                 );
-        }
 
-        scope
+            stmt_id
+        };
+
+        (stmt_id, scope)
     }
 
     fn number(&self, number: f64, span: TextRange) -> ExprId {
@@ -948,12 +944,49 @@ pub trait DatalogBuilder<'ddlog> {
 
         stmt_id
     }
+
+    fn stmt_expr(&self, expr: Option<ExprId>, span: TextRange) -> StmtId {
+        let mut datalog = self.datalog_mut();
+        let stmt_id = datalog.inc_statement();
+
+        datalog.insert(
+            Relations::Statement as RelId,
+            Statement {
+                id: stmt_id,
+                kind: StmtKind::StmtExpr {
+                    expr_id: expr.into(),
+                },
+                scope: self.scope_id(),
+                span: span.into(),
+            },
+        );
+
+        stmt_id
+    }
+
+    fn empty(&self, span: TextRange) -> StmtId {
+        let mut datalog = self.datalog_mut();
+        let stmt_id = datalog.inc_statement();
+
+        datalog.insert(
+            Relations::Statement as RelId,
+            Statement {
+                id: stmt_id,
+                kind: StmtKind::StmtEmpty,
+                scope: self.scope_id(),
+                span: span.into(),
+            },
+        );
+
+        stmt_id
+    }
 }
 
 #[derive(Clone)]
 pub struct DatalogFunction<'ddlog> {
     datalog: Arc<Mutex<DatalogInner>>,
     func_id: FuncId,
+    scope_id: Scope,
     __lifetime: PhantomData<&'ddlog ()>,
 }
 
@@ -979,7 +1012,7 @@ impl<'ddlog> DatalogBuilder<'ddlog> for DatalogFunction<'ddlog> {
     }
 
     fn scope_id(&self) -> Scope {
-        self.func_id
+        self.scope_id
     }
 }
 

@@ -1,10 +1,10 @@
 #[has_side_effects]
 extern function debug(message: string)
 
-typedef Scope = u32
-typedef FuncId = u32
-typedef StmtId = u32
-typedef ExprId = u32
+typedef Scope = Scope { id: u32 }
+typedef FuncId = FuncId { id: u32 }
+typedef StmtId = StmtId { id: u32 }
+typedef ExprId = ExprId { id: u32 }
 typedef Name = istring
 
 typedef Span = Span { start: u32, end: u32 }
@@ -13,6 +13,11 @@ function to_string(span: Span): string {
     "Span{.start = ${span.start}, .end = ${span.end}}"
 }
 
+typedef OneOf<'A, 'B, 'C> =
+    First { a: 'A }
+    | Second { b: 'B }
+    | Third { c: 'C }
+
 typedef Pattern = SinglePattern { name: Name }
 typedef IPattern = Intern<Pattern>
 
@@ -20,7 +25,9 @@ typedef StmtKind =
     StmtVarDecl
     | StmtLetDecl
     | StmtConstDecl
-    | StmtExpr { expr_id: ExprId }
+    // No statement relation, use expr_id to find the
+    // associated expression
+    | StmtExpr { expr_id: Option<ExprId> }
     | StmtReturn
     | StmtIf
     | StmtBreak
@@ -34,15 +41,19 @@ typedef StmtKind =
     | StmtSwitch
     | StmtThrow
     | StmtTry
-    | StmtDebugger // No associated relation, they carry no data
+    // No associated relation, they carry no data
+    | StmtDebugger
+    // No associated relation, literally nothing
+    | StmtEmpty
 
 typedef ExprKind = ExprLit { kind: LitKind } | NameRef
 typedef LitKind = LitNumber | LitBigInt | LitString | LitNull | LitBool | LitRegex
-typedef ForInit = ForDecl { stmt_id: StmtId } | ForExpr { expr_id: ExprId }
+typedef ForInit = ForDecl { stmt_id: Option<StmtId> } | ForExpr { expr_id: ExprId }
 typedef SwitchClause = CaseClause { test: Option<ExprId> } | DefaultClause
 typedef TryHandler = TryHandler { error: Option<IPattern>, body: Option<StmtId> }
 
 // The input scope relationships, just map parent<-child for one generation
+// TODO: Scope spans, make clear if a span is implicit or explicit
 input relation InputScope(parent: Scope, child: Scope)
 
 // Functions
@@ -55,7 +66,7 @@ input relation VarDecl(stmt_id: StmtId, pattern: Option<IPattern>, value: Option
 input relation LetDecl(stmt_id: StmtId, pattern: Option<IPattern>, value: Option<ExprId>)
 input relation ConstDecl(stmt_id: StmtId, pattern: Option<IPattern>, value: Option<ExprId>)
 input relation Return(stmt_id: StmtId, value: Option<ExprId>)
-input relation If(stmt_id: StmtId, cond: Option<ExprId>, if_body: Option<ExprId>, else_body: Option<ExprId>)
+input relation If(stmt_id: StmtId, cond: Option<ExprId>, if_body: Option<StmtId>, else_body: Option<StmtId>)
 input relation Break(stmt_id: StmtId, label: Option<Name>)
 input relation DoWhile(stmt_id: StmtId, body: Option<StmtId>, cond: Option<ExprId>)
 input relation While(stmt_id: StmtId, cond: Option<ExprId>, body: Option<StmtId>)
@@ -78,6 +89,9 @@ input relation ExprBigInt(id: ExprId, value: bigint)
 input relation ExprString(id: ExprId, value: istring)
 input relation ExprBool(id: ExprId, value: bool)
 input relation ExprNameRef(id: ExprId, value: Name)
+
+// Globals
+input relation ImplicitGlobals(name: Name)
 
 // Build the scope graph, unrolling the parent<-child relationships to full trees
 //
@@ -125,7 +139,8 @@ NameInScope(name, scope, Left { stmt }) :-
     SinglePattern { var name } = pat.ival(),
     Statement(stmt, _, decl_scope, _),
     // Bubble `var` up to the nearest function's scope?
-    ClosestFunction(decl_scope, scope).
+    ClosestFunction(decl_scope, func),
+    Function(func, _, scope).
 
 // Function arguments
 NameInScope(name, scope, Right { func }) :-

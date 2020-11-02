@@ -2,7 +2,7 @@ mod expr;
 mod stmt;
 
 use crate::{datalog::DatalogBuilder, visit::Visit};
-use rslint_core::rule_prelude::{
+use rslint_parser::{
     ast::{NameRef, Pattern},
     AstNode, SyntaxNodeExt,
 };

@@ -1850,6 +1850,7 @@ version = "0.1.0"
 dependencies = [
  "differential_datalog",
  "rslint_core",
+ "rslint_parser",
  "rslint_scoping",
  "serde",
  "types",
@@ -2572,7 +2573,8 @@ dependencies = [
  "num-traits",
  "once_cell",
  "ordered-float",
- "rslint_core",
+ "rslint_errors",
+ "rslint_parser",
  "serde",
  "serde_json",
  "time",
