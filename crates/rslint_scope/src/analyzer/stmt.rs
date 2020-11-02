@@ -1,7 +1,6 @@
 use crate::{
     datalog::{DatalogBuilder, DatalogScope},
-    visit::Visit,
-    AnalyzerInner,
+    AnalyzerInner, Visit,
 };
 use rslint_core::rule_prelude::{
     ast::{

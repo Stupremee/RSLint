@@ -1,4 +1,4 @@
-use crate::{datalog::DatalogBuilder, visit::Visit, AnalyzerInner};
+use crate::{datalog::DatalogBuilder, AnalyzerInner, Visit};
 use rslint_core::rule_prelude::{
     ast::{Expr, Literal, LiteralKind},
     AstNode, SyntaxNodeExt,
