@@ -46,7 +46,55 @@ typedef StmtKind =
     // No associated relation, literally nothing
     | StmtEmpty
 
-typedef ExprKind = ExprLit { kind: LitKind } | NameRef
+typedef ExprKind =
+    ExprLit { kind: LitKind }
+    | NameRef
+    | ExprYield
+    | ExprAwait
+    | ExprArrow
+    | ExprUnaryOp
+    | ExprBinOp
+    | ExprTernary
+
+typedef UnaryOperand =
+    UnaryIncrement
+    | UnaryDecrement
+    | UnaryDelete
+    | UnaryVoid
+    | UnaryTypeof
+    | UnaryPlus
+    | UnaryMinus
+    | UnaryBitwiseNot
+    | UnaryLogicalNot
+    | UnaryAwait
+
+typedef BinOperand =
+    BinLessThan
+    | BinGreaterThan
+    | BinLessThanOrEqual
+    | BinGreaterThanOrEqual
+    | BinEquality
+    | BinStrictEquality
+    | BinInequality
+    | BinStrictInequality
+    | BinPlus
+    | BinMinus
+    | BinTimes
+    | BinDivide
+    | BinRemainder
+    | BinExponent
+    | BinLeftShift
+    | BinRightShift
+    | BinUnsignedRightShift
+    | BinBitwiseAnd
+    | BinBitwiseOr
+    | BinBitwiseXor
+    | BinNullishCoalescing
+    | BinLogicalOr
+    | BinLogicalAnd
+    | BinIn
+    | BinInstanceof
+
 typedef LitKind = LitNumber | LitBigInt | LitString | LitNull | LitBool | LitRegex
 typedef ForInit = ForDecl { stmt_id: Option<StmtId> } | ForExpr { expr_id: ExprId }
 typedef SwitchClause = CaseClause { test: Option<ExprId> } | DefaultClause
@@ -84,11 +132,18 @@ input relation Try(stmt_id: StmtId, body: Option<StmtId>, handler: TryHandler, f
 // Expressions
 input relation Expression(id: ExprId, kind: ExprKind, scope: Scope, span: Span)
 // Literals
-input relation ExprNumber(id: ExprId, value: double)
-input relation ExprBigInt(id: ExprId, value: bigint)
-input relation ExprString(id: ExprId, value: istring)
-input relation ExprBool(id: ExprId, value: bool)
-input relation ExprNameRef(id: ExprId, value: Name)
+input relation ExprNumber(expr_id: ExprId, value: double)
+input relation ExprBigInt(expr_id: ExprId, value: bigint)
+input relation ExprString(expr_id: ExprId, value: istring)
+input relation ExprBool(expr_id: ExprId, value: bool)
+input relation ExprNameRef(expr_id: ExprId, value: Name)
+input relation Yield(expr_id: ExprId, value: Option<ExprId>)
+input relation Await(expr_id: ExprId, value: Option<ExprId>)
+input relation Arrow(expr_id: ExprId, body: Option<Either<ExprId, StmtId>>)
+input relation ArrowParam(expr_id: ExprId, param: IPattern)
+input relation UnaryOp(expr_id: ExprId, op: Option<UnaryOperand>, expr: Option<ExprId>)
+input relation BinOp(expr_id: ExprId, op: Option<BinOperand>, lhs: Option<ExprId>, rhs: Option<ExprId>)
+input relation Ternary(expr_id: ExprId, test: Option<ExprId>, true_val: Option<ExprId>, false_val: Option<ExprId>)
 
 // Globals
 input relation ImplicitGlobals(name: Name)

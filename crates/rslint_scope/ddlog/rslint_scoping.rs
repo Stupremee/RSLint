@@ -1,6 +1,9 @@
 use internment::Intern;
 use once_cell::sync::Lazy;
-use rslint_parser::TextRange;
+use rslint_parser::{
+    ast::{BinOp as AstBinOp, UnaryOp as AstUnaryOp},
+    TextRange,
+};
 use std::{
     cell::Cell,
     ops::{Add, AddAssign, Range},
@@ -116,3 +119,52 @@ pub static IMPLICIT_ARGUMENTS: Lazy<Intern<Pattern>> = Lazy::new(|| {
         name: Intern::new("arguments".to_owned()),
     })
 });
+
+impl From<AstUnaryOp> for UnaryOperand {
+    fn from(op: AstUnaryOp) -> Self {
+        match op {
+            AstUnaryOp::Increment => UnaryOperand::UnaryIncrement,
+            AstUnaryOp::Decrement => UnaryOperand::UnaryDecrement,
+            AstUnaryOp::Delete => UnaryOperand::UnaryDelete,
+            AstUnaryOp::Void => UnaryOperand::UnaryVoid,
+            AstUnaryOp::Typeof => UnaryOperand::UnaryTypeof,
+            AstUnaryOp::Plus => UnaryOperand::UnaryPlus,
+            AstUnaryOp::Minus => UnaryOperand::UnaryMinus,
+            AstUnaryOp::BitwiseNot => UnaryOperand::UnaryBitwiseNot,
+            AstUnaryOp::LogicalNot => UnaryOperand::UnaryLogicalNot,
+            AstUnaryOp::Await => UnaryOperand::UnaryAwait,
+        }
+    }
+}
+
+impl From<AstBinOp> for BinOperand {
+    fn from(op: AstBinOp) -> Self {
+        match op {
+            AstBinOp::LessThan => BinOperand::BinLessThan,
+            AstBinOp::GreaterThan => BinOperand::BinGreaterThan,
+            AstBinOp::LessThanOrEqual => BinOperand::BinLessThanOrEqual,
+            AstBinOp::GreaterThanOrEqual => BinOperand::BinGreaterThanOrEqual,
+            AstBinOp::Equality => BinOperand::BinEquality,
+            AstBinOp::StrictEquality => BinOperand::BinStrictEquality,
+            AstBinOp::Inequality => BinOperand::BinInequality,
+            AstBinOp::StrictInequality => BinOperand::BinStrictInequality,
+            AstBinOp::Plus => BinOperand::BinPlus,
+            AstBinOp::Minus => BinOperand::BinMinus,
+            AstBinOp::Times => BinOperand::BinTimes,
+            AstBinOp::Divide => BinOperand::BinDivide,
+            AstBinOp::Remainder => BinOperand::BinRemainder,
+            AstBinOp::Exponent => BinOperand::BinExponent,
+            AstBinOp::LeftShift => BinOperand::BinLeftShift,
+            AstBinOp::RightShift => BinOperand::BinRightShift,
+            AstBinOp::UnsignedRightShift => BinOperand::BinUnsignedRightShift,
+            AstBinOp::BitwiseAnd => BinOperand::BinBitwiseAnd,
+            AstBinOp::BitwiseOr => BinOperand::BinBitwiseOr,
+            AstBinOp::BitwiseXor => BinOperand::BinBitwiseXor,
+            AstBinOp::NullishCoalescing => BinOperand::BinNullishCoalescing,
+            AstBinOp::LogicalOr => BinOperand::BinLogicalOr,
+            AstBinOp::LogicalAnd => BinOperand::BinLogicalAnd,
+            AstBinOp::In => BinOperand::BinIn,
+            AstBinOp::Instanceof => BinOperand::BinInstanceof,
+        }
+    }
+}

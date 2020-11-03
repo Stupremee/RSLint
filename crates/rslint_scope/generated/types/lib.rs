@@ -118,7 +118,10 @@ pub mod debug;
 pub mod log;
 use internment::Intern;
 use once_cell::sync::Lazy;
-use rslint_parser::TextRange;
+use rslint_parser::{
+    ast::{BinOp as AstBinOp, UnaryOp as AstUnaryOp},
+    TextRange,
+};
 use std::{
     cell::Cell,
     ops::{Add, AddAssign, Range},
@@ -227,12 +230,325 @@ impl_id_traits! {
     ExprId,
 }
 
+/// The implicitly introduced `arguments` variable for function scopes,
+/// kept in a global so we only allocate & intern it once
 pub static IMPLICIT_ARGUMENTS: Lazy<Intern<Pattern>> = Lazy::new(|| {
     Intern::new(Pattern {
         name: Intern::new("arguments".to_owned()),
     })
 });
 
+impl From<AstUnaryOp> for UnaryOperand {
+    fn from(op: AstUnaryOp) -> Self {
+        match op {
+            AstUnaryOp::Increment => UnaryOperand::UnaryIncrement,
+            AstUnaryOp::Decrement => UnaryOperand::UnaryDecrement,
+            AstUnaryOp::Delete => UnaryOperand::UnaryDelete,
+            AstUnaryOp::Void => UnaryOperand::UnaryVoid,
+            AstUnaryOp::Typeof => UnaryOperand::UnaryTypeof,
+            AstUnaryOp::Plus => UnaryOperand::UnaryPlus,
+            AstUnaryOp::Minus => UnaryOperand::UnaryMinus,
+            AstUnaryOp::BitwiseNot => UnaryOperand::UnaryBitwiseNot,
+            AstUnaryOp::LogicalNot => UnaryOperand::UnaryLogicalNot,
+            AstUnaryOp::Await => UnaryOperand::UnaryAwait,
+        }
+    }
+}
+
+impl From<AstBinOp> for BinOperand {
+    fn from(op: AstBinOp) -> Self {
+        match op {
+            AstBinOp::LessThan => BinOperand::BinLessThan,
+            AstBinOp::GreaterThan => BinOperand::BinGreaterThan,
+            AstBinOp::LessThanOrEqual => BinOperand::BinLessThanOrEqual,
+            AstBinOp::GreaterThanOrEqual => BinOperand::BinGreaterThanOrEqual,
+            AstBinOp::Equality => BinOperand::BinEquality,
+            AstBinOp::StrictEquality => BinOperand::BinStrictEquality,
+            AstBinOp::Inequality => BinOperand::BinInequality,
+            AstBinOp::StrictInequality => BinOperand::BinStrictInequality,
+            AstBinOp::Plus => BinOperand::BinPlus,
+            AstBinOp::Minus => BinOperand::BinMinus,
+            AstBinOp::Times => BinOperand::BinTimes,
+            AstBinOp::Divide => BinOperand::BinDivide,
+            AstBinOp::Remainder => BinOperand::BinRemainder,
+            AstBinOp::Exponent => BinOperand::BinExponent,
+            AstBinOp::LeftShift => BinOperand::BinLeftShift,
+            AstBinOp::RightShift => BinOperand::BinRightShift,
+            AstBinOp::UnsignedRightShift => BinOperand::BinUnsignedRightShift,
+            AstBinOp::BitwiseAnd => BinOperand::BinBitwiseAnd,
+            AstBinOp::BitwiseOr => BinOperand::BinBitwiseOr,
+            AstBinOp::BitwiseXor => BinOperand::BinBitwiseXor,
+            AstBinOp::NullishCoalescing => BinOperand::BinNullishCoalescing,
+            AstBinOp::LogicalOr => BinOperand::BinLogicalOr,
+            AstBinOp::LogicalAnd => BinOperand::BinLogicalAnd,
+            AstBinOp::In => BinOperand::BinIn,
+            AstBinOp::Instanceof => BinOperand::BinInstanceof,
+        }
+    }
+}
+
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct Arrow {
+    pub expr_id: crate::ExprId,
+    pub body: crate::ddlog_std::Option<crate::ddlog_std::Either<crate::ExprId, crate::StmtId>>
+}
+impl abomonation::Abomonation for Arrow{}
+::differential_datalog::decl_struct_from_record!(Arrow["Arrow"]<>, ["Arrow"][2]{[0]expr_id["expr_id"]: crate::ExprId, [1]body["body"]: crate::ddlog_std::Option<crate::ddlog_std::Either<crate::ExprId, crate::StmtId>>});
+::differential_datalog::decl_struct_into_record!(Arrow, ["Arrow"]<>, expr_id, body);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(Arrow, <>, expr_id: crate::ExprId, body: crate::ddlog_std::Option<crate::ddlog_std::Either<crate::ExprId, crate::StmtId>>);
+impl ::std::fmt::Display for Arrow {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::Arrow{expr_id,body} => {
+                __formatter.write_str("Arrow{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(body, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for Arrow {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct ArrowParam {
+    pub expr_id: crate::ExprId,
+    pub param: crate::IPattern
+}
+impl abomonation::Abomonation for ArrowParam{}
+::differential_datalog::decl_struct_from_record!(ArrowParam["ArrowParam"]<>, ["ArrowParam"][2]{[0]expr_id["expr_id"]: crate::ExprId, [1]param["param"]: crate::IPattern});
+::differential_datalog::decl_struct_into_record!(ArrowParam, ["ArrowParam"]<>, expr_id, param);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ArrowParam, <>, expr_id: crate::ExprId, param: crate::IPattern);
+impl ::std::fmt::Display for ArrowParam {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::ArrowParam{expr_id,param} => {
+                __formatter.write_str("ArrowParam{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(param, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for ArrowParam {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct Await {
+    pub expr_id: crate::ExprId,
+    pub value: crate::ddlog_std::Option<crate::ExprId>
+}
+impl abomonation::Abomonation for Await{}
+::differential_datalog::decl_struct_from_record!(Await["Await"]<>, ["Await"][2]{[0]expr_id["expr_id"]: crate::ExprId, [1]value["value"]: crate::ddlog_std::Option<crate::ExprId>});
+::differential_datalog::decl_struct_into_record!(Await, ["Await"]<>, expr_id, value);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(Await, <>, expr_id: crate::ExprId, value: crate::ddlog_std::Option<crate::ExprId>);
+impl ::std::fmt::Display for Await {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::Await{expr_id,value} => {
+                __formatter.write_str("Await{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(value, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for Await {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct BinOp {
+    pub expr_id: crate::ExprId,
+    pub op: crate::ddlog_std::Option<crate::BinOperand>,
+    pub lhs: crate::ddlog_std::Option<crate::ExprId>,
+    pub rhs: crate::ddlog_std::Option<crate::ExprId>
+}
+impl abomonation::Abomonation for BinOp{}
+::differential_datalog::decl_struct_from_record!(BinOp["BinOp"]<>, ["BinOp"][4]{[0]expr_id["expr_id"]: crate::ExprId, [1]op["op"]: crate::ddlog_std::Option<crate::BinOperand>, [2]lhs["lhs"]: crate::ddlog_std::Option<crate::ExprId>, [3]rhs["rhs"]: crate::ddlog_std::Option<crate::ExprId>});
+::differential_datalog::decl_struct_into_record!(BinOp, ["BinOp"]<>, expr_id, op, lhs, rhs);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(BinOp, <>, expr_id: crate::ExprId, op: crate::ddlog_std::Option<crate::BinOperand>, lhs: crate::ddlog_std::Option<crate::ExprId>, rhs: crate::ddlog_std::Option<crate::ExprId>);
+impl ::std::fmt::Display for BinOp {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::BinOp{expr_id,op,lhs,rhs} => {
+                __formatter.write_str("BinOp{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(op, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(lhs, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(rhs, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for BinOp {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Serialize, Deserialize)]
+pub enum BinOperand {
+    BinLessThan,
+    BinGreaterThan,
+    BinLessThanOrEqual,
+    BinGreaterThanOrEqual,
+    BinEquality,
+    BinStrictEquality,
+    BinInequality,
+    BinStrictInequality,
+    BinPlus,
+    BinMinus,
+    BinTimes,
+    BinDivide,
+    BinRemainder,
+    BinExponent,
+    BinLeftShift,
+    BinRightShift,
+    BinUnsignedRightShift,
+    BinBitwiseAnd,
+    BinBitwiseOr,
+    BinBitwiseXor,
+    BinNullishCoalescing,
+    BinLogicalOr,
+    BinLogicalAnd,
+    BinIn,
+    BinInstanceof
+}
+impl abomonation::Abomonation for BinOperand{}
+::differential_datalog::decl_enum_from_record!(BinOperand["BinOperand"]<>, BinLessThan["BinLessThan"][0]{}, BinGreaterThan["BinGreaterThan"][0]{}, BinLessThanOrEqual["BinLessThanOrEqual"][0]{}, BinGreaterThanOrEqual["BinGreaterThanOrEqual"][0]{}, BinEquality["BinEquality"][0]{}, BinStrictEquality["BinStrictEquality"][0]{}, BinInequality["BinInequality"][0]{}, BinStrictInequality["BinStrictInequality"][0]{}, BinPlus["BinPlus"][0]{}, BinMinus["BinMinus"][0]{}, BinTimes["BinTimes"][0]{}, BinDivide["BinDivide"][0]{}, BinRemainder["BinRemainder"][0]{}, BinExponent["BinExponent"][0]{}, BinLeftShift["BinLeftShift"][0]{}, BinRightShift["BinRightShift"][0]{}, BinUnsignedRightShift["BinUnsignedRightShift"][0]{}, BinBitwiseAnd["BinBitwiseAnd"][0]{}, BinBitwiseOr["BinBitwiseOr"][0]{}, BinBitwiseXor["BinBitwiseXor"][0]{}, BinNullishCoalescing["BinNullishCoalescing"][0]{}, BinLogicalOr["BinLogicalOr"][0]{}, BinLogicalAnd["BinLogicalAnd"][0]{}, BinIn["BinIn"][0]{}, BinInstanceof["BinInstanceof"][0]{});
+::differential_datalog::decl_enum_into_record!(BinOperand<>, BinLessThan["BinLessThan"]{}, BinGreaterThan["BinGreaterThan"]{}, BinLessThanOrEqual["BinLessThanOrEqual"]{}, BinGreaterThanOrEqual["BinGreaterThanOrEqual"]{}, BinEquality["BinEquality"]{}, BinStrictEquality["BinStrictEquality"]{}, BinInequality["BinInequality"]{}, BinStrictInequality["BinStrictInequality"]{}, BinPlus["BinPlus"]{}, BinMinus["BinMinus"]{}, BinTimes["BinTimes"]{}, BinDivide["BinDivide"]{}, BinRemainder["BinRemainder"]{}, BinExponent["BinExponent"]{}, BinLeftShift["BinLeftShift"]{}, BinRightShift["BinRightShift"]{}, BinUnsignedRightShift["BinUnsignedRightShift"]{}, BinBitwiseAnd["BinBitwiseAnd"]{}, BinBitwiseOr["BinBitwiseOr"]{}, BinBitwiseXor["BinBitwiseXor"]{}, BinNullishCoalescing["BinNullishCoalescing"]{}, BinLogicalOr["BinLogicalOr"]{}, BinLogicalAnd["BinLogicalAnd"]{}, BinIn["BinIn"]{}, BinInstanceof["BinInstanceof"]{});
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_enum!(BinOperand<>, BinLessThan{}, BinGreaterThan{}, BinLessThanOrEqual{}, BinGreaterThanOrEqual{}, BinEquality{}, BinStrictEquality{}, BinInequality{}, BinStrictInequality{}, BinPlus{}, BinMinus{}, BinTimes{}, BinDivide{}, BinRemainder{}, BinExponent{}, BinLeftShift{}, BinRightShift{}, BinUnsignedRightShift{}, BinBitwiseAnd{}, BinBitwiseOr{}, BinBitwiseXor{}, BinNullishCoalescing{}, BinLogicalOr{}, BinLogicalAnd{}, BinIn{}, BinInstanceof{});
+impl ::std::fmt::Display for BinOperand {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::BinOperand::BinLessThan{} => {
+                __formatter.write_str("BinLessThan{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinGreaterThan{} => {
+                __formatter.write_str("BinGreaterThan{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinLessThanOrEqual{} => {
+                __formatter.write_str("BinLessThanOrEqual{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinGreaterThanOrEqual{} => {
+                __formatter.write_str("BinGreaterThanOrEqual{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinEquality{} => {
+                __formatter.write_str("BinEquality{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinStrictEquality{} => {
+                __formatter.write_str("BinStrictEquality{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinInequality{} => {
+                __formatter.write_str("BinInequality{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinStrictInequality{} => {
+                __formatter.write_str("BinStrictInequality{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinPlus{} => {
+                __formatter.write_str("BinPlus{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinMinus{} => {
+                __formatter.write_str("BinMinus{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinTimes{} => {
+                __formatter.write_str("BinTimes{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinDivide{} => {
+                __formatter.write_str("BinDivide{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinRemainder{} => {
+                __formatter.write_str("BinRemainder{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinExponent{} => {
+                __formatter.write_str("BinExponent{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinLeftShift{} => {
+                __formatter.write_str("BinLeftShift{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinRightShift{} => {
+                __formatter.write_str("BinRightShift{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinUnsignedRightShift{} => {
+                __formatter.write_str("BinUnsignedRightShift{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinBitwiseAnd{} => {
+                __formatter.write_str("BinBitwiseAnd{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinBitwiseOr{} => {
+                __formatter.write_str("BinBitwiseOr{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinBitwiseXor{} => {
+                __formatter.write_str("BinBitwiseXor{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinNullishCoalescing{} => {
+                __formatter.write_str("BinNullishCoalescing{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinLogicalOr{} => {
+                __formatter.write_str("BinLogicalOr{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinLogicalAnd{} => {
+                __formatter.write_str("BinLogicalAnd{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinIn{} => {
+                __formatter.write_str("BinIn{")?;
+                __formatter.write_str("}")
+            },
+            crate::BinOperand::BinInstanceof{} => {
+                __formatter.write_str("BinInstanceof{")?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for BinOperand {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+impl ::std::default::Default for BinOperand {
+    fn default() -> Self {
+        crate::BinOperand::BinLessThan{}
+    }
+}
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct Break {
     pub stmt_id: crate::StmtId,
@@ -403,19 +719,19 @@ impl ::std::fmt::Debug for DoWhile {
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct ExprBigInt {
-    pub id: crate::ExprId,
+    pub expr_id: crate::ExprId,
     pub value: ::differential_datalog::int::Int
 }
 impl abomonation::Abomonation for ExprBigInt{}
-::differential_datalog::decl_struct_from_record!(ExprBigInt["ExprBigInt"]<>, ["ExprBigInt"][2]{[0]id["id"]: crate::ExprId, [1]value["value"]: ::differential_datalog::int::Int});
-::differential_datalog::decl_struct_into_record!(ExprBigInt, ["ExprBigInt"]<>, id, value);
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ExprBigInt, <>, id: crate::ExprId, value: ::differential_datalog::int::Int);
+::differential_datalog::decl_struct_from_record!(ExprBigInt["ExprBigInt"]<>, ["ExprBigInt"][2]{[0]expr_id["expr_id"]: crate::ExprId, [1]value["value"]: ::differential_datalog::int::Int});
+::differential_datalog::decl_struct_into_record!(ExprBigInt, ["ExprBigInt"]<>, expr_id, value);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ExprBigInt, <>, expr_id: crate::ExprId, value: ::differential_datalog::int::Int);
 impl ::std::fmt::Display for ExprBigInt {
     fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
-            crate::ExprBigInt{id,value} => {
+            crate::ExprBigInt{expr_id,value} => {
                 __formatter.write_str("ExprBigInt{")?;
-                ::std::fmt::Debug::fmt(id, __formatter)?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
                 __formatter.write_str(",")?;
                 ::std::fmt::Debug::fmt(value, __formatter)?;
                 __formatter.write_str("}")
@@ -430,19 +746,19 @@ impl ::std::fmt::Debug for ExprBigInt {
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct ExprBool {
-    pub id: crate::ExprId,
+    pub expr_id: crate::ExprId,
     pub value: bool
 }
 impl abomonation::Abomonation for ExprBool{}
-::differential_datalog::decl_struct_from_record!(ExprBool["ExprBool"]<>, ["ExprBool"][2]{[0]id["id"]: crate::ExprId, [1]value["value"]: bool});
-::differential_datalog::decl_struct_into_record!(ExprBool, ["ExprBool"]<>, id, value);
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ExprBool, <>, id: crate::ExprId, value: bool);
+::differential_datalog::decl_struct_from_record!(ExprBool["ExprBool"]<>, ["ExprBool"][2]{[0]expr_id["expr_id"]: crate::ExprId, [1]value["value"]: bool});
+::differential_datalog::decl_struct_into_record!(ExprBool, ["ExprBool"]<>, expr_id, value);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ExprBool, <>, expr_id: crate::ExprId, value: bool);
 impl ::std::fmt::Display for ExprBool {
     fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
-            crate::ExprBool{id,value} => {
+            crate::ExprBool{expr_id,value} => {
                 __formatter.write_str("ExprBool{")?;
-                ::std::fmt::Debug::fmt(id, __formatter)?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
                 __formatter.write_str(",")?;
                 ::std::fmt::Debug::fmt(value, __formatter)?;
                 __formatter.write_str("}")
@@ -484,12 +800,18 @@ pub enum ExprKind {
     ExprLit {
         kind: crate::LitKind
     },
-    NameRef
+    NameRef,
+    ExprYield,
+    ExprAwait,
+    ExprArrow,
+    ExprUnaryOp,
+    ExprBinOp,
+    ExprTernary
 }
 impl abomonation::Abomonation for ExprKind{}
-::differential_datalog::decl_enum_from_record!(ExprKind["ExprKind"]<>, ExprLit["ExprLit"][1]{[0]kind["kind"]: crate::LitKind}, NameRef["NameRef"][0]{});
-::differential_datalog::decl_enum_into_record!(ExprKind<>, ExprLit["ExprLit"]{kind}, NameRef["NameRef"]{});
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_enum!(ExprKind<>, ExprLit{kind: crate::LitKind}, NameRef{});
+::differential_datalog::decl_enum_from_record!(ExprKind["ExprKind"]<>, ExprLit["ExprLit"][1]{[0]kind["kind"]: crate::LitKind}, NameRef["NameRef"][0]{}, ExprYield["ExprYield"][0]{}, ExprAwait["ExprAwait"][0]{}, ExprArrow["ExprArrow"][0]{}, ExprUnaryOp["ExprUnaryOp"][0]{}, ExprBinOp["ExprBinOp"][0]{}, ExprTernary["ExprTernary"][0]{});
+::differential_datalog::decl_enum_into_record!(ExprKind<>, ExprLit["ExprLit"]{kind}, NameRef["NameRef"]{}, ExprYield["ExprYield"]{}, ExprAwait["ExprAwait"]{}, ExprArrow["ExprArrow"]{}, ExprUnaryOp["ExprUnaryOp"]{}, ExprBinOp["ExprBinOp"]{}, ExprTernary["ExprTernary"]{});
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_enum!(ExprKind<>, ExprLit{kind: crate::LitKind}, NameRef{}, ExprYield{}, ExprAwait{}, ExprArrow{}, ExprUnaryOp{}, ExprBinOp{}, ExprTernary{});
 impl ::std::fmt::Display for ExprKind {
     fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
@@ -500,6 +822,30 @@ impl ::std::fmt::Display for ExprKind {
             },
             crate::ExprKind::NameRef{} => {
                 __formatter.write_str("NameRef{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprYield{} => {
+                __formatter.write_str("ExprYield{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprAwait{} => {
+                __formatter.write_str("ExprAwait{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprArrow{} => {
+                __formatter.write_str("ExprArrow{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprUnaryOp{} => {
+                __formatter.write_str("ExprUnaryOp{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprBinOp{} => {
+                __formatter.write_str("ExprBinOp{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprTernary{} => {
+                __formatter.write_str("ExprTernary{")?;
                 __formatter.write_str("}")
             }
         }
@@ -517,19 +863,19 @@ impl ::std::default::Default for ExprKind {
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct ExprNameRef {
-    pub id: crate::ExprId,
+    pub expr_id: crate::ExprId,
     pub value: crate::Name
 }
 impl abomonation::Abomonation for ExprNameRef{}
-::differential_datalog::decl_struct_from_record!(ExprNameRef["ExprNameRef"]<>, ["ExprNameRef"][2]{[0]id["id"]: crate::ExprId, [1]value["value"]: crate::Name});
-::differential_datalog::decl_struct_into_record!(ExprNameRef, ["ExprNameRef"]<>, id, value);
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ExprNameRef, <>, id: crate::ExprId, value: crate::Name);
+::differential_datalog::decl_struct_from_record!(ExprNameRef["ExprNameRef"]<>, ["ExprNameRef"][2]{[0]expr_id["expr_id"]: crate::ExprId, [1]value["value"]: crate::Name});
+::differential_datalog::decl_struct_into_record!(ExprNameRef, ["ExprNameRef"]<>, expr_id, value);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ExprNameRef, <>, expr_id: crate::ExprId, value: crate::Name);
 impl ::std::fmt::Display for ExprNameRef {
     fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
-            crate::ExprNameRef{id,value} => {
+            crate::ExprNameRef{expr_id,value} => {
                 __formatter.write_str("ExprNameRef{")?;
-                ::std::fmt::Debug::fmt(id, __formatter)?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
                 __formatter.write_str(",")?;
                 ::std::fmt::Debug::fmt(value, __formatter)?;
                 __formatter.write_str("}")
@@ -544,19 +890,19 @@ impl ::std::fmt::Debug for ExprNameRef {
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct ExprNumber {
-    pub id: crate::ExprId,
+    pub expr_id: crate::ExprId,
     pub value: ::ordered_float::OrderedFloat<f64>
 }
 impl abomonation::Abomonation for ExprNumber{}
-::differential_datalog::decl_struct_from_record!(ExprNumber["ExprNumber"]<>, ["ExprNumber"][2]{[0]id["id"]: crate::ExprId, [1]value["value"]: ::ordered_float::OrderedFloat<f64>});
-::differential_datalog::decl_struct_into_record!(ExprNumber, ["ExprNumber"]<>, id, value);
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ExprNumber, <>, id: crate::ExprId, value: ::ordered_float::OrderedFloat<f64>);
+::differential_datalog::decl_struct_from_record!(ExprNumber["ExprNumber"]<>, ["ExprNumber"][2]{[0]expr_id["expr_id"]: crate::ExprId, [1]value["value"]: ::ordered_float::OrderedFloat<f64>});
+::differential_datalog::decl_struct_into_record!(ExprNumber, ["ExprNumber"]<>, expr_id, value);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ExprNumber, <>, expr_id: crate::ExprId, value: ::ordered_float::OrderedFloat<f64>);
 impl ::std::fmt::Display for ExprNumber {
     fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
-            crate::ExprNumber{id,value} => {
+            crate::ExprNumber{expr_id,value} => {
                 __formatter.write_str("ExprNumber{")?;
-                ::std::fmt::Debug::fmt(id, __formatter)?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
                 __formatter.write_str(",")?;
                 ::std::fmt::Debug::fmt(value, __formatter)?;
                 __formatter.write_str("}")
@@ -571,19 +917,19 @@ impl ::std::fmt::Debug for ExprNumber {
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct ExprString {
-    pub id: crate::ExprId,
+    pub expr_id: crate::ExprId,
     pub value: crate::internment::istring
 }
 impl abomonation::Abomonation for ExprString{}
-::differential_datalog::decl_struct_from_record!(ExprString["ExprString"]<>, ["ExprString"][2]{[0]id["id"]: crate::ExprId, [1]value["value"]: crate::internment::istring});
-::differential_datalog::decl_struct_into_record!(ExprString, ["ExprString"]<>, id, value);
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ExprString, <>, id: crate::ExprId, value: crate::internment::istring);
+::differential_datalog::decl_struct_from_record!(ExprString["ExprString"]<>, ["ExprString"][2]{[0]expr_id["expr_id"]: crate::ExprId, [1]value["value"]: crate::internment::istring});
+::differential_datalog::decl_struct_into_record!(ExprString, ["ExprString"]<>, expr_id, value);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ExprString, <>, expr_id: crate::ExprId, value: crate::internment::istring);
 impl ::std::fmt::Display for ExprString {
     fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
-            crate::ExprString{id,value} => {
+            crate::ExprString{expr_id,value} => {
                 __formatter.write_str("ExprString{")?;
-                ::std::fmt::Debug::fmt(id, __formatter)?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
                 __formatter.write_str(",")?;
                 ::std::fmt::Debug::fmt(value, __formatter)?;
                 __formatter.write_str("}")
@@ -1498,6 +1844,39 @@ impl ::std::default::Default for SwitchClause {
     }
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct Ternary {
+    pub expr_id: crate::ExprId,
+    pub test: crate::ddlog_std::Option<crate::ExprId>,
+    pub true_val: crate::ddlog_std::Option<crate::ExprId>,
+    pub false_val: crate::ddlog_std::Option<crate::ExprId>
+}
+impl abomonation::Abomonation for Ternary{}
+::differential_datalog::decl_struct_from_record!(Ternary["Ternary"]<>, ["Ternary"][4]{[0]expr_id["expr_id"]: crate::ExprId, [1]test["test"]: crate::ddlog_std::Option<crate::ExprId>, [2]true_val["true_val"]: crate::ddlog_std::Option<crate::ExprId>, [3]false_val["false_val"]: crate::ddlog_std::Option<crate::ExprId>});
+::differential_datalog::decl_struct_into_record!(Ternary, ["Ternary"]<>, expr_id, test, true_val, false_val);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(Ternary, <>, expr_id: crate::ExprId, test: crate::ddlog_std::Option<crate::ExprId>, true_val: crate::ddlog_std::Option<crate::ExprId>, false_val: crate::ddlog_std::Option<crate::ExprId>);
+impl ::std::fmt::Display for Ternary {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::Ternary{expr_id,test,true_val,false_val} => {
+                __formatter.write_str("Ternary{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(test, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(true_val, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(false_val, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for Ternary {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct Throw {
     pub stmt_id: crate::StmtId,
     pub exception: crate::ddlog_std::Option<crate::ExprId>
@@ -1582,6 +1961,109 @@ impl ::std::fmt::Display for TryHandler {
 impl ::std::fmt::Debug for TryHandler {
     fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct UnaryOp {
+    pub expr_id: crate::ExprId,
+    pub op: crate::ddlog_std::Option<crate::UnaryOperand>,
+    pub expr: crate::ddlog_std::Option<crate::ExprId>
+}
+impl abomonation::Abomonation for UnaryOp{}
+::differential_datalog::decl_struct_from_record!(UnaryOp["UnaryOp"]<>, ["UnaryOp"][3]{[0]expr_id["expr_id"]: crate::ExprId, [1]op["op"]: crate::ddlog_std::Option<crate::UnaryOperand>, [2]expr["expr"]: crate::ddlog_std::Option<crate::ExprId>});
+::differential_datalog::decl_struct_into_record!(UnaryOp, ["UnaryOp"]<>, expr_id, op, expr);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(UnaryOp, <>, expr_id: crate::ExprId, op: crate::ddlog_std::Option<crate::UnaryOperand>, expr: crate::ddlog_std::Option<crate::ExprId>);
+impl ::std::fmt::Display for UnaryOp {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::UnaryOp{expr_id,op,expr} => {
+                __formatter.write_str("UnaryOp{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(op, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(expr, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for UnaryOp {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Serialize, Deserialize)]
+pub enum UnaryOperand {
+    UnaryIncrement,
+    UnaryDecrement,
+    UnaryDelete,
+    UnaryVoid,
+    UnaryTypeof,
+    UnaryPlus,
+    UnaryMinus,
+    UnaryBitwiseNot,
+    UnaryLogicalNot,
+    UnaryAwait
+}
+impl abomonation::Abomonation for UnaryOperand{}
+::differential_datalog::decl_enum_from_record!(UnaryOperand["UnaryOperand"]<>, UnaryIncrement["UnaryIncrement"][0]{}, UnaryDecrement["UnaryDecrement"][0]{}, UnaryDelete["UnaryDelete"][0]{}, UnaryVoid["UnaryVoid"][0]{}, UnaryTypeof["UnaryTypeof"][0]{}, UnaryPlus["UnaryPlus"][0]{}, UnaryMinus["UnaryMinus"][0]{}, UnaryBitwiseNot["UnaryBitwiseNot"][0]{}, UnaryLogicalNot["UnaryLogicalNot"][0]{}, UnaryAwait["UnaryAwait"][0]{});
+::differential_datalog::decl_enum_into_record!(UnaryOperand<>, UnaryIncrement["UnaryIncrement"]{}, UnaryDecrement["UnaryDecrement"]{}, UnaryDelete["UnaryDelete"]{}, UnaryVoid["UnaryVoid"]{}, UnaryTypeof["UnaryTypeof"]{}, UnaryPlus["UnaryPlus"]{}, UnaryMinus["UnaryMinus"]{}, UnaryBitwiseNot["UnaryBitwiseNot"]{}, UnaryLogicalNot["UnaryLogicalNot"]{}, UnaryAwait["UnaryAwait"]{});
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_enum!(UnaryOperand<>, UnaryIncrement{}, UnaryDecrement{}, UnaryDelete{}, UnaryVoid{}, UnaryTypeof{}, UnaryPlus{}, UnaryMinus{}, UnaryBitwiseNot{}, UnaryLogicalNot{}, UnaryAwait{});
+impl ::std::fmt::Display for UnaryOperand {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::UnaryOperand::UnaryIncrement{} => {
+                __formatter.write_str("UnaryIncrement{")?;
+                __formatter.write_str("}")
+            },
+            crate::UnaryOperand::UnaryDecrement{} => {
+                __formatter.write_str("UnaryDecrement{")?;
+                __formatter.write_str("}")
+            },
+            crate::UnaryOperand::UnaryDelete{} => {
+                __formatter.write_str("UnaryDelete{")?;
+                __formatter.write_str("}")
+            },
+            crate::UnaryOperand::UnaryVoid{} => {
+                __formatter.write_str("UnaryVoid{")?;
+                __formatter.write_str("}")
+            },
+            crate::UnaryOperand::UnaryTypeof{} => {
+                __formatter.write_str("UnaryTypeof{")?;
+                __formatter.write_str("}")
+            },
+            crate::UnaryOperand::UnaryPlus{} => {
+                __formatter.write_str("UnaryPlus{")?;
+                __formatter.write_str("}")
+            },
+            crate::UnaryOperand::UnaryMinus{} => {
+                __formatter.write_str("UnaryMinus{")?;
+                __formatter.write_str("}")
+            },
+            crate::UnaryOperand::UnaryBitwiseNot{} => {
+                __formatter.write_str("UnaryBitwiseNot{")?;
+                __formatter.write_str("}")
+            },
+            crate::UnaryOperand::UnaryLogicalNot{} => {
+                __formatter.write_str("UnaryLogicalNot{")?;
+                __formatter.write_str("}")
+            },
+            crate::UnaryOperand::UnaryAwait{} => {
+                __formatter.write_str("UnaryAwait{")?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for UnaryOperand {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+impl ::std::default::Default for UnaryOperand {
+    fn default() -> Self {
+        crate::UnaryOperand::UnaryIncrement{}
     }
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
@@ -1704,10 +2186,41 @@ impl ::std::fmt::Debug for With {
         ::std::fmt::Display::fmt(&self, f)
     }
 }
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct Yield {
+    pub expr_id: crate::ExprId,
+    pub value: crate::ddlog_std::Option<crate::ExprId>
+}
+impl abomonation::Abomonation for Yield{}
+::differential_datalog::decl_struct_from_record!(Yield["Yield"]<>, ["Yield"][2]{[0]expr_id["expr_id"]: crate::ExprId, [1]value["value"]: crate::ddlog_std::Option<crate::ExprId>});
+::differential_datalog::decl_struct_into_record!(Yield, ["Yield"]<>, expr_id, value);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(Yield, <>, expr_id: crate::ExprId, value: crate::ddlog_std::Option<crate::ExprId>);
+impl ::std::fmt::Display for Yield {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::Yield{expr_id,value} => {
+                __formatter.write_str("Yield{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(value, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for Yield {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
 /* fn debug(message: & String) -> () */
 pub fn to_string(span: & crate::Span) -> String
 {   string_append_str(string_append(string_append_str(string_append(String::from(r###"Span{.start = "###), (&crate::ddlog_std::__builtin_2string((&span.start)))), r###", .end = "###), (&crate::ddlog_std::__builtin_2string((&span.end)))), r###"}"###)
 }
+::differential_datalog::decl_ddval_convert!{crate::Arrow}
+::differential_datalog::decl_ddval_convert!{crate::ArrowParam}
+::differential_datalog::decl_ddval_convert!{crate::Await}
+::differential_datalog::decl_ddval_convert!{crate::BinOp}
 ::differential_datalog::decl_ddval_convert!{crate::Break}
 ::differential_datalog::decl_ddval_convert!{crate::ChildScope}
 ::differential_datalog::decl_ddval_convert!{crate::ClosestFunction}
@@ -1739,12 +2252,15 @@ pub fn to_string(span: & crate::Span) -> String
 ::differential_datalog::decl_ddval_convert!{crate::StmtId}
 ::differential_datalog::decl_ddval_convert!{crate::Switch}
 ::differential_datalog::decl_ddval_convert!{crate::SwitchCase}
+::differential_datalog::decl_ddval_convert!{crate::Ternary}
 ::differential_datalog::decl_ddval_convert!{crate::Throw}
 ::differential_datalog::decl_ddval_convert!{crate::Try}
+::differential_datalog::decl_ddval_convert!{crate::UnaryOp}
 ::differential_datalog::decl_ddval_convert!{crate::VarDecl}
 ::differential_datalog::decl_ddval_convert!{crate::VarUseBeforeDeclaration}
 ::differential_datalog::decl_ddval_convert!{crate::While}
 ::differential_datalog::decl_ddval_convert!{crate::With}
+::differential_datalog::decl_ddval_convert!{crate::Yield}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<crate::FuncId, crate::internment::Intern<String>>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<crate::Scope, crate::Scope>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<crate::StmtId, crate::internment::Intern<String>>}
