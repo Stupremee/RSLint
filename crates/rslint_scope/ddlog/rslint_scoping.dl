@@ -2,10 +2,18 @@
 extern function debug(message: string)
 
 typedef Scope = Scope { id: u32 }
+typedef Name = istring
+
+// Ids
+typedef GlobalId = GlobalId { id: u32 }
 typedef FuncId = FuncId { id: u32 }
 typedef StmtId = StmtId { id: u32 }
 typedef ExprId = ExprId { id: u32 }
-typedef Name = istring
+typedef AnyId =
+    AnyIdGlobal { global: GlobalId }
+    | AnyIdFunc { func: FuncId }
+    | AnyIdStmt { stmt: StmtId }
+    | AnyIdExpr { expr: ExprId }
 
 typedef Span = Span { start: u32, end: u32 }
 
@@ -48,7 +56,7 @@ typedef StmtKind =
 
 typedef ExprKind =
     ExprLit { kind: LitKind }
-    | NameRef
+    | ExprNameRef
     | ExprYield
     | ExprAwait
     | ExprArrow
@@ -103,6 +111,7 @@ typedef TryHandler = TryHandler { error: Option<IPattern>, body: Option<StmtId> 
 // The input scope relationships, just map parent<-child for one generation
 // TODO: Scope spans, make clear if a span is implicit or explicit
 input relation InputScope(parent: Scope, child: Scope)
+input relation EveryScope(scope: Scope)
 
 // Functions
 input relation Function(id: FuncId, name: Option<Name>, scope: Scope)
@@ -136,7 +145,7 @@ input relation ExprNumber(expr_id: ExprId, value: double)
 input relation ExprBigInt(expr_id: ExprId, value: bigint)
 input relation ExprString(expr_id: ExprId, value: istring)
 input relation ExprBool(expr_id: ExprId, value: bool)
-input relation ExprNameRef(expr_id: ExprId, value: Name)
+input relation NameRef(expr_id: ExprId, value: Name)
 input relation Yield(expr_id: ExprId, value: Option<ExprId>)
 input relation Await(expr_id: ExprId, value: Option<ExprId>)
 input relation Arrow(expr_id: ExprId, body: Option<Either<ExprId, StmtId>>)
@@ -146,7 +155,7 @@ input relation BinOp(expr_id: ExprId, op: Option<BinOperand>, lhs: Option<ExprId
 input relation Ternary(expr_id: ExprId, test: Option<ExprId>, true_val: Option<ExprId>, false_val: Option<ExprId>)
 
 // Globals
-input relation ImplicitGlobals(name: Name)
+input relation ImplicitGlobal(id: GlobalId, name: Name)
 
 // Build the scope graph, unrolling the parent<-child relationships to full trees
 //
@@ -175,21 +184,24 @@ relation ClosestFunction(scope: Scope, func: FuncId)
 ClosestFunction(scope, func) :- Function(func, _, scope).
 ClosestFunction(scope, func) :- Function(func, _, func_scope), ChildScope(func_scope, scope).
 
-relation NameInScope(name: Name, scope: Scope, declared_in: Either<StmtId, FuncId>)
+relation NameInScope(name: Name, scope: Scope, declared_in: AnyId)
+// Add globals to every scope
+NameInScope(name, scope, AnyIdGlobal { global }) :- ImplicitGlobal(global, name), EveryScope(scope).
+
 // `let` declarations
-NameInScope(name, scope, Left { stmt }) :-
+NameInScope(name, scope, AnyIdStmt { stmt }) :-
     LetDecl(stmt, Some { pat }, _),
     SinglePattern { var name } = pat.ival(),
     Statement(stmt, _, scope, _).
 
 // `const` declarations
-NameInScope(name, scope, Left { stmt }) :-
+NameInScope(name, scope, AnyIdStmt { stmt }) :-
     ConstDecl(stmt, Some { pat }, _),
     SinglePattern { var name } = pat.ival(),
     Statement(stmt, _, scope, _).
 
 // `var` declarations
-NameInScope(name, scope, Left { stmt }) :-
+NameInScope(name, scope, AnyIdStmt { stmt }) :-
     VarDecl(stmt, Some { pat }, _),
     SinglePattern { var name } = pat.ival(),
     Statement(stmt, _, decl_scope, _),
@@ -198,13 +210,31 @@ NameInScope(name, scope, Left { stmt }) :-
     Function(func, _, scope).
 
 // Functions
-NameInScope(name, scope, Right { func }) :- Function(func, Some { name }, scope).
+NameInScope(name, scope, AnyIdFunc { func }) :- Function(func, Some { name }, scope).
 
 // Function arguments
-NameInScope(name, scope, Right { func }) :-
+NameInScope(name, scope, AnyIdFunc { func }) :-
     FunctionArg(func, pat),
     SinglePattern { var name } = pat.ival(),
     Function(func, _, scope).
+
+// Closure arguments
+NameInScope(name, scope, AnyIdExpr { expr }) :-
+    ArrowParam(expr, pat),
+    SinglePattern { var name } = pat.ival(),
+    // Get the body's expression and put the parameters in-scope
+    // there, not within the arrow expression's scope
+    // TODO: Can I address Expr/Stmt at the same time instead
+    //       of seperate rules?
+    Arrow(expr, Some { Left { expr_body } }),
+    Expression(expr_body, _, scope, _).
+NameInScope(name, scope, AnyIdExpr { expr }) :-
+    ArrowParam(expr, pat),
+    SinglePattern { var name } = pat.ival(),
+    // Get the body's statement and put the parameters in-scope
+    // there, not within the arrow expression's scope
+    Arrow(expr, Some { Right { stmt_body } }),
+    Statement(stmt_body, _, scope, _).
 
 // Walk variables down scopes
 NameInScope(name, scope, declared_in) :-
@@ -217,15 +247,15 @@ NameInScope(name, scope, declared_in) :-
 //       scopes for a declaration
 output relation InvalidNameUse(name: Name, scope: Scope, span: Span)
 InvalidNameUse(name, scope, span) :-
-    ExprNameRef(expr, name),
-    Expression(expr, NameRef, scope, span),
+    NameRef(expr, name),
+    Expression(expr, ExprNameRef, scope, span),
     not NameInScope(name, scope, _).
 
 // `var` usages that happen before the declaration
 output relation VarUseBeforeDeclaration(name: Name, used_in: Span, declared_in: Span)
 VarUseBeforeDeclaration(name, used_in, declared_in) :-
-    ExprNameRef(expr, name),
-    Expression(expr, NameRef, used_scope, used_in),
-    NameInScope(name, used_scope, Left { .l = stmt }),
+    NameRef(expr, name),
+    Expression(expr, ExprNameRef, used_scope, used_in),
+    NameInScope(name, used_scope, AnyIdStmt { .stmt = stmt }),
     Statement(stmt, StmtVarDecl, declared_scope, declared_in),
     ChildScope(used_scope, declared_scope).

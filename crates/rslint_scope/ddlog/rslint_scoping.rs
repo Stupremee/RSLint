@@ -107,6 +107,7 @@ macro_rules! impl_id_traits {
 // Implement basic traits for id type-safe wrappers
 impl_id_traits! {
     Scope,
+    GlobalId,
     FuncId,
     StmtId,
     ExprId,

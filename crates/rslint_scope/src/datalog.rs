@@ -58,6 +58,19 @@ impl Datalog {
         Ok(this)
     }
 
+    pub fn inject_globals<I>(&self, globals: I) -> DatalogResult<DerivedFacts>
+    where
+        I: IntoIterator<Item = String>,
+    {
+        self.transaction(|trans| {
+            for global in globals {
+                trans.implicit_global(Intern::new(global));
+            }
+
+            Ok(())
+        })
+    }
+
     // Note: Ddlog only allows one concurrent transaction, so all calls to this function
     //       will block until the previous completes
     pub fn transaction<F>(&self, transaction: F) -> DatalogResult<DerivedFacts>
@@ -119,6 +132,7 @@ pub struct DatalogInner {
     hddlog: HDDlog,
     updates: RefCell<Vec<Update<DDValue>>>,
     scope_id: Cell<Scope>,
+    global_id: Cell<GlobalId>,
     function_id: Cell<FuncId>,
     statement_id: Cell<StmtId>,
     expression_id: Cell<ExprId>,
@@ -130,6 +144,7 @@ impl DatalogInner {
             hddlog,
             updates: RefCell::new(Vec::with_capacity(100)),
             scope_id: Cell::new(Scope::new(0)),
+            global_id: Cell::new(GlobalId::new(0)),
             function_id: Cell::new(FuncId::new(0)),
             statement_id: Cell::new(StmtId::new(0)),
             expression_id: Cell::new(ExprId::new(0)),
@@ -138,6 +153,10 @@ impl DatalogInner {
 
     fn inc_scope(&self) -> Scope {
         self.scope_id.inc()
+    }
+
+    fn inc_global(&self) -> GlobalId {
+        self.global_id.inc()
     }
 
     fn inc_function(&self) -> FuncId {
@@ -150,10 +169,6 @@ impl DatalogInner {
 
     fn inc_expression(&self) -> ExprId {
         self.expression_id.inc()
-    }
-
-    fn push_scope(&self, scope: InputScope) -> &Self {
-        self.insert(Relations::InputScope as RelId, scope)
     }
 
     fn insert<V>(&self, relation: RelId, val: V) -> &Self
@@ -180,18 +195,33 @@ impl<'ddlog> DatalogTransaction<'ddlog> {
         Ok(Self { datalog })
     }
 
-    pub fn scope(&self) -> DatalogScope<'_> {
+    pub fn scope(&self) -> DatalogScope<'ddlog> {
         let parent = self.datalog.scope_id.get();
         let scope_id = self.datalog.inc_scope();
-        self.datalog.push_scope(InputScope {
-            parent,
-            child: scope_id,
-        });
+        self.datalog
+            .insert(
+                Relations::EveryScope as RelId,
+                InputScope {
+                    parent,
+                    child: scope_id,
+                },
+            )
+            .insert(Relations::InputScope as RelId, scope_id);
 
         DatalogScope {
             datalog: self.datalog,
             scope_id,
         }
+    }
+
+    fn implicit_global(&self, name: Intern<String>) -> GlobalId {
+        let id = self.datalog.inc_global();
+        self.datalog.insert(
+            Relations::ImplicitGlobal as RelId,
+            ImplicitGlobal { id, name },
+        );
+
+        id
     }
 
     pub fn commit(self) -> DatalogResult<DeltaMap<DDValue>> {
@@ -217,15 +247,21 @@ pub trait DatalogBuilder<'ddlog> {
     fn datalog(&self) -> &'ddlog DatalogInner;
 
     fn scope(&self) -> DatalogScope<'ddlog> {
-        let new_scope_id = self.datalog().inc_scope();
-        self.datalog().push_scope(InputScope {
-            parent: self.scope_id(),
-            child: new_scope_id,
-        });
+        let parent = self.datalog().scope_id.get();
+        let scope_id = self.datalog().inc_scope();
+        self.datalog()
+            .insert(
+                Relations::EveryScope as RelId,
+                InputScope {
+                    parent,
+                    child: scope_id,
+                },
+            )
+            .insert(Relations::InputScope as RelId, scope_id);
 
         DatalogScope {
             datalog: self.datalog(),
-            scope_id: new_scope_id,
+            scope_id,
         }
     }
 
@@ -235,6 +271,16 @@ pub trait DatalogBuilder<'ddlog> {
 
     fn next_expr_id(&self) -> ExprId {
         self.datalog().inc_expression()
+    }
+
+    fn implicit_global(&self, name: Intern<String>) -> GlobalId {
+        let id = self.datalog().inc_global();
+        self.datalog().insert(
+            Relations::ImplicitGlobal as RelId,
+            ImplicitGlobal { id, name },
+        );
+
+        id
     }
 
     fn decl_function(&self, id: FuncId, name: Option<Intern<String>>) -> DatalogFunction<'ddlog> {
@@ -947,8 +993,8 @@ pub trait DatalogBuilder<'ddlog> {
 
         datalog
             .insert(
-                Relations::ExprNameRef as RelId,
-                ExprNameRef {
+                Relations::NameRef as RelId,
+                NameRef {
                     expr_id,
                     value: internment::intern(&name),
                 },
@@ -957,7 +1003,7 @@ pub trait DatalogBuilder<'ddlog> {
                 Relations::Expression as RelId,
                 Expression {
                     id: expr_id,
-                    kind: ExprKind::NameRef,
+                    kind: ExprKind::ExprNameRef,
                     scope: self.scope_id(),
                     span: span.into(),
                 },
@@ -1202,6 +1248,7 @@ impl<'ddlog> DatalogBuilder<'ddlog> for DatalogScope<'ddlog> {
 }
 
 #[cfg(debug_assertions)]
+#[allow(dead_code)]
 fn dump_delta(delta: &DeltaMap<DDValue>) {
     for (rel, changes) in delta.iter() {
         println!("Changes to relation {}", relid2name(*rel).unwrap());

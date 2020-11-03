@@ -2,7 +2,7 @@ use crate::{datalog::DatalogBuilder, AnalyzerInner, Visit};
 use rslint_core::rule_prelude::{
     ast::{
         ArrowExpr, ArrowExprParams, AwaitExpr, BinExpr, CondExpr, Expr, Literal, LiteralKind,
-        UnaryExpr, YieldExpr,
+        NameRef, UnaryExpr, YieldExpr,
     },
     AstNode, SyntaxNodeExt,
 };
@@ -40,6 +40,14 @@ impl<'ddlog> Visit<'ddlog, Expr> for AnalyzerInner {
             Expr::YieldExpr(yield_expr) => self.visit(scope, yield_expr),
             Expr::AwaitExpr(await_expr) => self.visit(scope, await_expr),
         }
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, NameRef> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, name: NameRef) -> Self::Output {
+        scope.name_ref(name.to_string(), name.syntax().trimmed_range())
     }
 }
 
