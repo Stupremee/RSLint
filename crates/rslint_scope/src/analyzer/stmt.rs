@@ -73,7 +73,7 @@ impl<'ddlog> Visit<'ddlog, FnDecl> for AnalyzerInner {
 
         if let Some(params) = func.parameters() {
             for param in params.parameters() {
-                function.argument(self.visit_pattern(param));
+                function.argument(self.visit(scope, param));
             }
         }
 
@@ -97,7 +97,7 @@ impl<'ddlog> Visit<'ddlog, VarDecl> for AnalyzerInner {
         let (mut stmt_id, mut last_scope, span) = (None, None, var.syntax().trimmed_range());
 
         for decl in var.declared() {
-            let pattern = decl.pattern().map(|pat| self.visit_pattern(pat));
+            let pattern = decl.pattern().map(|pat| self.visit(scope, pat));
             let value = self.visit(scope, decl.value());
 
             let (new_id, new_scope) = if var.is_let() {
@@ -315,7 +315,7 @@ impl<'ddlog> Visit<'ddlog, TryStmt> for AnalyzerInner {
         let handler = try_stmt
             .handler()
             .map(|handler| {
-                let pattern = handler.error().map(|pat| self.visit_pattern(pat));
+                let pattern = handler.error().map(|pat| self.visit(scope, pat));
                 let body = self.visit(scope, handler.cons()).flatten();
 
                 (pattern.into(), body.into())

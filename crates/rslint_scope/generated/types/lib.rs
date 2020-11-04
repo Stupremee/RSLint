@@ -344,6 +344,72 @@ impl ::std::default::Default for AnyId {
     }
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct Array {
+    pub expr_id: crate::ExprId,
+    pub elements: crate::ddlog_std::Vec<crate::ArrayElement>
+}
+impl abomonation::Abomonation for Array{}
+::differential_datalog::decl_struct_from_record!(Array["Array"]<>, ["Array"][2]{[0]expr_id["expr_id"]: crate::ExprId, [1]elements["elements"]: crate::ddlog_std::Vec<crate::ArrayElement>});
+::differential_datalog::decl_struct_into_record!(Array, ["Array"]<>, expr_id, elements);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(Array, <>, expr_id: crate::ExprId, elements: crate::ddlog_std::Vec<crate::ArrayElement>);
+impl ::std::fmt::Display for Array {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::Array{expr_id,elements} => {
+                __formatter.write_str("Array{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(elements, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for Array {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Serialize, Deserialize)]
+pub enum ArrayElement {
+    ArrExpr {
+        expr: crate::ExprId
+    },
+    ArrSpread {
+        spread: crate::ddlog_std::Option<crate::ExprId>
+    }
+}
+impl abomonation::Abomonation for ArrayElement{}
+::differential_datalog::decl_enum_from_record!(ArrayElement["ArrayElement"]<>, ArrExpr["ArrExpr"][1]{[0]expr["expr"]: crate::ExprId}, ArrSpread["ArrSpread"][1]{[0]spread["spread"]: crate::ddlog_std::Option<crate::ExprId>});
+::differential_datalog::decl_enum_into_record!(ArrayElement<>, ArrExpr["ArrExpr"]{expr}, ArrSpread["ArrSpread"]{spread});
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_enum!(ArrayElement<>, ArrExpr{expr: crate::ExprId}, ArrSpread{spread: crate::ddlog_std::Option<crate::ExprId>});
+impl ::std::fmt::Display for ArrayElement {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::ArrayElement::ArrExpr{expr} => {
+                __formatter.write_str("ArrExpr{")?;
+                ::std::fmt::Debug::fmt(expr, __formatter)?;
+                __formatter.write_str("}")
+            },
+            crate::ArrayElement::ArrSpread{spread} => {
+                __formatter.write_str("ArrSpread{")?;
+                ::std::fmt::Debug::fmt(spread, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for ArrayElement {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+impl ::std::default::Default for ArrayElement {
+    fn default() -> Self {
+        crate::ArrayElement::ArrExpr{expr : ::std::default::Default::default()}
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct Arrow {
     pub expr_id: crate::ExprId,
     pub body: crate::ddlog_std::Option<crate::ddlog_std::Either<crate::ExprId, crate::StmtId>>
@@ -606,6 +672,36 @@ impl ::std::default::Default for BinOperand {
     }
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct BracketAccess {
+    pub expr_id: crate::ExprId,
+    pub object: crate::ddlog_std::Option<crate::ExprId>,
+    pub prop: crate::ddlog_std::Option<crate::ExprId>
+}
+impl abomonation::Abomonation for BracketAccess{}
+::differential_datalog::decl_struct_from_record!(BracketAccess["BracketAccess"]<>, ["BracketAccess"][3]{[0]expr_id["expr_id"]: crate::ExprId, [1]object["object"]: crate::ddlog_std::Option<crate::ExprId>, [2]prop["prop"]: crate::ddlog_std::Option<crate::ExprId>});
+::differential_datalog::decl_struct_into_record!(BracketAccess, ["BracketAccess"]<>, expr_id, object, prop);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(BracketAccess, <>, expr_id: crate::ExprId, object: crate::ddlog_std::Option<crate::ExprId>, prop: crate::ddlog_std::Option<crate::ExprId>);
+impl ::std::fmt::Display for BracketAccess {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::BracketAccess{expr_id,object,prop} => {
+                __formatter.write_str("BracketAccess{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(object, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(prop, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for BracketAccess {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct Break {
     pub stmt_id: crate::StmtId,
     pub label: crate::ddlog_std::Option<crate::Name>
@@ -774,6 +870,36 @@ impl ::std::fmt::Debug for DoWhile {
     }
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct DotAccess {
+    pub expr_id: crate::ExprId,
+    pub object: crate::ddlog_std::Option<crate::ExprId>,
+    pub prop: crate::ddlog_std::Option<crate::Name>
+}
+impl abomonation::Abomonation for DotAccess{}
+::differential_datalog::decl_struct_from_record!(DotAccess["DotAccess"]<>, ["DotAccess"][3]{[0]expr_id["expr_id"]: crate::ExprId, [1]object["object"]: crate::ddlog_std::Option<crate::ExprId>, [2]prop["prop"]: crate::ddlog_std::Option<crate::Name>});
+::differential_datalog::decl_struct_into_record!(DotAccess, ["DotAccess"]<>, expr_id, object, prop);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(DotAccess, <>, expr_id: crate::ExprId, object: crate::ddlog_std::Option<crate::ExprId>, prop: crate::ddlog_std::Option<crate::Name>);
+impl ::std::fmt::Display for DotAccess {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::DotAccess{expr_id,object,prop} => {
+                __formatter.write_str("DotAccess{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(object, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(prop, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for DotAccess {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct EveryScope {
     pub scope: crate::Scope
 }
@@ -886,12 +1012,21 @@ pub enum ExprKind {
     ExprArrow,
     ExprUnaryOp,
     ExprBinOp,
-    ExprTernary
+    ExprTernary,
+    ExprThis,
+    ExprTemplate,
+    ExprArray,
+    ExprObject,
+    ExprGrouping {
+        inner: crate::ddlog_std::Option<crate::ExprId>
+    },
+    ExprBracket,
+    ExprDot
 }
 impl abomonation::Abomonation for ExprKind{}
-::differential_datalog::decl_enum_from_record!(ExprKind["ExprKind"]<>, ExprLit["ExprLit"][1]{[0]kind["kind"]: crate::LitKind}, ExprNameRef["ExprNameRef"][0]{}, ExprYield["ExprYield"][0]{}, ExprAwait["ExprAwait"][0]{}, ExprArrow["ExprArrow"][0]{}, ExprUnaryOp["ExprUnaryOp"][0]{}, ExprBinOp["ExprBinOp"][0]{}, ExprTernary["ExprTernary"][0]{});
-::differential_datalog::decl_enum_into_record!(ExprKind<>, ExprLit["ExprLit"]{kind}, ExprNameRef["ExprNameRef"]{}, ExprYield["ExprYield"]{}, ExprAwait["ExprAwait"]{}, ExprArrow["ExprArrow"]{}, ExprUnaryOp["ExprUnaryOp"]{}, ExprBinOp["ExprBinOp"]{}, ExprTernary["ExprTernary"]{});
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_enum!(ExprKind<>, ExprLit{kind: crate::LitKind}, ExprNameRef{}, ExprYield{}, ExprAwait{}, ExprArrow{}, ExprUnaryOp{}, ExprBinOp{}, ExprTernary{});
+::differential_datalog::decl_enum_from_record!(ExprKind["ExprKind"]<>, ExprLit["ExprLit"][1]{[0]kind["kind"]: crate::LitKind}, ExprNameRef["ExprNameRef"][0]{}, ExprYield["ExprYield"][0]{}, ExprAwait["ExprAwait"][0]{}, ExprArrow["ExprArrow"][0]{}, ExprUnaryOp["ExprUnaryOp"][0]{}, ExprBinOp["ExprBinOp"][0]{}, ExprTernary["ExprTernary"][0]{}, ExprThis["ExprThis"][0]{}, ExprTemplate["ExprTemplate"][0]{}, ExprArray["ExprArray"][0]{}, ExprObject["ExprObject"][0]{}, ExprGrouping["ExprGrouping"][1]{[0]inner["inner"]: crate::ddlog_std::Option<crate::ExprId>}, ExprBracket["ExprBracket"][0]{}, ExprDot["ExprDot"][0]{});
+::differential_datalog::decl_enum_into_record!(ExprKind<>, ExprLit["ExprLit"]{kind}, ExprNameRef["ExprNameRef"]{}, ExprYield["ExprYield"]{}, ExprAwait["ExprAwait"]{}, ExprArrow["ExprArrow"]{}, ExprUnaryOp["ExprUnaryOp"]{}, ExprBinOp["ExprBinOp"]{}, ExprTernary["ExprTernary"]{}, ExprThis["ExprThis"]{}, ExprTemplate["ExprTemplate"]{}, ExprArray["ExprArray"]{}, ExprObject["ExprObject"]{}, ExprGrouping["ExprGrouping"]{inner}, ExprBracket["ExprBracket"]{}, ExprDot["ExprDot"]{});
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_enum!(ExprKind<>, ExprLit{kind: crate::LitKind}, ExprNameRef{}, ExprYield{}, ExprAwait{}, ExprArrow{}, ExprUnaryOp{}, ExprBinOp{}, ExprTernary{}, ExprThis{}, ExprTemplate{}, ExprArray{}, ExprObject{}, ExprGrouping{inner: crate::ddlog_std::Option<crate::ExprId>}, ExprBracket{}, ExprDot{});
 impl ::std::fmt::Display for ExprKind {
     fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
@@ -926,6 +1061,35 @@ impl ::std::fmt::Display for ExprKind {
             },
             crate::ExprKind::ExprTernary{} => {
                 __formatter.write_str("ExprTernary{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprThis{} => {
+                __formatter.write_str("ExprThis{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprTemplate{} => {
+                __formatter.write_str("ExprTemplate{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprArray{} => {
+                __formatter.write_str("ExprArray{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprObject{} => {
+                __formatter.write_str("ExprObject{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprGrouping{inner} => {
+                __formatter.write_str("ExprGrouping{")?;
+                ::std::fmt::Debug::fmt(inner, __formatter)?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprBracket{} => {
+                __formatter.write_str("ExprBracket{")?;
+                __formatter.write_str("}")
+            },
+            crate::ExprKind::ExprDot{} => {
+                __formatter.write_str("ExprDot{")?;
                 __formatter.write_str("}")
             }
         }
@@ -1602,6 +1766,162 @@ impl ::std::fmt::Debug for Pattern {
     }
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct Property {
+    pub expr_id: crate::ExprId,
+    pub key: crate::ddlog_std::Option<crate::PropertyKey>,
+    pub val: crate::ddlog_std::Option<crate::PropertyVal>
+}
+impl abomonation::Abomonation for Property{}
+::differential_datalog::decl_struct_from_record!(Property["Property"]<>, ["Property"][3]{[0]expr_id["expr_id"]: crate::ExprId, [1]key["key"]: crate::ddlog_std::Option<crate::PropertyKey>, [2]val["val"]: crate::ddlog_std::Option<crate::PropertyVal>});
+::differential_datalog::decl_struct_into_record!(Property, ["Property"]<>, expr_id, key, val);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(Property, <>, expr_id: crate::ExprId, key: crate::ddlog_std::Option<crate::PropertyKey>, val: crate::ddlog_std::Option<crate::PropertyVal>);
+impl ::std::fmt::Display for Property {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::Property{expr_id,key,val} => {
+                __formatter.write_str("Property{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(key, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(val, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for Property {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Serialize, Deserialize)]
+pub enum PropertyKey {
+    ComputedKey {
+        prop: crate::ddlog_std::Option<crate::ExprId>
+    },
+    LiteralKey {
+        lit: crate::ExprId
+    },
+    IdentKey {
+        ident: crate::Name
+    }
+}
+impl abomonation::Abomonation for PropertyKey{}
+::differential_datalog::decl_enum_from_record!(PropertyKey["PropertyKey"]<>, ComputedKey["ComputedKey"][1]{[0]prop["prop"]: crate::ddlog_std::Option<crate::ExprId>}, LiteralKey["LiteralKey"][1]{[0]lit["lit"]: crate::ExprId}, IdentKey["IdentKey"][1]{[0]ident["ident"]: crate::Name});
+::differential_datalog::decl_enum_into_record!(PropertyKey<>, ComputedKey["ComputedKey"]{prop}, LiteralKey["LiteralKey"]{lit}, IdentKey["IdentKey"]{ident});
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_enum!(PropertyKey<>, ComputedKey{prop: crate::ddlog_std::Option<crate::ExprId>}, LiteralKey{lit: crate::ExprId}, IdentKey{ident: crate::Name});
+impl ::std::fmt::Display for PropertyKey {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::PropertyKey::ComputedKey{prop} => {
+                __formatter.write_str("ComputedKey{")?;
+                ::std::fmt::Debug::fmt(prop, __formatter)?;
+                __formatter.write_str("}")
+            },
+            crate::PropertyKey::LiteralKey{lit} => {
+                __formatter.write_str("LiteralKey{")?;
+                ::std::fmt::Debug::fmt(lit, __formatter)?;
+                __formatter.write_str("}")
+            },
+            crate::PropertyKey::IdentKey{ident} => {
+                __formatter.write_str("IdentKey{")?;
+                ::std::fmt::Debug::fmt(ident, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for PropertyKey {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+impl ::std::default::Default for PropertyKey {
+    fn default() -> Self {
+        crate::PropertyKey::ComputedKey{prop : ::std::default::Default::default()}
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Serialize, Deserialize)]
+pub enum PropertyVal {
+    PropLit {
+        lit: crate::ddlog_std::Option<crate::ExprId>
+    },
+    PropGetter {
+        body: crate::ddlog_std::Option<crate::StmtId>
+    },
+    PropSetter {
+        params: crate::ddlog_std::Option<crate::ddlog_std::Vec<crate::IPattern>>
+    },
+    PropSpread {
+        value: crate::ddlog_std::Option<crate::ExprId>
+    },
+    PropInit {
+        value: crate::ddlog_std::Option<crate::ExprId>
+    },
+    PropIdent,
+    PropMethod {
+        params: crate::ddlog_std::Option<crate::ddlog_std::Vec<crate::IPattern>>,
+        body: crate::ddlog_std::Option<crate::StmtId>
+    }
+}
+impl abomonation::Abomonation for PropertyVal{}
+::differential_datalog::decl_enum_from_record!(PropertyVal["PropertyVal"]<>, PropLit["PropLit"][1]{[0]lit["lit"]: crate::ddlog_std::Option<crate::ExprId>}, PropGetter["PropGetter"][1]{[0]body["body"]: crate::ddlog_std::Option<crate::StmtId>}, PropSetter["PropSetter"][1]{[0]params["params"]: crate::ddlog_std::Option<crate::ddlog_std::Vec<crate::IPattern>>}, PropSpread["PropSpread"][1]{[0]value["value"]: crate::ddlog_std::Option<crate::ExprId>}, PropInit["PropInit"][1]{[0]value["value"]: crate::ddlog_std::Option<crate::ExprId>}, PropIdent["PropIdent"][0]{}, PropMethod["PropMethod"][2]{[0]params["params"]: crate::ddlog_std::Option<crate::ddlog_std::Vec<crate::IPattern>>, [1]body["body"]: crate::ddlog_std::Option<crate::StmtId>});
+::differential_datalog::decl_enum_into_record!(PropertyVal<>, PropLit["PropLit"]{lit}, PropGetter["PropGetter"]{body}, PropSetter["PropSetter"]{params}, PropSpread["PropSpread"]{value}, PropInit["PropInit"]{value}, PropIdent["PropIdent"]{}, PropMethod["PropMethod"]{params, body});
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_enum!(PropertyVal<>, PropLit{lit: crate::ddlog_std::Option<crate::ExprId>}, PropGetter{body: crate::ddlog_std::Option<crate::StmtId>}, PropSetter{params: crate::ddlog_std::Option<crate::ddlog_std::Vec<crate::IPattern>>}, PropSpread{value: crate::ddlog_std::Option<crate::ExprId>}, PropInit{value: crate::ddlog_std::Option<crate::ExprId>}, PropIdent{}, PropMethod{params: crate::ddlog_std::Option<crate::ddlog_std::Vec<crate::IPattern>>, body: crate::ddlog_std::Option<crate::StmtId>});
+impl ::std::fmt::Display for PropertyVal {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::PropertyVal::PropLit{lit} => {
+                __formatter.write_str("PropLit{")?;
+                ::std::fmt::Debug::fmt(lit, __formatter)?;
+                __formatter.write_str("}")
+            },
+            crate::PropertyVal::PropGetter{body} => {
+                __formatter.write_str("PropGetter{")?;
+                ::std::fmt::Debug::fmt(body, __formatter)?;
+                __formatter.write_str("}")
+            },
+            crate::PropertyVal::PropSetter{params} => {
+                __formatter.write_str("PropSetter{")?;
+                ::std::fmt::Debug::fmt(params, __formatter)?;
+                __formatter.write_str("}")
+            },
+            crate::PropertyVal::PropSpread{value} => {
+                __formatter.write_str("PropSpread{")?;
+                ::std::fmt::Debug::fmt(value, __formatter)?;
+                __formatter.write_str("}")
+            },
+            crate::PropertyVal::PropInit{value} => {
+                __formatter.write_str("PropInit{")?;
+                ::std::fmt::Debug::fmt(value, __formatter)?;
+                __formatter.write_str("}")
+            },
+            crate::PropertyVal::PropIdent{} => {
+                __formatter.write_str("PropIdent{")?;
+                __formatter.write_str("}")
+            },
+            crate::PropertyVal::PropMethod{params,body} => {
+                __formatter.write_str("PropMethod{")?;
+                ::std::fmt::Debug::fmt(params, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(body, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for PropertyVal {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+impl ::std::default::Default for PropertyVal {
+    fn default() -> Self {
+        crate::PropertyVal::PropLit{lit : ::std::default::Default::default()}
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct Return {
     pub stmt_id: crate::StmtId,
     pub value: crate::ddlog_std::Option<crate::ExprId>
@@ -1948,6 +2268,36 @@ impl ::std::fmt::Debug for SwitchClause {
 impl ::std::default::Default for SwitchClause {
     fn default() -> Self {
         crate::SwitchClause::CaseClause{test : ::std::default::Default::default()}
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct Template {
+    pub expr_id: crate::ExprId,
+    pub tag: crate::ddlog_std::Option<crate::ExprId>,
+    pub elements: crate::ddlog_std::Vec<crate::ExprId>
+}
+impl abomonation::Abomonation for Template{}
+::differential_datalog::decl_struct_from_record!(Template["Template"]<>, ["Template"][3]{[0]expr_id["expr_id"]: crate::ExprId, [1]tag["tag"]: crate::ddlog_std::Option<crate::ExprId>, [2]elements["elements"]: crate::ddlog_std::Vec<crate::ExprId>});
+::differential_datalog::decl_struct_into_record!(Template, ["Template"]<>, expr_id, tag, elements);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(Template, <>, expr_id: crate::ExprId, tag: crate::ddlog_std::Option<crate::ExprId>, elements: crate::ddlog_std::Vec<crate::ExprId>);
+impl ::std::fmt::Display for Template {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::Template{expr_id,tag,elements} => {
+                __formatter.write_str("Template{")?;
+                ::std::fmt::Debug::fmt(expr_id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(tag, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(elements, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for Template {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
     }
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
@@ -2324,16 +2674,19 @@ impl ::std::fmt::Debug for Yield {
 pub fn to_string(span: & crate::Span) -> String
 {   string_append_str(string_append(string_append_str(string_append(String::from(r###"Span{.start = "###), (&crate::ddlog_std::__builtin_2string((&span.start)))), r###", .end = "###), (&crate::ddlog_std::__builtin_2string((&span.end)))), r###"}"###)
 }
+::differential_datalog::decl_ddval_convert!{crate::Array}
 ::differential_datalog::decl_ddval_convert!{crate::Arrow}
 ::differential_datalog::decl_ddval_convert!{crate::ArrowParam}
 ::differential_datalog::decl_ddval_convert!{crate::Await}
 ::differential_datalog::decl_ddval_convert!{crate::BinOp}
+::differential_datalog::decl_ddval_convert!{crate::BracketAccess}
 ::differential_datalog::decl_ddval_convert!{crate::Break}
 ::differential_datalog::decl_ddval_convert!{crate::ChildScope}
 ::differential_datalog::decl_ddval_convert!{crate::ClosestFunction}
 ::differential_datalog::decl_ddval_convert!{crate::ConstDecl}
 ::differential_datalog::decl_ddval_convert!{crate::Continue}
 ::differential_datalog::decl_ddval_convert!{crate::DoWhile}
+::differential_datalog::decl_ddval_convert!{crate::DotAccess}
 ::differential_datalog::decl_ddval_convert!{crate::EveryScope}
 ::differential_datalog::decl_ddval_convert!{crate::ExprBigInt}
 ::differential_datalog::decl_ddval_convert!{crate::ExprBool}
@@ -2354,12 +2707,14 @@ pub fn to_string(span: & crate::Span) -> String
 ::differential_datalog::decl_ddval_convert!{crate::LetDecl}
 ::differential_datalog::decl_ddval_convert!{crate::NameInScope}
 ::differential_datalog::decl_ddval_convert!{crate::NameRef}
+::differential_datalog::decl_ddval_convert!{crate::Property}
 ::differential_datalog::decl_ddval_convert!{crate::Return}
 ::differential_datalog::decl_ddval_convert!{crate::Scope}
 ::differential_datalog::decl_ddval_convert!{crate::Statement}
 ::differential_datalog::decl_ddval_convert!{crate::StmtId}
 ::differential_datalog::decl_ddval_convert!{crate::Switch}
 ::differential_datalog::decl_ddval_convert!{crate::SwitchCase}
+::differential_datalog::decl_ddval_convert!{crate::Template}
 ::differential_datalog::decl_ddval_convert!{crate::Ternary}
 ::differential_datalog::decl_ddval_convert!{crate::Throw}
 ::differential_datalog::decl_ddval_convert!{crate::Try}

@@ -1,3 +1,4 @@
+use crate::globals::{BROWSER_GLOBALS, ECMA_GLOBALS, NODE_GLOBALS};
 use differential_datalog::{
     ddval::{DDValConvert, DDValue},
     int::Int,
@@ -71,8 +72,22 @@ impl Datalog {
         })
     }
 
+    pub fn with_node_globals(&self) -> DatalogResult<DerivedFacts> {
+        self.inject_globals(NODE_GLOBALS.iter().map(ToString::to_string))
+    }
+
+    pub fn with_ecma_globals(&self) -> DatalogResult<DerivedFacts> {
+        self.inject_globals(ECMA_GLOBALS.iter().map(ToString::to_string))
+    }
+
+    pub fn with_browser_globals(&self) -> DatalogResult<DerivedFacts> {
+        self.inject_globals(BROWSER_GLOBALS.iter().map(ToString::to_string))
+    }
+
     // Note: Ddlog only allows one concurrent transaction, so all calls to this function
     //       will block until the previous completes
+    // TODO: We can actually add to the transaction batch concurrently, but transactions
+    //       themselves have to be synchronized in some fashion (barrier?)
     pub fn transaction<F>(&self, transaction: F) -> DatalogResult<DerivedFacts>
     where
         F: for<'trans> FnOnce(&mut DatalogTransaction<'trans>) -> DatalogResult<()>,
@@ -1183,6 +1198,177 @@ pub trait DatalogBuilder<'ddlog> {
                 Expression {
                     id: expr_id,
                     kind: ExprKind::ExprTernary,
+                    scope: self.scope_id(),
+                    span: span.into(),
+                },
+            );
+
+        expr_id
+    }
+
+    fn this(&self, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog.insert(
+            Relations::Expression as RelId,
+            Expression {
+                id: expr_id,
+                kind: ExprKind::ExprThis,
+                scope: self.scope_id(),
+                span: span.into(),
+            },
+        );
+
+        expr_id
+    }
+
+    fn template(&self, tag: Option<ExprId>, elements: Vec<ExprId>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog
+            .insert(
+                Relations::Template as RelId,
+                Template {
+                    expr_id,
+                    tag: tag.into(),
+                    elements: elements.into(),
+                },
+            )
+            .insert(
+                Relations::Expression as RelId,
+                Expression {
+                    id: expr_id,
+                    kind: ExprKind::ExprTemplate,
+                    scope: self.scope_id(),
+                    span: span.into(),
+                },
+            );
+
+        expr_id
+    }
+
+    fn array(&self, elements: Vec<ArrayElement>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog
+            .insert(
+                Relations::Array as RelId,
+                Array {
+                    expr_id,
+                    elements: elements.into(),
+                },
+            )
+            .insert(
+                Relations::Expression as RelId,
+                Expression {
+                    id: expr_id,
+                    kind: ExprKind::ExprArray,
+                    scope: self.scope_id(),
+                    span: span.into(),
+                },
+            );
+
+        expr_id
+    }
+
+    fn object(
+        &self,
+        properties: Vec<(Option<PropertyKey>, PropertyVal)>,
+        span: TextRange,
+    ) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        for (key, val) in properties {
+            datalog.insert(
+                Relations::Property as RelId,
+                Property {
+                    expr_id,
+                    key: key.into(),
+                    val: Some(val).into(),
+                },
+            );
+        }
+
+        datalog.insert(
+            Relations::Expression as RelId,
+            Expression {
+                id: expr_id,
+                kind: ExprKind::ExprObject,
+                scope: self.scope_id(),
+                span: span.into(),
+            },
+        );
+
+        expr_id
+    }
+
+    fn grouping(&self, inner: Option<ExprId>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog.insert(
+            Relations::Expression as RelId,
+            Expression {
+                id: expr_id,
+                kind: ExprKind::ExprGrouping {
+                    inner: inner.into(),
+                },
+                scope: self.scope_id(),
+                span: span.into(),
+            },
+        );
+
+        expr_id
+    }
+
+    fn bracket(&self, object: Option<ExprId>, prop: Option<ExprId>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog
+            .insert(
+                Relations::BracketAccess as RelId,
+                BracketAccess {
+                    expr_id,
+                    object: object.into(),
+                    prop: prop.into(),
+                },
+            )
+            .insert(
+                Relations::Expression as RelId,
+                Expression {
+                    id: expr_id,
+                    kind: ExprKind::ExprBracket,
+                    scope: self.scope_id(),
+                    span: span.into(),
+                },
+            );
+
+        expr_id
+    }
+
+    fn dot(&self, object: Option<ExprId>, prop: Option<Intern<String>>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog
+            .insert(
+                Relations::DotAccess as RelId,
+                DotAccess {
+                    expr_id,
+                    object: object.into(),
+                    prop: prop.into(),
+                },
+            )
+            .insert(
+                Relations::Expression as RelId,
+                Expression {
+                    id: expr_id,
+                    kind: ExprKind::ExprDot,
                     scope: self.scope_id(),
                     span: span.into(),
                 },

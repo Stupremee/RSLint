@@ -63,6 +63,15 @@ typedef ExprKind =
     | ExprUnaryOp
     | ExprBinOp
     | ExprTernary
+    // No associated relation
+    | ExprThis
+    | ExprTemplate
+    | ExprArray
+    // Associated with the Property relation
+    | ExprObject
+    | ExprGrouping { inner: Option<ExprId> }
+    | ExprBracket
+    | ExprDot
 
 typedef UnaryOperand =
     UnaryIncrement
@@ -107,6 +116,19 @@ typedef LitKind = LitNumber | LitBigInt | LitString | LitNull | LitBool | LitReg
 typedef ForInit = ForDecl { stmt_id: Option<StmtId> } | ForExpr { expr_id: ExprId }
 typedef SwitchClause = CaseClause { test: Option<ExprId> } | DefaultClause
 typedef TryHandler = TryHandler { error: Option<IPattern>, body: Option<StmtId> }
+typedef ArrayElement = ArrExpr { expr: ExprId } | ArrSpread { spread: Option<ExprId> }
+typedef PropertyKey =
+    ComputedKey { prop: Option<ExprId> }
+    | LiteralKey { lit: ExprId }
+    | IdentKey { ident: Name }
+typedef PropertyVal =
+    PropLit { lit: Option<ExprId> }
+    | PropGetter { body: Option<StmtId> }
+    | PropSetter { params: Option<Vec<IPattern>> }
+    | PropSpread { value: Option<ExprId> }
+    | PropInit { value: Option<ExprId> }
+    | PropIdent
+    | PropMethod { params: Option<Vec<IPattern>>, body: Option<StmtId> }
 
 // The input scope relationships, just map parent<-child for one generation
 // TODO: Scope spans, make clear if a span is implicit or explicit
@@ -153,6 +175,11 @@ input relation ArrowParam(expr_id: ExprId, param: IPattern)
 input relation UnaryOp(expr_id: ExprId, op: Option<UnaryOperand>, expr: Option<ExprId>)
 input relation BinOp(expr_id: ExprId, op: Option<BinOperand>, lhs: Option<ExprId>, rhs: Option<ExprId>)
 input relation Ternary(expr_id: ExprId, test: Option<ExprId>, true_val: Option<ExprId>, false_val: Option<ExprId>)
+input relation Template(expr_id: ExprId, tag: Option<ExprId>, elements: Vec<ExprId>)
+input relation Array(expr_id: ExprId, elements: Vec<ArrayElement>)
+input relation Property(expr_id: ExprId, key: Option<PropertyKey>, val: Option<PropertyVal>)
+input relation BracketAccess(expr_id: ExprId, object: Option<ExprId>, prop: Option<ExprId>)
+input relation DotAccess(expr_id: ExprId, object: Option<ExprId>, prop: Option<Name>)
 
 // Globals
 input relation ImplicitGlobal(id: GlobalId, name: Name)

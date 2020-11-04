@@ -1,13 +1,18 @@
 use crate::{datalog::DatalogBuilder, AnalyzerInner, Visit};
 use rslint_core::rule_prelude::{
     ast::{
-        ArrowExpr, ArrowExprParams, AwaitExpr, BinExpr, CondExpr, Expr, Literal, LiteralKind,
-        NameRef, UnaryExpr, YieldExpr,
+        ArrayExpr, ArrowExpr, ArrowExprParams, AstChildren, AwaitExpr, BinExpr, BracketExpr,
+        CondExpr, DotExpr, Expr, ExprOrSpread, GroupingExpr, Literal, LiteralKind, NameRef,
+        ObjectExpr, ObjectProp, ParameterList, PropName, Template, TemplateElement, ThisExpr,
+        UnaryExpr, YieldExpr,
     },
     AstNode, SyntaxNodeExt,
 };
 use rslint_parser::ast::ExprOrBlock;
-use types::{ddlog_std::Either, internment::Intern, ExprId, Pattern as DatalogPattern};
+use types::{
+    ddlog_std::Either, internment::Intern, ArrayElement, ExprId, Pattern as DatalogPattern,
+    PropertyKey, PropertyVal,
+};
 
 impl<'ddlog> Visit<'ddlog, Expr> for AnalyzerInner {
     type Output = ExprId;
@@ -17,13 +22,13 @@ impl<'ddlog> Visit<'ddlog, Expr> for AnalyzerInner {
             Expr::Literal(literal) => self.visit(scope, literal),
             Expr::NameRef(name) => self.visit(scope, name),
             Expr::ArrowExpr(arrow) => self.visit(scope, arrow),
-            Expr::Template(_) => ExprId::new(u32::max_value()),
-            Expr::ThisExpr(_) => ExprId::new(u32::max_value()),
-            Expr::ArrayExpr(_) => ExprId::new(u32::max_value()),
-            Expr::ObjectExpr(_) => ExprId::new(u32::max_value()),
-            Expr::GroupingExpr(_) => ExprId::new(u32::max_value()),
-            Expr::BracketExpr(_) => ExprId::new(u32::max_value()),
-            Expr::DotExpr(_) => ExprId::new(u32::max_value()),
+            Expr::Template(template) => self.visit(scope, template),
+            Expr::ThisExpr(this) => self.visit(scope, this),
+            Expr::ArrayExpr(array) => self.visit(scope, array),
+            Expr::ObjectExpr(object) => self.visit(scope, object),
+            Expr::GroupingExpr(grouping) => self.visit(scope, grouping),
+            Expr::BracketExpr(bracket) => self.visit(scope, bracket),
+            Expr::DotExpr(dot) => self.visit(scope, dot),
             Expr::NewExpr(_) => ExprId::new(u32::max_value()),
             Expr::CallExpr(_) => ExprId::new(u32::max_value()),
             Expr::UnaryExpr(unary) => self.visit(scope, unary),
@@ -111,7 +116,7 @@ impl<'ddlog> Visit<'ddlog, ArrowExpr> for AnalyzerInner {
 
                 ArrowExprParams::ParameterList(params) => params
                     .parameters()
-                    .map(|pat| self.visit_pattern(pat))
+                    .map(|pattern| self.visit(scope, pattern))
                     .collect(),
             })
             .unwrap_or_default();
@@ -152,5 +157,210 @@ impl<'ddlog> Visit<'ddlog, CondExpr> for AnalyzerInner {
         let false_val = self.visit(scope, cond.alt());
 
         scope.ternary(test, true_val, false_val, cond.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, Template> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, template: Template) -> Self::Output {
+        let tag = self.visit(scope, template.tag());
+        let elements = self.visit(scope, template.elements());
+
+        scope.template(tag, elements, template.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, AstChildren<TemplateElement>> for AnalyzerInner {
+    type Output = Vec<ExprId>;
+
+    fn visit(
+        &self,
+        scope: &dyn DatalogBuilder<'ddlog>,
+        elements: AstChildren<TemplateElement>,
+    ) -> Self::Output {
+        elements
+            .filter_map(|elem| self.visit(scope, elem.expr()))
+            .collect()
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, ThisExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, this: ThisExpr) -> Self::Output {
+        scope.this(this.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, ArrayExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, array: ArrayExpr) -> Self::Output {
+        let elements = self.visit(scope, array.elements());
+        scope.array(elements, array.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, AstChildren<ExprOrSpread>> for AnalyzerInner {
+    type Output = Vec<ArrayElement>;
+
+    fn visit(
+        &self,
+        scope: &dyn DatalogBuilder<'ddlog>,
+        elements: AstChildren<ExprOrSpread>,
+    ) -> Self::Output {
+        elements
+            .map(|elem| match elem {
+                ExprOrSpread::Expr(expr) => ArrayElement::ArrExpr {
+                    expr: self.visit(scope, expr),
+                },
+                ExprOrSpread::Spread(spread) => ArrayElement::ArrSpread {
+                    spread: self.visit(scope, spread.element()).into(),
+                },
+            })
+            .collect()
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, ObjectExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, object: ObjectExpr) -> Self::Output {
+        let properties = self.visit(scope, object.props());
+        scope.object(properties, object.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, AstChildren<ObjectProp>> for AnalyzerInner {
+    type Output = Vec<(Option<PropertyKey>, PropertyVal)>;
+
+    fn visit(
+        &self,
+        scope: &dyn DatalogBuilder<'ddlog>,
+        properties: AstChildren<ObjectProp>,
+    ) -> Self::Output {
+        // TODO: Break into separate visitors?
+        properties
+            .map(|prop| match prop {
+                ObjectProp::LiteralProp(literal) => {
+                    let key = self.visit(scope, literal.key());
+                    let lit = self.visit(scope, literal.value()).into();
+
+                    (key, PropertyVal::PropLit { lit })
+                }
+
+                ObjectProp::Getter(getter) => {
+                    let key = self.visit(scope, getter.key());
+                    let body = self.visit(scope, getter.body()).flatten().into();
+
+                    (key, PropertyVal::PropGetter { body })
+                }
+
+                ObjectProp::Setter(setter) => {
+                    let key = self.visit(scope, setter.key());
+                    let params = self
+                        .visit(scope, setter.parameters())
+                        .map(Into::into)
+                        .into();
+
+                    (key, PropertyVal::PropSetter { params })
+                }
+
+                ObjectProp::SpreadProp(spread) => {
+                    let value = self.visit(scope, spread.value()).into();
+
+                    (None, PropertyVal::PropSpread { value })
+                }
+
+                ObjectProp::InitializedProp(init) => {
+                    let key = init.key().map(|ident| PropertyKey::IdentKey {
+                        ident: self.visit(scope, ident),
+                    });
+                    let value = self.visit(scope, init.value()).into();
+
+                    (key, PropertyVal::PropSpread { value })
+                }
+
+                ObjectProp::IdentProp(ident) => {
+                    let key = ident.name().map(|ident| PropertyKey::IdentKey {
+                        ident: self.visit(scope, ident),
+                    });
+
+                    (key, PropertyVal::PropIdent)
+                }
+
+                ObjectProp::Method(method) => {
+                    let key = self.visit(scope, method.name());
+                    let params = self
+                        .visit(scope, method.parameters())
+                        .map(Into::into)
+                        .into();
+                    let body = self.visit(scope, method.body()).flatten().into();
+
+                    (key, PropertyVal::PropMethod { params, body })
+                }
+            })
+            .collect()
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, ParameterList> for AnalyzerInner {
+    type Output = Vec<Intern<DatalogPattern>>;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, params: ParameterList) -> Self::Output {
+        params
+            .parameters()
+            .map(|param| self.visit(scope, param))
+            .collect()
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, PropName> for AnalyzerInner {
+    type Output = PropertyKey;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, prop: PropName) -> Self::Output {
+        match prop {
+            PropName::Computed(computed) => PropertyKey::ComputedKey {
+                prop: self.visit(scope, computed.prop()).into(),
+            },
+            PropName::Literal(literal) => PropertyKey::LiteralKey {
+                lit: self.visit(scope, literal),
+            },
+            PropName::Ident(ident) => PropertyKey::IdentKey {
+                ident: self.visit(scope, ident),
+            },
+        }
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, GroupingExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, grouping: GroupingExpr) -> Self::Output {
+        let inner = self.visit(scope, grouping.inner());
+        scope.grouping(inner, grouping.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, BracketExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, bracket: BracketExpr) -> Self::Output {
+        let object = self.visit(scope, bracket.object());
+        let property = self.visit(scope, bracket.prop());
+
+        scope.bracket(object, property, bracket.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, DotExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, dot: DotExpr) -> Self::Output {
+        let object = self.visit(scope, dot.object());
+        let property = self.visit(scope, dot.prop());
+
+        scope.dot(object, property, dot.range())
     }
 }

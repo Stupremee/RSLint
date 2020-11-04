@@ -1,5 +1,6 @@
 mod analyzer;
 mod datalog;
+pub mod globals;
 
 pub use datalog::{
     Datalog, DatalogBuilder, DatalogFunction, DatalogResult, DatalogScope, DatalogTransaction,
