@@ -229,7 +229,7 @@ impl<'ddlog> DatalogTransaction<'ddlog> {
         }
     }
 
-    fn implicit_global(&self, name: Intern<String>) -> GlobalId {
+    fn implicit_global(&self, name: Name) -> GlobalId {
         let id = self.datalog.inc_global();
         self.datalog.insert(
             Relations::ImplicitGlobal as RelId,
@@ -288,7 +288,7 @@ pub trait DatalogBuilder<'ddlog> {
         self.datalog().inc_expression()
     }
 
-    fn implicit_global(&self, name: Intern<String>) -> GlobalId {
+    fn implicit_global(&self, name: Name) -> GlobalId {
         let id = self.datalog().inc_global();
         self.datalog().insert(
             Relations::ImplicitGlobal as RelId,
@@ -298,7 +298,7 @@ pub trait DatalogBuilder<'ddlog> {
         id
     }
 
-    fn decl_function(&self, id: FuncId, name: Option<Intern<String>>) -> DatalogFunction<'ddlog> {
+    fn decl_function(&self, id: FuncId, name: Option<Name>) -> DatalogFunction<'ddlog> {
         self.datalog().insert(
             Relations::Function as RelId,
             Function {
@@ -1351,7 +1351,7 @@ pub trait DatalogBuilder<'ddlog> {
         expr_id
     }
 
-    fn dot(&self, object: Option<ExprId>, prop: Option<Intern<String>>, span: TextRange) -> ExprId {
+    fn dot(&self, object: Option<ExprId>, prop: Option<Name>, span: TextRange) -> ExprId {
         let datalog = self.datalog();
         let expr_id = datalog.inc_expression();
 
@@ -1369,6 +1369,242 @@ pub trait DatalogBuilder<'ddlog> {
                 Expression {
                     id: expr_id,
                     kind: ExprKind::ExprDot,
+                    scope: self.scope_id(),
+                    span: span.into(),
+                },
+            );
+
+        expr_id
+    }
+
+    fn new(&self, object: Option<ExprId>, args: Option<Vec<ExprId>>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog
+            .insert(
+                Relations::New as RelId,
+                New {
+                    expr_id,
+                    object: object.into(),
+                    args: args.map(Into::into).into(),
+                },
+            )
+            .insert(
+                Relations::Expression as RelId,
+                Expression {
+                    id: expr_id,
+                    kind: ExprKind::ExprNew,
+                    scope: self.scope_id(),
+                    span: span.into(),
+                },
+            );
+
+        expr_id
+    }
+
+    fn call(&self, callee: Option<ExprId>, args: Option<Vec<ExprId>>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog
+            .insert(
+                Relations::Call as RelId,
+                Call {
+                    expr_id,
+                    callee: callee.into(),
+                    args: args.map(Into::into).into(),
+                },
+            )
+            .insert(
+                Relations::Expression as RelId,
+                Expression {
+                    id: expr_id,
+                    kind: ExprKind::ExprCall,
+                    scope: self.scope_id(),
+                    span: span.into(),
+                },
+            );
+
+        expr_id
+    }
+
+    fn assign(
+        &self,
+        lhs: Option<Either<IPattern, ExprId>>,
+        rhs: Option<ExprId>,
+        op: Option<AssignOperand>,
+        span: TextRange,
+    ) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog
+            .insert(
+                Relations::Assign as RelId,
+                Assign {
+                    expr_id,
+                    lhs: lhs.into(),
+                    rhs: rhs.into(),
+                    op: op.into(),
+                },
+            )
+            .insert(
+                Relations::Expression as RelId,
+                Expression {
+                    id: expr_id,
+                    kind: ExprKind::ExprAssign,
+                    scope: self.scope_id(),
+                    span: span.into(),
+                },
+            );
+
+        expr_id
+    }
+
+    fn sequence(&self, exprs: Vec<ExprId>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog.insert(
+            Relations::Expression as RelId,
+            Expression {
+                id: expr_id,
+                kind: ExprKind::ExprSequence {
+                    exprs: exprs.into(),
+                },
+                scope: self.scope_id(),
+                span: span.into(),
+            },
+        );
+
+        expr_id
+    }
+
+    fn new_target(&self, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog.insert(
+            Relations::Expression as RelId,
+            Expression {
+                id: expr_id,
+                kind: ExprKind::ExprNewTarget,
+                scope: self.scope_id(),
+                span: span.into(),
+            },
+        );
+
+        expr_id
+    }
+
+    fn import_meta(&self, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog.insert(
+            Relations::Expression as RelId,
+            Expression {
+                id: expr_id,
+                kind: ExprKind::ExprImportMeta,
+                scope: self.scope_id(),
+                span: span.into(),
+            },
+        );
+
+        expr_id
+    }
+
+    fn fn_expr(
+        &self,
+        name: Option<Name>,
+        params: Vec<IPattern>,
+        body: Option<StmtId>,
+        span: TextRange,
+    ) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog
+            .insert(
+                Relations::InlineFunc as RelId,
+                InlineFunc {
+                    expr_id,
+                    name: name.into(),
+                    body: body.into(),
+                },
+            )
+            .insert(
+                Relations::Expression as RelId,
+                Expression {
+                    id: expr_id,
+                    kind: ExprKind::ExprInlineFunc,
+                    scope: self.scope_id(),
+                    span: span.into(),
+                },
+            );
+
+        for param in params {
+            datalog.insert(
+                Relations::InlineFuncParam as RelId,
+                InlineFuncParam { expr_id, param },
+            );
+        }
+
+        expr_id
+    }
+
+    fn super_call(&self, args: Option<Vec<ExprId>>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog.insert(
+            Relations::Expression as RelId,
+            Expression {
+                id: expr_id,
+                kind: ExprKind::ExprSuperCall {
+                    args: args.map(Into::into).into(),
+                },
+                scope: self.scope_id(),
+                span: span.into(),
+            },
+        );
+        expr_id
+    }
+
+    fn import_call(&self, arg: Option<ExprId>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog.insert(
+            Relations::Expression as RelId,
+            Expression {
+                id: expr_id,
+                kind: ExprKind::ExprImportCall { arg: arg.into() },
+                scope: self.scope_id(),
+                span: span.into(),
+            },
+        );
+        expr_id
+    }
+
+    fn class_expr(&self, element: Option<ClassElement>, span: TextRange) -> ExprId {
+        let datalog = self.datalog();
+        let expr_id = datalog.inc_expression();
+
+        datalog
+            .insert(
+                Relations::ClassExpr as RelId,
+                ClassExpr {
+                    expr_id,
+                    element: element.into(),
+                },
+            )
+            .insert(
+                Relations::Expression as RelId,
+                Expression {
+                    id: expr_id,
+                    kind: ExprKind::ExprClass,
                     scope: self.scope_id(),
                     span: span.into(),
                 },

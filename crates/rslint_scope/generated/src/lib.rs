@@ -197,7 +197,7 @@ impl TryFrom<&RelIdentifier> for Relations {
 }
 
 
-decl_update_deserializer!(UpdateSerializer,(0, ::types::Array), (1, ::types::Arrow), (2, ::types::ArrowParam), (3, ::types::Await), (4, ::types::BinOp), (5, ::types::BracketAccess), (6, ::types::Break), (7, ::types::ChildScope), (8, ::types::ClosestFunction), (9, ::types::ConstDecl), (10, ::types::Continue), (11, ::types::DoWhile), (12, ::types::DotAccess), (13, ::types::EveryScope), (14, ::types::ExprBigInt), (15, ::types::ExprBool), (16, ::types::ExprNumber), (17, ::types::ExprString), (18, ::types::Expression), (19, ::types::For), (20, ::types::ForIn), (21, ::types::Function), (22, ::types::FunctionArg), (23, ::types::Array), (24, ::types::Arrow), (25, ::types::ArrowParam), (26, ::types::Await), (27, ::types::BinOp), (28, ::types::BracketAccess), (29, ::types::Break), (30, ::types::ConstDecl), (31, ::types::Continue), (32, ::types::DoWhile), (33, ::types::DotAccess), (34, ::types::EveryScope), (35, ::types::ExprBigInt), (36, ::types::ExprBool), (37, ::types::ExprNumber), (38, ::types::ExprString), (39, ::types::Expression), (40, ::types::For), (41, ::types::ForIn), (42, ::types::Function), (43, ::types::FunctionArg), (44, ::types::If), (45, ::types::ImplicitGlobal), (46, ::types::InputScope), (47, ::types::Label), (48, ::types::LetDecl), (49, ::types::NameRef), (50, ::types::Property), (51, ::types::Return), (52, ::types::Statement), (53, ::types::Switch), (54, ::types::SwitchCase), (55, ::types::Template), (56, ::types::Ternary), (57, ::types::Throw), (58, ::types::Try), (59, ::types::UnaryOp), (60, ::types::VarDecl), (61, ::types::While), (62, ::types::With), (63, ::types::Yield), (64, ::types::If), (65, ::types::ImplicitGlobal), (66, ::types::InputScope), (67, ::types::InvalidNameUse), (68, ::types::Label), (69, ::types::LetDecl), (70, ::types::NameInScope), (71, ::types::NameRef), (72, ::types::Property), (73, ::types::Return), (74, ::types::Statement), (75, ::types::Switch), (76, ::types::SwitchCase), (77, ::types::Template), (78, ::types::Ternary), (79, ::types::Throw), (80, ::types::Try), (81, ::types::UnaryOp), (82, ::types::VarDecl), (83, ::types::VarUseBeforeDeclaration), (84, ::types::While), (85, ::types::With), (86, ::types::Yield));
+decl_update_deserializer!(UpdateSerializer,(0, ::types::Array), (1, ::types::Arrow), (2, ::types::ArrowParam), (3, ::types::Assign), (4, ::types::Await), (5, ::types::BinOp), (6, ::types::BracketAccess), (7, ::types::Break), (8, ::types::Call), (9, ::types::ChildScope), (10, ::types::ClassExpr), (11, ::types::ClosestFunction), (12, ::types::ConstDecl), (13, ::types::Continue), (14, ::types::DoWhile), (15, ::types::DotAccess), (16, ::types::EveryScope), (17, ::types::ExprBigInt), (18, ::types::ExprBool), (19, ::types::ExprNumber), (20, ::types::ExprString), (21, ::types::Expression), (22, ::types::For), (23, ::types::ForIn), (24, ::types::Function), (25, ::types::FunctionArg), (26, ::types::Array), (27, ::types::Arrow), (28, ::types::ArrowParam), (29, ::types::Assign), (30, ::types::Await), (31, ::types::BinOp), (32, ::types::BracketAccess), (33, ::types::Break), (34, ::types::Call), (35, ::types::ClassExpr), (36, ::types::ConstDecl), (37, ::types::Continue), (38, ::types::DoWhile), (39, ::types::DotAccess), (40, ::types::EveryScope), (41, ::types::ExprBigInt), (42, ::types::ExprBool), (43, ::types::ExprNumber), (44, ::types::ExprString), (45, ::types::Expression), (46, ::types::For), (47, ::types::ForIn), (48, ::types::Function), (49, ::types::FunctionArg), (50, ::types::If), (51, ::types::ImplicitGlobal), (52, ::types::InlineFunc), (53, ::types::InlineFuncParam), (54, ::types::InputScope), (55, ::types::Label), (56, ::types::LetDecl), (57, ::types::NameRef), (58, ::types::New), (59, ::types::Property), (60, ::types::Return), (61, ::types::Statement), (62, ::types::Switch), (63, ::types::SwitchCase), (64, ::types::Template), (65, ::types::Ternary), (66, ::types::Throw), (67, ::types::Try), (68, ::types::UnaryOp), (69, ::types::VarDecl), (70, ::types::While), (71, ::types::With), (72, ::types::Yield), (73, ::types::If), (74, ::types::ImplicitGlobal), (75, ::types::InlineFunc), (76, ::types::InlineFuncParam), (77, ::types::InputScope), (78, ::types::InvalidNameUse), (79, ::types::Label), (80, ::types::LetDecl), (81, ::types::NameInScope), (82, ::types::NameRef), (83, ::types::New), (84, ::types::Property), (85, ::types::Return), (86, ::types::Statement), (87, ::types::Switch), (88, ::types::SwitchCase), (89, ::types::Template), (90, ::types::Ternary), (91, ::types::Throw), (92, ::types::Try), (93, ::types::UnaryOp), (94, ::types::VarDecl), (95, ::types::VarUseBeforeDeclaration), (96, ::types::While), (97, ::types::With), (98, ::types::Yield));
 impl TryFrom<&str> for Relations {
     type Error = ();
     fn try_from(rname: &str) -> ::std::result::Result<Self, ()> {
@@ -205,11 +205,14 @@ impl TryFrom<&str> for Relations {
         "Array" => Ok(Relations::Array),
         "Arrow" => Ok(Relations::Arrow),
         "ArrowParam" => Ok(Relations::ArrowParam),
+        "Assign" => Ok(Relations::Assign),
         "Await" => Ok(Relations::Await),
         "BinOp" => Ok(Relations::BinOp),
         "BracketAccess" => Ok(Relations::BracketAccess),
         "Break" => Ok(Relations::Break),
+        "Call" => Ok(Relations::Call),
         "ChildScope" => Ok(Relations::ChildScope),
+        "ClassExpr" => Ok(Relations::ClassExpr),
         "ClosestFunction" => Ok(Relations::ClosestFunction),
         "ConstDecl" => Ok(Relations::ConstDecl),
         "Continue" => Ok(Relations::Continue),
@@ -228,10 +231,13 @@ impl TryFrom<&str> for Relations {
         "INPUT_Array" => Ok(Relations::INPUT_Array),
         "INPUT_Arrow" => Ok(Relations::INPUT_Arrow),
         "INPUT_ArrowParam" => Ok(Relations::INPUT_ArrowParam),
+        "INPUT_Assign" => Ok(Relations::INPUT_Assign),
         "INPUT_Await" => Ok(Relations::INPUT_Await),
         "INPUT_BinOp" => Ok(Relations::INPUT_BinOp),
         "INPUT_BracketAccess" => Ok(Relations::INPUT_BracketAccess),
         "INPUT_Break" => Ok(Relations::INPUT_Break),
+        "INPUT_Call" => Ok(Relations::INPUT_Call),
+        "INPUT_ClassExpr" => Ok(Relations::INPUT_ClassExpr),
         "INPUT_ConstDecl" => Ok(Relations::INPUT_ConstDecl),
         "INPUT_Continue" => Ok(Relations::INPUT_Continue),
         "INPUT_DoWhile" => Ok(Relations::INPUT_DoWhile),
@@ -248,10 +254,13 @@ impl TryFrom<&str> for Relations {
         "INPUT_FunctionArg" => Ok(Relations::INPUT_FunctionArg),
         "INPUT_If" => Ok(Relations::INPUT_If),
         "INPUT_ImplicitGlobal" => Ok(Relations::INPUT_ImplicitGlobal),
+        "INPUT_InlineFunc" => Ok(Relations::INPUT_InlineFunc),
+        "INPUT_InlineFuncParam" => Ok(Relations::INPUT_InlineFuncParam),
         "INPUT_InputScope" => Ok(Relations::INPUT_InputScope),
         "INPUT_Label" => Ok(Relations::INPUT_Label),
         "INPUT_LetDecl" => Ok(Relations::INPUT_LetDecl),
         "INPUT_NameRef" => Ok(Relations::INPUT_NameRef),
+        "INPUT_New" => Ok(Relations::INPUT_New),
         "INPUT_Property" => Ok(Relations::INPUT_Property),
         "INPUT_Return" => Ok(Relations::INPUT_Return),
         "INPUT_Statement" => Ok(Relations::INPUT_Statement),
@@ -268,12 +277,15 @@ impl TryFrom<&str> for Relations {
         "INPUT_Yield" => Ok(Relations::INPUT_Yield),
         "If" => Ok(Relations::If),
         "ImplicitGlobal" => Ok(Relations::ImplicitGlobal),
+        "InlineFunc" => Ok(Relations::InlineFunc),
+        "InlineFuncParam" => Ok(Relations::InlineFuncParam),
         "InputScope" => Ok(Relations::InputScope),
         "InvalidNameUse" => Ok(Relations::InvalidNameUse),
         "Label" => Ok(Relations::Label),
         "LetDecl" => Ok(Relations::LetDecl),
         "NameInScope" => Ok(Relations::NameInScope),
         "NameRef" => Ok(Relations::NameRef),
+        "New" => Ok(Relations::New),
         "Property" => Ok(Relations::Property),
         "Return" => Ok(Relations::Return),
         "Statement" => Ok(Relations::Statement),
@@ -303,10 +315,13 @@ impl Relations {
         Relations::INPUT_Array => true,
         Relations::INPUT_Arrow => true,
         Relations::INPUT_ArrowParam => true,
+        Relations::INPUT_Assign => true,
         Relations::INPUT_Await => true,
         Relations::INPUT_BinOp => true,
         Relations::INPUT_BracketAccess => true,
         Relations::INPUT_Break => true,
+        Relations::INPUT_Call => true,
+        Relations::INPUT_ClassExpr => true,
         Relations::INPUT_ConstDecl => true,
         Relations::INPUT_Continue => true,
         Relations::INPUT_DoWhile => true,
@@ -323,10 +338,13 @@ impl Relations {
         Relations::INPUT_FunctionArg => true,
         Relations::INPUT_If => true,
         Relations::INPUT_ImplicitGlobal => true,
+        Relations::INPUT_InlineFunc => true,
+        Relations::INPUT_InlineFuncParam => true,
         Relations::INPUT_InputScope => true,
         Relations::INPUT_Label => true,
         Relations::INPUT_LetDecl => true,
         Relations::INPUT_NameRef => true,
+        Relations::INPUT_New => true,
         Relations::INPUT_Property => true,
         Relations::INPUT_Return => true,
         Relations::INPUT_Statement => true,
@@ -354,10 +372,13 @@ impl Relations {
         Relations::Array => true,
         Relations::Arrow => true,
         Relations::ArrowParam => true,
+        Relations::Assign => true,
         Relations::Await => true,
         Relations::BinOp => true,
         Relations::BracketAccess => true,
         Relations::Break => true,
+        Relations::Call => true,
+        Relations::ClassExpr => true,
         Relations::ConstDecl => true,
         Relations::Continue => true,
         Relations::DoWhile => true,
@@ -374,10 +395,13 @@ impl Relations {
         Relations::FunctionArg => true,
         Relations::If => true,
         Relations::ImplicitGlobal => true,
+        Relations::InlineFunc => true,
+        Relations::InlineFuncParam => true,
         Relations::InputScope => true,
         Relations::Label => true,
         Relations::LetDecl => true,
         Relations::NameRef => true,
+        Relations::New => true,
         Relations::Property => true,
         Relations::Return => true,
         Relations::Statement => true,
@@ -403,92 +427,104 @@ impl TryFrom<RelId> for Relations {
         0 => Ok(Relations::Array),
         1 => Ok(Relations::Arrow),
         2 => Ok(Relations::ArrowParam),
-        3 => Ok(Relations::Await),
-        4 => Ok(Relations::BinOp),
-        5 => Ok(Relations::BracketAccess),
-        6 => Ok(Relations::Break),
-        7 => Ok(Relations::ChildScope),
-        8 => Ok(Relations::ClosestFunction),
-        9 => Ok(Relations::ConstDecl),
-        10 => Ok(Relations::Continue),
-        11 => Ok(Relations::DoWhile),
-        12 => Ok(Relations::DotAccess),
-        13 => Ok(Relations::EveryScope),
-        14 => Ok(Relations::ExprBigInt),
-        15 => Ok(Relations::ExprBool),
-        16 => Ok(Relations::ExprNumber),
-        17 => Ok(Relations::ExprString),
-        18 => Ok(Relations::Expression),
-        19 => Ok(Relations::For),
-        20 => Ok(Relations::ForIn),
-        21 => Ok(Relations::Function),
-        22 => Ok(Relations::FunctionArg),
-        23 => Ok(Relations::INPUT_Array),
-        24 => Ok(Relations::INPUT_Arrow),
-        25 => Ok(Relations::INPUT_ArrowParam),
-        26 => Ok(Relations::INPUT_Await),
-        27 => Ok(Relations::INPUT_BinOp),
-        28 => Ok(Relations::INPUT_BracketAccess),
-        29 => Ok(Relations::INPUT_Break),
-        30 => Ok(Relations::INPUT_ConstDecl),
-        31 => Ok(Relations::INPUT_Continue),
-        32 => Ok(Relations::INPUT_DoWhile),
-        33 => Ok(Relations::INPUT_DotAccess),
-        34 => Ok(Relations::INPUT_EveryScope),
-        35 => Ok(Relations::INPUT_ExprBigInt),
-        36 => Ok(Relations::INPUT_ExprBool),
-        37 => Ok(Relations::INPUT_ExprNumber),
-        38 => Ok(Relations::INPUT_ExprString),
-        39 => Ok(Relations::INPUT_Expression),
-        40 => Ok(Relations::INPUT_For),
-        41 => Ok(Relations::INPUT_ForIn),
-        42 => Ok(Relations::INPUT_Function),
-        43 => Ok(Relations::INPUT_FunctionArg),
-        44 => Ok(Relations::INPUT_If),
-        45 => Ok(Relations::INPUT_ImplicitGlobal),
-        46 => Ok(Relations::INPUT_InputScope),
-        47 => Ok(Relations::INPUT_Label),
-        48 => Ok(Relations::INPUT_LetDecl),
-        49 => Ok(Relations::INPUT_NameRef),
-        50 => Ok(Relations::INPUT_Property),
-        51 => Ok(Relations::INPUT_Return),
-        52 => Ok(Relations::INPUT_Statement),
-        53 => Ok(Relations::INPUT_Switch),
-        54 => Ok(Relations::INPUT_SwitchCase),
-        55 => Ok(Relations::INPUT_Template),
-        56 => Ok(Relations::INPUT_Ternary),
-        57 => Ok(Relations::INPUT_Throw),
-        58 => Ok(Relations::INPUT_Try),
-        59 => Ok(Relations::INPUT_UnaryOp),
-        60 => Ok(Relations::INPUT_VarDecl),
-        61 => Ok(Relations::INPUT_While),
-        62 => Ok(Relations::INPUT_With),
-        63 => Ok(Relations::INPUT_Yield),
-        64 => Ok(Relations::If),
-        65 => Ok(Relations::ImplicitGlobal),
-        66 => Ok(Relations::InputScope),
-        67 => Ok(Relations::InvalidNameUse),
-        68 => Ok(Relations::Label),
-        69 => Ok(Relations::LetDecl),
-        70 => Ok(Relations::NameInScope),
-        71 => Ok(Relations::NameRef),
-        72 => Ok(Relations::Property),
-        73 => Ok(Relations::Return),
-        74 => Ok(Relations::Statement),
-        75 => Ok(Relations::Switch),
-        76 => Ok(Relations::SwitchCase),
-        77 => Ok(Relations::Template),
-        78 => Ok(Relations::Ternary),
-        79 => Ok(Relations::Throw),
-        80 => Ok(Relations::Try),
-        81 => Ok(Relations::UnaryOp),
-        82 => Ok(Relations::VarDecl),
-        83 => Ok(Relations::VarUseBeforeDeclaration),
-        84 => Ok(Relations::While),
-        85 => Ok(Relations::With),
-        86 => Ok(Relations::Yield),
-        87 => Ok(Relations::__Null),
-        88 => Ok(Relations::__Prefix_0),
+        3 => Ok(Relations::Assign),
+        4 => Ok(Relations::Await),
+        5 => Ok(Relations::BinOp),
+        6 => Ok(Relations::BracketAccess),
+        7 => Ok(Relations::Break),
+        8 => Ok(Relations::Call),
+        9 => Ok(Relations::ChildScope),
+        10 => Ok(Relations::ClassExpr),
+        11 => Ok(Relations::ClosestFunction),
+        12 => Ok(Relations::ConstDecl),
+        13 => Ok(Relations::Continue),
+        14 => Ok(Relations::DoWhile),
+        15 => Ok(Relations::DotAccess),
+        16 => Ok(Relations::EveryScope),
+        17 => Ok(Relations::ExprBigInt),
+        18 => Ok(Relations::ExprBool),
+        19 => Ok(Relations::ExprNumber),
+        20 => Ok(Relations::ExprString),
+        21 => Ok(Relations::Expression),
+        22 => Ok(Relations::For),
+        23 => Ok(Relations::ForIn),
+        24 => Ok(Relations::Function),
+        25 => Ok(Relations::FunctionArg),
+        26 => Ok(Relations::INPUT_Array),
+        27 => Ok(Relations::INPUT_Arrow),
+        28 => Ok(Relations::INPUT_ArrowParam),
+        29 => Ok(Relations::INPUT_Assign),
+        30 => Ok(Relations::INPUT_Await),
+        31 => Ok(Relations::INPUT_BinOp),
+        32 => Ok(Relations::INPUT_BracketAccess),
+        33 => Ok(Relations::INPUT_Break),
+        34 => Ok(Relations::INPUT_Call),
+        35 => Ok(Relations::INPUT_ClassExpr),
+        36 => Ok(Relations::INPUT_ConstDecl),
+        37 => Ok(Relations::INPUT_Continue),
+        38 => Ok(Relations::INPUT_DoWhile),
+        39 => Ok(Relations::INPUT_DotAccess),
+        40 => Ok(Relations::INPUT_EveryScope),
+        41 => Ok(Relations::INPUT_ExprBigInt),
+        42 => Ok(Relations::INPUT_ExprBool),
+        43 => Ok(Relations::INPUT_ExprNumber),
+        44 => Ok(Relations::INPUT_ExprString),
+        45 => Ok(Relations::INPUT_Expression),
+        46 => Ok(Relations::INPUT_For),
+        47 => Ok(Relations::INPUT_ForIn),
+        48 => Ok(Relations::INPUT_Function),
+        49 => Ok(Relations::INPUT_FunctionArg),
+        50 => Ok(Relations::INPUT_If),
+        51 => Ok(Relations::INPUT_ImplicitGlobal),
+        52 => Ok(Relations::INPUT_InlineFunc),
+        53 => Ok(Relations::INPUT_InlineFuncParam),
+        54 => Ok(Relations::INPUT_InputScope),
+        55 => Ok(Relations::INPUT_Label),
+        56 => Ok(Relations::INPUT_LetDecl),
+        57 => Ok(Relations::INPUT_NameRef),
+        58 => Ok(Relations::INPUT_New),
+        59 => Ok(Relations::INPUT_Property),
+        60 => Ok(Relations::INPUT_Return),
+        61 => Ok(Relations::INPUT_Statement),
+        62 => Ok(Relations::INPUT_Switch),
+        63 => Ok(Relations::INPUT_SwitchCase),
+        64 => Ok(Relations::INPUT_Template),
+        65 => Ok(Relations::INPUT_Ternary),
+        66 => Ok(Relations::INPUT_Throw),
+        67 => Ok(Relations::INPUT_Try),
+        68 => Ok(Relations::INPUT_UnaryOp),
+        69 => Ok(Relations::INPUT_VarDecl),
+        70 => Ok(Relations::INPUT_While),
+        71 => Ok(Relations::INPUT_With),
+        72 => Ok(Relations::INPUT_Yield),
+        73 => Ok(Relations::If),
+        74 => Ok(Relations::ImplicitGlobal),
+        75 => Ok(Relations::InlineFunc),
+        76 => Ok(Relations::InlineFuncParam),
+        77 => Ok(Relations::InputScope),
+        78 => Ok(Relations::InvalidNameUse),
+        79 => Ok(Relations::Label),
+        80 => Ok(Relations::LetDecl),
+        81 => Ok(Relations::NameInScope),
+        82 => Ok(Relations::NameRef),
+        83 => Ok(Relations::New),
+        84 => Ok(Relations::Property),
+        85 => Ok(Relations::Return),
+        86 => Ok(Relations::Statement),
+        87 => Ok(Relations::Switch),
+        88 => Ok(Relations::SwitchCase),
+        89 => Ok(Relations::Template),
+        90 => Ok(Relations::Ternary),
+        91 => Ok(Relations::Throw),
+        92 => Ok(Relations::Try),
+        93 => Ok(Relations::UnaryOp),
+        94 => Ok(Relations::VarDecl),
+        95 => Ok(Relations::VarUseBeforeDeclaration),
+        96 => Ok(Relations::While),
+        97 => Ok(Relations::With),
+        98 => Ok(Relations::Yield),
+        99 => Ok(Relations::__Null),
+        100 => Ok(Relations::__Prefix_0),
              _  => Err(())
          }
     }
@@ -498,92 +534,104 @@ pub fn relid2name(rid: RelId) -> Option<&'static str> {
         0 => Some(&"Array"),
         1 => Some(&"Arrow"),
         2 => Some(&"ArrowParam"),
-        3 => Some(&"Await"),
-        4 => Some(&"BinOp"),
-        5 => Some(&"BracketAccess"),
-        6 => Some(&"Break"),
-        7 => Some(&"ChildScope"),
-        8 => Some(&"ClosestFunction"),
-        9 => Some(&"ConstDecl"),
-        10 => Some(&"Continue"),
-        11 => Some(&"DoWhile"),
-        12 => Some(&"DotAccess"),
-        13 => Some(&"EveryScope"),
-        14 => Some(&"ExprBigInt"),
-        15 => Some(&"ExprBool"),
-        16 => Some(&"ExprNumber"),
-        17 => Some(&"ExprString"),
-        18 => Some(&"Expression"),
-        19 => Some(&"For"),
-        20 => Some(&"ForIn"),
-        21 => Some(&"Function"),
-        22 => Some(&"FunctionArg"),
-        23 => Some(&"INPUT_Array"),
-        24 => Some(&"INPUT_Arrow"),
-        25 => Some(&"INPUT_ArrowParam"),
-        26 => Some(&"INPUT_Await"),
-        27 => Some(&"INPUT_BinOp"),
-        28 => Some(&"INPUT_BracketAccess"),
-        29 => Some(&"INPUT_Break"),
-        30 => Some(&"INPUT_ConstDecl"),
-        31 => Some(&"INPUT_Continue"),
-        32 => Some(&"INPUT_DoWhile"),
-        33 => Some(&"INPUT_DotAccess"),
-        34 => Some(&"INPUT_EveryScope"),
-        35 => Some(&"INPUT_ExprBigInt"),
-        36 => Some(&"INPUT_ExprBool"),
-        37 => Some(&"INPUT_ExprNumber"),
-        38 => Some(&"INPUT_ExprString"),
-        39 => Some(&"INPUT_Expression"),
-        40 => Some(&"INPUT_For"),
-        41 => Some(&"INPUT_ForIn"),
-        42 => Some(&"INPUT_Function"),
-        43 => Some(&"INPUT_FunctionArg"),
-        44 => Some(&"INPUT_If"),
-        45 => Some(&"INPUT_ImplicitGlobal"),
-        46 => Some(&"INPUT_InputScope"),
-        47 => Some(&"INPUT_Label"),
-        48 => Some(&"INPUT_LetDecl"),
-        49 => Some(&"INPUT_NameRef"),
-        50 => Some(&"INPUT_Property"),
-        51 => Some(&"INPUT_Return"),
-        52 => Some(&"INPUT_Statement"),
-        53 => Some(&"INPUT_Switch"),
-        54 => Some(&"INPUT_SwitchCase"),
-        55 => Some(&"INPUT_Template"),
-        56 => Some(&"INPUT_Ternary"),
-        57 => Some(&"INPUT_Throw"),
-        58 => Some(&"INPUT_Try"),
-        59 => Some(&"INPUT_UnaryOp"),
-        60 => Some(&"INPUT_VarDecl"),
-        61 => Some(&"INPUT_While"),
-        62 => Some(&"INPUT_With"),
-        63 => Some(&"INPUT_Yield"),
-        64 => Some(&"If"),
-        65 => Some(&"ImplicitGlobal"),
-        66 => Some(&"InputScope"),
-        67 => Some(&"InvalidNameUse"),
-        68 => Some(&"Label"),
-        69 => Some(&"LetDecl"),
-        70 => Some(&"NameInScope"),
-        71 => Some(&"NameRef"),
-        72 => Some(&"Property"),
-        73 => Some(&"Return"),
-        74 => Some(&"Statement"),
-        75 => Some(&"Switch"),
-        76 => Some(&"SwitchCase"),
-        77 => Some(&"Template"),
-        78 => Some(&"Ternary"),
-        79 => Some(&"Throw"),
-        80 => Some(&"Try"),
-        81 => Some(&"UnaryOp"),
-        82 => Some(&"VarDecl"),
-        83 => Some(&"VarUseBeforeDeclaration"),
-        84 => Some(&"While"),
-        85 => Some(&"With"),
-        86 => Some(&"Yield"),
-        87 => Some(&"__Null"),
-        88 => Some(&"__Prefix_0"),
+        3 => Some(&"Assign"),
+        4 => Some(&"Await"),
+        5 => Some(&"BinOp"),
+        6 => Some(&"BracketAccess"),
+        7 => Some(&"Break"),
+        8 => Some(&"Call"),
+        9 => Some(&"ChildScope"),
+        10 => Some(&"ClassExpr"),
+        11 => Some(&"ClosestFunction"),
+        12 => Some(&"ConstDecl"),
+        13 => Some(&"Continue"),
+        14 => Some(&"DoWhile"),
+        15 => Some(&"DotAccess"),
+        16 => Some(&"EveryScope"),
+        17 => Some(&"ExprBigInt"),
+        18 => Some(&"ExprBool"),
+        19 => Some(&"ExprNumber"),
+        20 => Some(&"ExprString"),
+        21 => Some(&"Expression"),
+        22 => Some(&"For"),
+        23 => Some(&"ForIn"),
+        24 => Some(&"Function"),
+        25 => Some(&"FunctionArg"),
+        26 => Some(&"INPUT_Array"),
+        27 => Some(&"INPUT_Arrow"),
+        28 => Some(&"INPUT_ArrowParam"),
+        29 => Some(&"INPUT_Assign"),
+        30 => Some(&"INPUT_Await"),
+        31 => Some(&"INPUT_BinOp"),
+        32 => Some(&"INPUT_BracketAccess"),
+        33 => Some(&"INPUT_Break"),
+        34 => Some(&"INPUT_Call"),
+        35 => Some(&"INPUT_ClassExpr"),
+        36 => Some(&"INPUT_ConstDecl"),
+        37 => Some(&"INPUT_Continue"),
+        38 => Some(&"INPUT_DoWhile"),
+        39 => Some(&"INPUT_DotAccess"),
+        40 => Some(&"INPUT_EveryScope"),
+        41 => Some(&"INPUT_ExprBigInt"),
+        42 => Some(&"INPUT_ExprBool"),
+        43 => Some(&"INPUT_ExprNumber"),
+        44 => Some(&"INPUT_ExprString"),
+        45 => Some(&"INPUT_Expression"),
+        46 => Some(&"INPUT_For"),
+        47 => Some(&"INPUT_ForIn"),
+        48 => Some(&"INPUT_Function"),
+        49 => Some(&"INPUT_FunctionArg"),
+        50 => Some(&"INPUT_If"),
+        51 => Some(&"INPUT_ImplicitGlobal"),
+        52 => Some(&"INPUT_InlineFunc"),
+        53 => Some(&"INPUT_InlineFuncParam"),
+        54 => Some(&"INPUT_InputScope"),
+        55 => Some(&"INPUT_Label"),
+        56 => Some(&"INPUT_LetDecl"),
+        57 => Some(&"INPUT_NameRef"),
+        58 => Some(&"INPUT_New"),
+        59 => Some(&"INPUT_Property"),
+        60 => Some(&"INPUT_Return"),
+        61 => Some(&"INPUT_Statement"),
+        62 => Some(&"INPUT_Switch"),
+        63 => Some(&"INPUT_SwitchCase"),
+        64 => Some(&"INPUT_Template"),
+        65 => Some(&"INPUT_Ternary"),
+        66 => Some(&"INPUT_Throw"),
+        67 => Some(&"INPUT_Try"),
+        68 => Some(&"INPUT_UnaryOp"),
+        69 => Some(&"INPUT_VarDecl"),
+        70 => Some(&"INPUT_While"),
+        71 => Some(&"INPUT_With"),
+        72 => Some(&"INPUT_Yield"),
+        73 => Some(&"If"),
+        74 => Some(&"ImplicitGlobal"),
+        75 => Some(&"InlineFunc"),
+        76 => Some(&"InlineFuncParam"),
+        77 => Some(&"InputScope"),
+        78 => Some(&"InvalidNameUse"),
+        79 => Some(&"Label"),
+        80 => Some(&"LetDecl"),
+        81 => Some(&"NameInScope"),
+        82 => Some(&"NameRef"),
+        83 => Some(&"New"),
+        84 => Some(&"Property"),
+        85 => Some(&"Return"),
+        86 => Some(&"Statement"),
+        87 => Some(&"Switch"),
+        88 => Some(&"SwitchCase"),
+        89 => Some(&"Template"),
+        90 => Some(&"Ternary"),
+        91 => Some(&"Throw"),
+        92 => Some(&"Try"),
+        93 => Some(&"UnaryOp"),
+        94 => Some(&"VarDecl"),
+        95 => Some(&"VarUseBeforeDeclaration"),
+        96 => Some(&"While"),
+        97 => Some(&"With"),
+        98 => Some(&"Yield"),
+        99 => Some(&"__Null"),
+        100 => Some(&"__Prefix_0"),
        _  => None
    }
 }
@@ -592,15 +640,18 @@ pub fn relid2cname(rid: RelId) -> Option<&'static ::std::ffi::CStr> {
 }   /// A map of `RelId`s to their name as an `&'static str`
 pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(89, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(101, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::Array, "Array");
         map.insert(Relations::Arrow, "Arrow");
         map.insert(Relations::ArrowParam, "ArrowParam");
+        map.insert(Relations::Assign, "Assign");
         map.insert(Relations::Await, "Await");
         map.insert(Relations::BinOp, "BinOp");
         map.insert(Relations::BracketAccess, "BracketAccess");
         map.insert(Relations::Break, "Break");
+        map.insert(Relations::Call, "Call");
         map.insert(Relations::ChildScope, "ChildScope");
+        map.insert(Relations::ClassExpr, "ClassExpr");
         map.insert(Relations::ClosestFunction, "ClosestFunction");
         map.insert(Relations::ConstDecl, "ConstDecl");
         map.insert(Relations::Continue, "Continue");
@@ -619,10 +670,13 @@ pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'stat
         map.insert(Relations::INPUT_Array, "INPUT_Array");
         map.insert(Relations::INPUT_Arrow, "INPUT_Arrow");
         map.insert(Relations::INPUT_ArrowParam, "INPUT_ArrowParam");
+        map.insert(Relations::INPUT_Assign, "INPUT_Assign");
         map.insert(Relations::INPUT_Await, "INPUT_Await");
         map.insert(Relations::INPUT_BinOp, "INPUT_BinOp");
         map.insert(Relations::INPUT_BracketAccess, "INPUT_BracketAccess");
         map.insert(Relations::INPUT_Break, "INPUT_Break");
+        map.insert(Relations::INPUT_Call, "INPUT_Call");
+        map.insert(Relations::INPUT_ClassExpr, "INPUT_ClassExpr");
         map.insert(Relations::INPUT_ConstDecl, "INPUT_ConstDecl");
         map.insert(Relations::INPUT_Continue, "INPUT_Continue");
         map.insert(Relations::INPUT_DoWhile, "INPUT_DoWhile");
@@ -639,10 +693,13 @@ pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'stat
         map.insert(Relations::INPUT_FunctionArg, "INPUT_FunctionArg");
         map.insert(Relations::INPUT_If, "INPUT_If");
         map.insert(Relations::INPUT_ImplicitGlobal, "INPUT_ImplicitGlobal");
+        map.insert(Relations::INPUT_InlineFunc, "INPUT_InlineFunc");
+        map.insert(Relations::INPUT_InlineFuncParam, "INPUT_InlineFuncParam");
         map.insert(Relations::INPUT_InputScope, "INPUT_InputScope");
         map.insert(Relations::INPUT_Label, "INPUT_Label");
         map.insert(Relations::INPUT_LetDecl, "INPUT_LetDecl");
         map.insert(Relations::INPUT_NameRef, "INPUT_NameRef");
+        map.insert(Relations::INPUT_New, "INPUT_New");
         map.insert(Relations::INPUT_Property, "INPUT_Property");
         map.insert(Relations::INPUT_Return, "INPUT_Return");
         map.insert(Relations::INPUT_Statement, "INPUT_Statement");
@@ -659,12 +716,15 @@ pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'stat
         map.insert(Relations::INPUT_Yield, "INPUT_Yield");
         map.insert(Relations::If, "If");
         map.insert(Relations::ImplicitGlobal, "ImplicitGlobal");
+        map.insert(Relations::InlineFunc, "InlineFunc");
+        map.insert(Relations::InlineFuncParam, "InlineFuncParam");
         map.insert(Relations::InputScope, "InputScope");
         map.insert(Relations::InvalidNameUse, "InvalidNameUse");
         map.insert(Relations::Label, "Label");
         map.insert(Relations::LetDecl, "LetDecl");
         map.insert(Relations::NameInScope, "NameInScope");
         map.insert(Relations::NameRef, "NameRef");
+        map.insert(Relations::New, "New");
         map.insert(Relations::Property, "Property");
         map.insert(Relations::Return, "Return");
         map.insert(Relations::Statement, "Statement");
@@ -687,109 +747,124 @@ pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'stat
     /// A map of `RelId`s to their name as an `&'static CStr`
 pub static RELIDMAPC: ::once_cell::sync::Lazy<::fnv::FnvHashMap<RelId, &'static ::std::ffi::CStr>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(89, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(101, ::fnv::FnvBuildHasher::default());
         map.insert(0, ::std::ffi::CStr::from_bytes_with_nul(b"Array\0").expect("Unreachable: A null byte was specifically inserted"));
         map.insert(1, ::std::ffi::CStr::from_bytes_with_nul(b"Arrow\0").expect("Unreachable: A null byte was specifically inserted"));
         map.insert(2, ::std::ffi::CStr::from_bytes_with_nul(b"ArrowParam\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(3, ::std::ffi::CStr::from_bytes_with_nul(b"Await\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(4, ::std::ffi::CStr::from_bytes_with_nul(b"BinOp\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(5, ::std::ffi::CStr::from_bytes_with_nul(b"BracketAccess\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(6, ::std::ffi::CStr::from_bytes_with_nul(b"Break\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(7, ::std::ffi::CStr::from_bytes_with_nul(b"ChildScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(8, ::std::ffi::CStr::from_bytes_with_nul(b"ClosestFunction\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(9, ::std::ffi::CStr::from_bytes_with_nul(b"ConstDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(10, ::std::ffi::CStr::from_bytes_with_nul(b"Continue\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(11, ::std::ffi::CStr::from_bytes_with_nul(b"DoWhile\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(12, ::std::ffi::CStr::from_bytes_with_nul(b"DotAccess\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(13, ::std::ffi::CStr::from_bytes_with_nul(b"EveryScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(14, ::std::ffi::CStr::from_bytes_with_nul(b"ExprBigInt\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(15, ::std::ffi::CStr::from_bytes_with_nul(b"ExprBool\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(16, ::std::ffi::CStr::from_bytes_with_nul(b"ExprNumber\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(17, ::std::ffi::CStr::from_bytes_with_nul(b"ExprString\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(18, ::std::ffi::CStr::from_bytes_with_nul(b"Expression\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(19, ::std::ffi::CStr::from_bytes_with_nul(b"For\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(20, ::std::ffi::CStr::from_bytes_with_nul(b"ForIn\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(21, ::std::ffi::CStr::from_bytes_with_nul(b"Function\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(22, ::std::ffi::CStr::from_bytes_with_nul(b"FunctionArg\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(23, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Array\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(24, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Arrow\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(25, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ArrowParam\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(26, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Await\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(27, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_BinOp\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(28, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_BracketAccess\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(29, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Break\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(30, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ConstDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(31, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Continue\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(32, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_DoWhile\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(33, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_DotAccess\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(34, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_EveryScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(35, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprBigInt\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(36, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprBool\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(37, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprNumber\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(38, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprString\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(39, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Expression\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(40, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_For\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(41, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ForIn\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(42, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Function\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(43, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_FunctionArg\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(44, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_If\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(45, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ImplicitGlobal\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(46, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_InputScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(47, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Label\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(48, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_LetDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(49, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_NameRef\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(50, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Property\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(51, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Return\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(52, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Statement\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(53, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Switch\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(54, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_SwitchCase\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(55, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Template\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(56, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Ternary\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(57, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Throw\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(58, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Try\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(59, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_UnaryOp\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(60, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(61, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_While\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(62, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_With\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(63, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Yield\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(64, ::std::ffi::CStr::from_bytes_with_nul(b"If\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(65, ::std::ffi::CStr::from_bytes_with_nul(b"ImplicitGlobal\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(66, ::std::ffi::CStr::from_bytes_with_nul(b"InputScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(67, ::std::ffi::CStr::from_bytes_with_nul(b"InvalidNameUse\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(68, ::std::ffi::CStr::from_bytes_with_nul(b"Label\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(69, ::std::ffi::CStr::from_bytes_with_nul(b"LetDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(70, ::std::ffi::CStr::from_bytes_with_nul(b"NameInScope\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(71, ::std::ffi::CStr::from_bytes_with_nul(b"NameRef\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(72, ::std::ffi::CStr::from_bytes_with_nul(b"Property\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(73, ::std::ffi::CStr::from_bytes_with_nul(b"Return\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(74, ::std::ffi::CStr::from_bytes_with_nul(b"Statement\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(75, ::std::ffi::CStr::from_bytes_with_nul(b"Switch\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(76, ::std::ffi::CStr::from_bytes_with_nul(b"SwitchCase\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(77, ::std::ffi::CStr::from_bytes_with_nul(b"Template\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(78, ::std::ffi::CStr::from_bytes_with_nul(b"Ternary\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(79, ::std::ffi::CStr::from_bytes_with_nul(b"Throw\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(80, ::std::ffi::CStr::from_bytes_with_nul(b"Try\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(81, ::std::ffi::CStr::from_bytes_with_nul(b"UnaryOp\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(82, ::std::ffi::CStr::from_bytes_with_nul(b"VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(83, ::std::ffi::CStr::from_bytes_with_nul(b"VarUseBeforeDeclaration\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(84, ::std::ffi::CStr::from_bytes_with_nul(b"While\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(85, ::std::ffi::CStr::from_bytes_with_nul(b"With\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(86, ::std::ffi::CStr::from_bytes_with_nul(b"Yield\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(87, ::std::ffi::CStr::from_bytes_with_nul(b"__Null\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(88, ::std::ffi::CStr::from_bytes_with_nul(b"__Prefix_0\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(3, ::std::ffi::CStr::from_bytes_with_nul(b"Assign\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(4, ::std::ffi::CStr::from_bytes_with_nul(b"Await\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(5, ::std::ffi::CStr::from_bytes_with_nul(b"BinOp\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(6, ::std::ffi::CStr::from_bytes_with_nul(b"BracketAccess\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(7, ::std::ffi::CStr::from_bytes_with_nul(b"Break\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(8, ::std::ffi::CStr::from_bytes_with_nul(b"Call\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(9, ::std::ffi::CStr::from_bytes_with_nul(b"ChildScope\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(10, ::std::ffi::CStr::from_bytes_with_nul(b"ClassExpr\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(11, ::std::ffi::CStr::from_bytes_with_nul(b"ClosestFunction\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(12, ::std::ffi::CStr::from_bytes_with_nul(b"ConstDecl\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(13, ::std::ffi::CStr::from_bytes_with_nul(b"Continue\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(14, ::std::ffi::CStr::from_bytes_with_nul(b"DoWhile\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(15, ::std::ffi::CStr::from_bytes_with_nul(b"DotAccess\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(16, ::std::ffi::CStr::from_bytes_with_nul(b"EveryScope\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(17, ::std::ffi::CStr::from_bytes_with_nul(b"ExprBigInt\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(18, ::std::ffi::CStr::from_bytes_with_nul(b"ExprBool\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(19, ::std::ffi::CStr::from_bytes_with_nul(b"ExprNumber\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(20, ::std::ffi::CStr::from_bytes_with_nul(b"ExprString\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(21, ::std::ffi::CStr::from_bytes_with_nul(b"Expression\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(22, ::std::ffi::CStr::from_bytes_with_nul(b"For\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(23, ::std::ffi::CStr::from_bytes_with_nul(b"ForIn\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(24, ::std::ffi::CStr::from_bytes_with_nul(b"Function\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(25, ::std::ffi::CStr::from_bytes_with_nul(b"FunctionArg\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(26, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Array\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(27, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Arrow\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(28, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ArrowParam\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(29, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Assign\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(30, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Await\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(31, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_BinOp\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(32, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_BracketAccess\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(33, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Break\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(34, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Call\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(35, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ClassExpr\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(36, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ConstDecl\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(37, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Continue\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(38, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_DoWhile\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(39, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_DotAccess\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(40, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_EveryScope\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(41, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprBigInt\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(42, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprBool\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(43, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprNumber\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(44, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ExprString\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(45, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Expression\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(46, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_For\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(47, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ForIn\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(48, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Function\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(49, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_FunctionArg\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(50, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_If\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(51, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_ImplicitGlobal\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(52, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_InlineFunc\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(53, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_InlineFuncParam\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(54, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_InputScope\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(55, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Label\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(56, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_LetDecl\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(57, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_NameRef\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(58, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_New\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(59, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Property\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(60, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Return\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(61, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Statement\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(62, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Switch\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(63, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_SwitchCase\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(64, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Template\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(65, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Ternary\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(66, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Throw\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(67, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Try\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(68, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_UnaryOp\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(69, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(70, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_While\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(71, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_With\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(72, ::std::ffi::CStr::from_bytes_with_nul(b"INPUT_Yield\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(73, ::std::ffi::CStr::from_bytes_with_nul(b"If\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(74, ::std::ffi::CStr::from_bytes_with_nul(b"ImplicitGlobal\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(75, ::std::ffi::CStr::from_bytes_with_nul(b"InlineFunc\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(76, ::std::ffi::CStr::from_bytes_with_nul(b"InlineFuncParam\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(77, ::std::ffi::CStr::from_bytes_with_nul(b"InputScope\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(78, ::std::ffi::CStr::from_bytes_with_nul(b"InvalidNameUse\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(79, ::std::ffi::CStr::from_bytes_with_nul(b"Label\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(80, ::std::ffi::CStr::from_bytes_with_nul(b"LetDecl\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(81, ::std::ffi::CStr::from_bytes_with_nul(b"NameInScope\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(82, ::std::ffi::CStr::from_bytes_with_nul(b"NameRef\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(83, ::std::ffi::CStr::from_bytes_with_nul(b"New\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(84, ::std::ffi::CStr::from_bytes_with_nul(b"Property\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(85, ::std::ffi::CStr::from_bytes_with_nul(b"Return\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(86, ::std::ffi::CStr::from_bytes_with_nul(b"Statement\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(87, ::std::ffi::CStr::from_bytes_with_nul(b"Switch\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(88, ::std::ffi::CStr::from_bytes_with_nul(b"SwitchCase\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(89, ::std::ffi::CStr::from_bytes_with_nul(b"Template\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(90, ::std::ffi::CStr::from_bytes_with_nul(b"Ternary\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(91, ::std::ffi::CStr::from_bytes_with_nul(b"Throw\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(92, ::std::ffi::CStr::from_bytes_with_nul(b"Try\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(93, ::std::ffi::CStr::from_bytes_with_nul(b"UnaryOp\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(94, ::std::ffi::CStr::from_bytes_with_nul(b"VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(95, ::std::ffi::CStr::from_bytes_with_nul(b"VarUseBeforeDeclaration\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(96, ::std::ffi::CStr::from_bytes_with_nul(b"While\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(97, ::std::ffi::CStr::from_bytes_with_nul(b"With\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(98, ::std::ffi::CStr::from_bytes_with_nul(b"Yield\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(99, ::std::ffi::CStr::from_bytes_with_nul(b"__Null\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(100, ::std::ffi::CStr::from_bytes_with_nul(b"__Prefix_0\0").expect("Unreachable: A null byte was specifically inserted"));
         map
     });
     /// A map of input `Relations`s to their name as an `&'static str`
 pub static INPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(41, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(47, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::Array, "Array");
         map.insert(Relations::Arrow, "Arrow");
         map.insert(Relations::ArrowParam, "ArrowParam");
+        map.insert(Relations::Assign, "Assign");
         map.insert(Relations::Await, "Await");
         map.insert(Relations::BinOp, "BinOp");
         map.insert(Relations::BracketAccess, "BracketAccess");
         map.insert(Relations::Break, "Break");
+        map.insert(Relations::Call, "Call");
+        map.insert(Relations::ClassExpr, "ClassExpr");
         map.insert(Relations::ConstDecl, "ConstDecl");
         map.insert(Relations::Continue, "Continue");
         map.insert(Relations::DoWhile, "DoWhile");
@@ -806,10 +881,13 @@ pub static INPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, 
         map.insert(Relations::FunctionArg, "FunctionArg");
         map.insert(Relations::If, "If");
         map.insert(Relations::ImplicitGlobal, "ImplicitGlobal");
+        map.insert(Relations::InlineFunc, "InlineFunc");
+        map.insert(Relations::InlineFuncParam, "InlineFuncParam");
         map.insert(Relations::InputScope, "InputScope");
         map.insert(Relations::Label, "Label");
         map.insert(Relations::LetDecl, "LetDecl");
         map.insert(Relations::NameRef, "NameRef");
+        map.insert(Relations::New, "New");
         map.insert(Relations::Property, "Property");
         map.insert(Relations::Return, "Return");
         map.insert(Relations::Statement, "Statement");
@@ -829,16 +907,19 @@ pub static INPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, 
     /// A map of output `Relations`s to their name as an `&'static str`
 pub static OUTPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(46, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(52, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::ChildScope, "ChildScope");
         map.insert(Relations::ClosestFunction, "ClosestFunction");
         map.insert(Relations::INPUT_Array, "INPUT_Array");
         map.insert(Relations::INPUT_Arrow, "INPUT_Arrow");
         map.insert(Relations::INPUT_ArrowParam, "INPUT_ArrowParam");
+        map.insert(Relations::INPUT_Assign, "INPUT_Assign");
         map.insert(Relations::INPUT_Await, "INPUT_Await");
         map.insert(Relations::INPUT_BinOp, "INPUT_BinOp");
         map.insert(Relations::INPUT_BracketAccess, "INPUT_BracketAccess");
         map.insert(Relations::INPUT_Break, "INPUT_Break");
+        map.insert(Relations::INPUT_Call, "INPUT_Call");
+        map.insert(Relations::INPUT_ClassExpr, "INPUT_ClassExpr");
         map.insert(Relations::INPUT_ConstDecl, "INPUT_ConstDecl");
         map.insert(Relations::INPUT_Continue, "INPUT_Continue");
         map.insert(Relations::INPUT_DoWhile, "INPUT_DoWhile");
@@ -855,10 +936,13 @@ pub static OUTPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations,
         map.insert(Relations::INPUT_FunctionArg, "INPUT_FunctionArg");
         map.insert(Relations::INPUT_If, "INPUT_If");
         map.insert(Relations::INPUT_ImplicitGlobal, "INPUT_ImplicitGlobal");
+        map.insert(Relations::INPUT_InlineFunc, "INPUT_InlineFunc");
+        map.insert(Relations::INPUT_InlineFuncParam, "INPUT_InlineFuncParam");
         map.insert(Relations::INPUT_InputScope, "INPUT_InputScope");
         map.insert(Relations::INPUT_Label, "INPUT_Label");
         map.insert(Relations::INPUT_LetDecl, "INPUT_LetDecl");
         map.insert(Relations::INPUT_NameRef, "INPUT_NameRef");
+        map.insert(Relations::INPUT_New, "INPUT_New");
         map.insert(Relations::INPUT_Property, "INPUT_Property");
         map.insert(Relations::INPUT_Return, "INPUT_Return");
         map.insert(Relations::INPUT_Statement, "INPUT_Statement");
@@ -929,6 +1013,9 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         Relations::ArrowParam => {
             Ok(<::types::ArrowParam>::from_record(_rec)?.into_ddvalue())
         },
+        Relations::Assign => {
+            Ok(<::types::Assign>::from_record(_rec)?.into_ddvalue())
+        },
         Relations::Await => {
             Ok(<::types::Await>::from_record(_rec)?.into_ddvalue())
         },
@@ -941,8 +1028,14 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         Relations::Break => {
             Ok(<::types::Break>::from_record(_rec)?.into_ddvalue())
         },
+        Relations::Call => {
+            Ok(<::types::Call>::from_record(_rec)?.into_ddvalue())
+        },
         Relations::ChildScope => {
             Ok(<::types::ChildScope>::from_record(_rec)?.into_ddvalue())
+        },
+        Relations::ClassExpr => {
+            Ok(<::types::ClassExpr>::from_record(_rec)?.into_ddvalue())
         },
         Relations::ClosestFunction => {
             Ok(<::types::ClosestFunction>::from_record(_rec)?.into_ddvalue())
@@ -998,6 +1091,9 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         Relations::INPUT_ArrowParam => {
             Ok(<::types::ArrowParam>::from_record(_rec)?.into_ddvalue())
         },
+        Relations::INPUT_Assign => {
+            Ok(<::types::Assign>::from_record(_rec)?.into_ddvalue())
+        },
         Relations::INPUT_Await => {
             Ok(<::types::Await>::from_record(_rec)?.into_ddvalue())
         },
@@ -1009,6 +1105,12 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         },
         Relations::INPUT_Break => {
             Ok(<::types::Break>::from_record(_rec)?.into_ddvalue())
+        },
+        Relations::INPUT_Call => {
+            Ok(<::types::Call>::from_record(_rec)?.into_ddvalue())
+        },
+        Relations::INPUT_ClassExpr => {
+            Ok(<::types::ClassExpr>::from_record(_rec)?.into_ddvalue())
         },
         Relations::INPUT_ConstDecl => {
             Ok(<::types::ConstDecl>::from_record(_rec)?.into_ddvalue())
@@ -1058,6 +1160,12 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         Relations::INPUT_ImplicitGlobal => {
             Ok(<::types::ImplicitGlobal>::from_record(_rec)?.into_ddvalue())
         },
+        Relations::INPUT_InlineFunc => {
+            Ok(<::types::InlineFunc>::from_record(_rec)?.into_ddvalue())
+        },
+        Relations::INPUT_InlineFuncParam => {
+            Ok(<::types::InlineFuncParam>::from_record(_rec)?.into_ddvalue())
+        },
         Relations::INPUT_InputScope => {
             Ok(<::types::InputScope>::from_record(_rec)?.into_ddvalue())
         },
@@ -1069,6 +1177,9 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         },
         Relations::INPUT_NameRef => {
             Ok(<::types::NameRef>::from_record(_rec)?.into_ddvalue())
+        },
+        Relations::INPUT_New => {
+            Ok(<::types::New>::from_record(_rec)?.into_ddvalue())
         },
         Relations::INPUT_Property => {
             Ok(<::types::Property>::from_record(_rec)?.into_ddvalue())
@@ -1118,6 +1229,12 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         Relations::ImplicitGlobal => {
             Ok(<::types::ImplicitGlobal>::from_record(_rec)?.into_ddvalue())
         },
+        Relations::InlineFunc => {
+            Ok(<::types::InlineFunc>::from_record(_rec)?.into_ddvalue())
+        },
+        Relations::InlineFuncParam => {
+            Ok(<::types::InlineFuncParam>::from_record(_rec)?.into_ddvalue())
+        },
         Relations::InputScope => {
             Ok(<::types::InputScope>::from_record(_rec)?.into_ddvalue())
         },
@@ -1135,6 +1252,9 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         },
         Relations::NameRef => {
             Ok(<::types::NameRef>::from_record(_rec)?.into_ddvalue())
+        },
+        Relations::New => {
+            Ok(<::types::New>::from_record(_rec)?.into_ddvalue())
         },
         Relations::Property => {
             Ok(<::types::Property>::from_record(_rec)?.into_ddvalue())
@@ -1203,7 +1323,7 @@ pub fn idxkey_from_record(idx: Indexes, _rec: &differential_datalog::record::Rec
 }
 pub fn indexes2arrid(idx: Indexes) -> ArrId {
     match idx {
-        Indexes::__Null_by_none => ( 87, 0),
+        Indexes::__Null_by_none => ( 99, 0),
     }
 }
 #[derive(Copy,Clone,Debug,PartialEq,Eq,Hash)]
@@ -1211,92 +1331,104 @@ pub enum Relations {
     Array = 0,
     Arrow = 1,
     ArrowParam = 2,
-    Await = 3,
-    BinOp = 4,
-    BracketAccess = 5,
-    Break = 6,
-    ChildScope = 7,
-    ClosestFunction = 8,
-    ConstDecl = 9,
-    Continue = 10,
-    DoWhile = 11,
-    DotAccess = 12,
-    EveryScope = 13,
-    ExprBigInt = 14,
-    ExprBool = 15,
-    ExprNumber = 16,
-    ExprString = 17,
-    Expression = 18,
-    For = 19,
-    ForIn = 20,
-    Function = 21,
-    FunctionArg = 22,
-    INPUT_Array = 23,
-    INPUT_Arrow = 24,
-    INPUT_ArrowParam = 25,
-    INPUT_Await = 26,
-    INPUT_BinOp = 27,
-    INPUT_BracketAccess = 28,
-    INPUT_Break = 29,
-    INPUT_ConstDecl = 30,
-    INPUT_Continue = 31,
-    INPUT_DoWhile = 32,
-    INPUT_DotAccess = 33,
-    INPUT_EveryScope = 34,
-    INPUT_ExprBigInt = 35,
-    INPUT_ExprBool = 36,
-    INPUT_ExprNumber = 37,
-    INPUT_ExprString = 38,
-    INPUT_Expression = 39,
-    INPUT_For = 40,
-    INPUT_ForIn = 41,
-    INPUT_Function = 42,
-    INPUT_FunctionArg = 43,
-    INPUT_If = 44,
-    INPUT_ImplicitGlobal = 45,
-    INPUT_InputScope = 46,
-    INPUT_Label = 47,
-    INPUT_LetDecl = 48,
-    INPUT_NameRef = 49,
-    INPUT_Property = 50,
-    INPUT_Return = 51,
-    INPUT_Statement = 52,
-    INPUT_Switch = 53,
-    INPUT_SwitchCase = 54,
-    INPUT_Template = 55,
-    INPUT_Ternary = 56,
-    INPUT_Throw = 57,
-    INPUT_Try = 58,
-    INPUT_UnaryOp = 59,
-    INPUT_VarDecl = 60,
-    INPUT_While = 61,
-    INPUT_With = 62,
-    INPUT_Yield = 63,
-    If = 64,
-    ImplicitGlobal = 65,
-    InputScope = 66,
-    InvalidNameUse = 67,
-    Label = 68,
-    LetDecl = 69,
-    NameInScope = 70,
-    NameRef = 71,
-    Property = 72,
-    Return = 73,
-    Statement = 74,
-    Switch = 75,
-    SwitchCase = 76,
-    Template = 77,
-    Ternary = 78,
-    Throw = 79,
-    Try = 80,
-    UnaryOp = 81,
-    VarDecl = 82,
-    VarUseBeforeDeclaration = 83,
-    While = 84,
-    With = 85,
-    Yield = 86,
-    __Null = 87,
-    __Prefix_0 = 88
+    Assign = 3,
+    Await = 4,
+    BinOp = 5,
+    BracketAccess = 6,
+    Break = 7,
+    Call = 8,
+    ChildScope = 9,
+    ClassExpr = 10,
+    ClosestFunction = 11,
+    ConstDecl = 12,
+    Continue = 13,
+    DoWhile = 14,
+    DotAccess = 15,
+    EveryScope = 16,
+    ExprBigInt = 17,
+    ExprBool = 18,
+    ExprNumber = 19,
+    ExprString = 20,
+    Expression = 21,
+    For = 22,
+    ForIn = 23,
+    Function = 24,
+    FunctionArg = 25,
+    INPUT_Array = 26,
+    INPUT_Arrow = 27,
+    INPUT_ArrowParam = 28,
+    INPUT_Assign = 29,
+    INPUT_Await = 30,
+    INPUT_BinOp = 31,
+    INPUT_BracketAccess = 32,
+    INPUT_Break = 33,
+    INPUT_Call = 34,
+    INPUT_ClassExpr = 35,
+    INPUT_ConstDecl = 36,
+    INPUT_Continue = 37,
+    INPUT_DoWhile = 38,
+    INPUT_DotAccess = 39,
+    INPUT_EveryScope = 40,
+    INPUT_ExprBigInt = 41,
+    INPUT_ExprBool = 42,
+    INPUT_ExprNumber = 43,
+    INPUT_ExprString = 44,
+    INPUT_Expression = 45,
+    INPUT_For = 46,
+    INPUT_ForIn = 47,
+    INPUT_Function = 48,
+    INPUT_FunctionArg = 49,
+    INPUT_If = 50,
+    INPUT_ImplicitGlobal = 51,
+    INPUT_InlineFunc = 52,
+    INPUT_InlineFuncParam = 53,
+    INPUT_InputScope = 54,
+    INPUT_Label = 55,
+    INPUT_LetDecl = 56,
+    INPUT_NameRef = 57,
+    INPUT_New = 58,
+    INPUT_Property = 59,
+    INPUT_Return = 60,
+    INPUT_Statement = 61,
+    INPUT_Switch = 62,
+    INPUT_SwitchCase = 63,
+    INPUT_Template = 64,
+    INPUT_Ternary = 65,
+    INPUT_Throw = 66,
+    INPUT_Try = 67,
+    INPUT_UnaryOp = 68,
+    INPUT_VarDecl = 69,
+    INPUT_While = 70,
+    INPUT_With = 71,
+    INPUT_Yield = 72,
+    If = 73,
+    ImplicitGlobal = 74,
+    InlineFunc = 75,
+    InlineFuncParam = 76,
+    InputScope = 77,
+    InvalidNameUse = 78,
+    Label = 79,
+    LetDecl = 80,
+    NameInScope = 81,
+    NameRef = 82,
+    New = 83,
+    Property = 84,
+    Return = 85,
+    Statement = 86,
+    Switch = 87,
+    SwitchCase = 88,
+    Template = 89,
+    Ternary = 90,
+    Throw = 91,
+    Try = 92,
+    UnaryOp = 93,
+    VarDecl = 94,
+    VarUseBeforeDeclaration = 95,
+    While = 96,
+    With = 97,
+    Yield = 98,
+    __Null = 99,
+    __Prefix_0 = 100
 }
 #[derive(Copy,Clone,Debug,PartialEq,Eq,Hash)]
 pub enum Indexes {
@@ -1503,6 +1635,49 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                              }],
                          change_cb:    None
                      };
+    let Assign = Relation {
+                     name:         "Assign".to_string(),
+                     input:        true,
+                     distinct:     false,
+                     caching_mode: CachingMode::Set,
+                     key_func:     None,
+                     id:           Relations::Assign as RelId,
+                     rules:        vec![
+                         ],
+                     arrangements: vec![
+                         ],
+                     change_cb:    None
+                 };
+    let INPUT_Assign = Relation {
+                           name:         "INPUT_Assign".to_string(),
+                           input:        false,
+                           distinct:     false,
+                           caching_mode: CachingMode::Set,
+                           key_func:     None,
+                           id:           Relations::INPUT_Assign as RelId,
+                           rules:        vec![
+                               /* INPUT_Assign[x] :- Assign[(x: Assign)]. */
+                               Rule::CollectionRule {
+                                   description: "INPUT_Assign[x] :- Assign[(x: Assign)].".to_string(),
+                                   rel: Relations::Assign as RelId,
+                                   xform: Some(XFormCollection::FilterMap{
+                                                   description: "head of INPUT_Assign[x] :- Assign[(x: Assign)]." .to_string(),
+                                                   fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
+                                                   {
+                                                       let ref x = match *unsafe {<::types::Assign>::from_ddvalue_ref(&__v) } {
+                                                           ref x => (*x).clone(),
+                                                           _ => return None
+                                                       };
+                                                       Some(((*x).clone()).into_ddvalue())
+                                                   }
+                                                   __f},
+                                                   next: Box::new(None)
+                                               })
+                               }],
+                           arrangements: vec![
+                               ],
+                           change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
+                       };
     let Await = Relation {
                     name:         "Await".to_string(),
                     input:        true,
@@ -1675,6 +1850,92 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                               ],
                           change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
                       };
+    let Call = Relation {
+                   name:         "Call".to_string(),
+                   input:        true,
+                   distinct:     false,
+                   caching_mode: CachingMode::Set,
+                   key_func:     None,
+                   id:           Relations::Call as RelId,
+                   rules:        vec![
+                       ],
+                   arrangements: vec![
+                       ],
+                   change_cb:    None
+               };
+    let INPUT_Call = Relation {
+                         name:         "INPUT_Call".to_string(),
+                         input:        false,
+                         distinct:     false,
+                         caching_mode: CachingMode::Set,
+                         key_func:     None,
+                         id:           Relations::INPUT_Call as RelId,
+                         rules:        vec![
+                             /* INPUT_Call[x] :- Call[(x: Call)]. */
+                             Rule::CollectionRule {
+                                 description: "INPUT_Call[x] :- Call[(x: Call)].".to_string(),
+                                 rel: Relations::Call as RelId,
+                                 xform: Some(XFormCollection::FilterMap{
+                                                 description: "head of INPUT_Call[x] :- Call[(x: Call)]." .to_string(),
+                                                 fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
+                                                 {
+                                                     let ref x = match *unsafe {<::types::Call>::from_ddvalue_ref(&__v) } {
+                                                         ref x => (*x).clone(),
+                                                         _ => return None
+                                                     };
+                                                     Some(((*x).clone()).into_ddvalue())
+                                                 }
+                                                 __f},
+                                                 next: Box::new(None)
+                                             })
+                             }],
+                         arrangements: vec![
+                             ],
+                         change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
+                     };
+    let ClassExpr = Relation {
+                        name:         "ClassExpr".to_string(),
+                        input:        true,
+                        distinct:     false,
+                        caching_mode: CachingMode::Set,
+                        key_func:     None,
+                        id:           Relations::ClassExpr as RelId,
+                        rules:        vec![
+                            ],
+                        arrangements: vec![
+                            ],
+                        change_cb:    None
+                    };
+    let INPUT_ClassExpr = Relation {
+                              name:         "INPUT_ClassExpr".to_string(),
+                              input:        false,
+                              distinct:     false,
+                              caching_mode: CachingMode::Set,
+                              key_func:     None,
+                              id:           Relations::INPUT_ClassExpr as RelId,
+                              rules:        vec![
+                                  /* INPUT_ClassExpr[x] :- ClassExpr[(x: ClassExpr)]. */
+                                  Rule::CollectionRule {
+                                      description: "INPUT_ClassExpr[x] :- ClassExpr[(x: ClassExpr)].".to_string(),
+                                      rel: Relations::ClassExpr as RelId,
+                                      xform: Some(XFormCollection::FilterMap{
+                                                      description: "head of INPUT_ClassExpr[x] :- ClassExpr[(x: ClassExpr)]." .to_string(),
+                                                      fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
+                                                      {
+                                                          let ref x = match *unsafe {<::types::ClassExpr>::from_ddvalue_ref(&__v) } {
+                                                              ref x => (*x).clone(),
+                                                              _ => return None
+                                                          };
+                                                          Some(((*x).clone()).into_ddvalue())
+                                                      }
+                                                      __f},
+                                                      next: Box::new(None)
+                                                  })
+                                  }],
+                              arrangements: vec![
+                                  ],
+                              change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
+                          };
     let ConstDecl = Relation {
                         name:         "ConstDecl".to_string(),
                         input:        true,
@@ -2437,6 +2698,104 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                                        ],
                                    change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
                                };
+    let InlineFunc = Relation {
+                         name:         "InlineFunc".to_string(),
+                         input:        true,
+                         distinct:     false,
+                         caching_mode: CachingMode::Set,
+                         key_func:     None,
+                         id:           Relations::InlineFunc as RelId,
+                         rules:        vec![
+                             ],
+                         arrangements: vec![
+                             Arrangement::Map{
+                                name: r###"(InlineFunc{.expr_id=(_0: ExprId), .name=(_: ddlog_std::Option<Name>), .body=(ddlog_std::Some{.x=(_: StmtId)}: ddlog_std::Option<StmtId>)}: InlineFunc) /*join*/"###.to_string(),
+                                 afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
+                                 {
+                                     let __cloned = __v.clone();
+                                     match unsafe {< ::types::InlineFunc>::from_ddvalue(__v) } {
+                                         ::types::InlineFunc{expr_id: ref _0, name: _, body: ::types::ddlog_std::Option::Some{x: _}} => Some(((*_0).clone()).into_ddvalue()),
+                                         _ => None
+                                     }.map(|x|(x,__cloned))
+                                 }
+                                 __f},
+                                 queryable: false
+                             }],
+                         change_cb:    None
+                     };
+    let INPUT_InlineFunc = Relation {
+                               name:         "INPUT_InlineFunc".to_string(),
+                               input:        false,
+                               distinct:     false,
+                               caching_mode: CachingMode::Set,
+                               key_func:     None,
+                               id:           Relations::INPUT_InlineFunc as RelId,
+                               rules:        vec![
+                                   /* INPUT_InlineFunc[x] :- InlineFunc[(x: InlineFunc)]. */
+                                   Rule::CollectionRule {
+                                       description: "INPUT_InlineFunc[x] :- InlineFunc[(x: InlineFunc)].".to_string(),
+                                       rel: Relations::InlineFunc as RelId,
+                                       xform: Some(XFormCollection::FilterMap{
+                                                       description: "head of INPUT_InlineFunc[x] :- InlineFunc[(x: InlineFunc)]." .to_string(),
+                                                       fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
+                                                       {
+                                                           let ref x = match *unsafe {<::types::InlineFunc>::from_ddvalue_ref(&__v) } {
+                                                               ref x => (*x).clone(),
+                                                               _ => return None
+                                                           };
+                                                           Some(((*x).clone()).into_ddvalue())
+                                                       }
+                                                       __f},
+                                                       next: Box::new(None)
+                                                   })
+                                   }],
+                               arrangements: vec![
+                                   ],
+                               change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
+                           };
+    let InlineFuncParam = Relation {
+                              name:         "InlineFuncParam".to_string(),
+                              input:        true,
+                              distinct:     false,
+                              caching_mode: CachingMode::Set,
+                              key_func:     None,
+                              id:           Relations::InlineFuncParam as RelId,
+                              rules:        vec![
+                                  ],
+                              arrangements: vec![
+                                  ],
+                              change_cb:    None
+                          };
+    let INPUT_InlineFuncParam = Relation {
+                                    name:         "INPUT_InlineFuncParam".to_string(),
+                                    input:        false,
+                                    distinct:     false,
+                                    caching_mode: CachingMode::Set,
+                                    key_func:     None,
+                                    id:           Relations::INPUT_InlineFuncParam as RelId,
+                                    rules:        vec![
+                                        /* INPUT_InlineFuncParam[x] :- InlineFuncParam[(x: InlineFuncParam)]. */
+                                        Rule::CollectionRule {
+                                            description: "INPUT_InlineFuncParam[x] :- InlineFuncParam[(x: InlineFuncParam)].".to_string(),
+                                            rel: Relations::InlineFuncParam as RelId,
+                                            xform: Some(XFormCollection::FilterMap{
+                                                            description: "head of INPUT_InlineFuncParam[x] :- InlineFuncParam[(x: InlineFuncParam)]." .to_string(),
+                                                            fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
+                                                            {
+                                                                let ref x = match *unsafe {<::types::InlineFuncParam>::from_ddvalue_ref(&__v) } {
+                                                                    ref x => (*x).clone(),
+                                                                    _ => return None
+                                                                };
+                                                                Some(((*x).clone()).into_ddvalue())
+                                                            }
+                                                            __f},
+                                                            next: Box::new(None)
+                                                        })
+                                        }],
+                                    arrangements: vec![
+                                        ],
+                                    change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
+                                };
     let InputScope = Relation {
                          name:         "InputScope".to_string(),
                          input:        true,
@@ -2790,6 +3149,49 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                                 ],
                             change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
                         };
+    let New = Relation {
+                  name:         "New".to_string(),
+                  input:        true,
+                  distinct:     false,
+                  caching_mode: CachingMode::Set,
+                  key_func:     None,
+                  id:           Relations::New as RelId,
+                  rules:        vec![
+                      ],
+                  arrangements: vec![
+                      ],
+                  change_cb:    None
+              };
+    let INPUT_New = Relation {
+                        name:         "INPUT_New".to_string(),
+                        input:        false,
+                        distinct:     false,
+                        caching_mode: CachingMode::Set,
+                        key_func:     None,
+                        id:           Relations::INPUT_New as RelId,
+                        rules:        vec![
+                            /* INPUT_New[x] :- New[(x: New)]. */
+                            Rule::CollectionRule {
+                                description: "INPUT_New[x] :- New[(x: New)].".to_string(),
+                                rel: Relations::New as RelId,
+                                xform: Some(XFormCollection::FilterMap{
+                                                description: "head of INPUT_New[x] :- New[(x: New)]." .to_string(),
+                                                fmfun: &{fn __f(__v: DDValue) -> Option<DDValue>
+                                                {
+                                                    let ref x = match *unsafe {<::types::New>::from_ddvalue_ref(&__v) } {
+                                                        ref x => (*x).clone(),
+                                                        _ => return None
+                                                    };
+                                                    Some(((*x).clone()).into_ddvalue())
+                                                }
+                                                __f},
+                                                next: Box::new(None)
+                                            })
+                            }],
+                        arrangements: vec![
+                            ],
+                        change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
+                    };
     let Property = Relation {
                        name:         "Property".to_string(),
                        input:        true,
@@ -3600,6 +4002,67 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                                                                  }))
                                          }
                               },
+                              /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(AnyIdExpr{.expr=expr}: AnyId)}: NameInScope)] :- InlineFuncParam[(InlineFuncParam{.expr_id=(expr: ExprId), .param=(pat: internment::Intern<Pattern>)}: InlineFuncParam)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), InlineFunc[(InlineFunc{.expr_id=(expr: ExprId), .name=(_: ddlog_std::Option<Name>), .body=(ddlog_std::Some{.x=(body: StmtId)}: ddlog_std::Option<StmtId>)}: InlineFunc)], Statement[(Statement{.id=(body: StmtId), .kind=(_: StmtKind), .scope=(scope: Scope), .span=(_: Span)}: Statement)]. */
+                              Rule::CollectionRule {
+                                  description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=(AnyIdExpr{.expr=expr}: AnyId)}: NameInScope)] :- InlineFuncParam[(InlineFuncParam{.expr_id=(expr: ExprId), .param=(pat: internment::Intern<Pattern>)}: InlineFuncParam)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), InlineFunc[(InlineFunc{.expr_id=(expr: ExprId), .name=(_: ddlog_std::Option<Name>), .body=(ddlog_std::Some{.x=(body: StmtId)}: ddlog_std::Option<StmtId>)}: InlineFunc)], Statement[(Statement{.id=(body: StmtId), .kind=(_: StmtKind), .scope=(scope: Scope), .span=(_: Span)}: Statement)].".to_string(),
+                                  rel: Relations::InlineFuncParam as RelId,
+                                  xform: Some(XFormCollection::Arrange {
+                                                  description: "arrange InlineFuncParam[(InlineFuncParam{.expr_id=(expr: ExprId), .param=(pat: internment::Intern<Pattern>)}: InlineFuncParam)] by (expr)" .to_string(),
+                                                  afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
+                                                  {
+                                                      let (ref expr, ref pat) = match *unsafe {<::types::InlineFuncParam>::from_ddvalue_ref(&__v) } {
+                                                          ::types::InlineFuncParam{expr_id: ref expr, param: ref pat} => ((*expr).clone(), (*pat).clone()),
+                                                          _ => return None
+                                                      };
+                                                      let ref name: ::types::internment::Intern<String> = match (*::types::internment::ival(pat)).clone() {
+                                                          ::types::Pattern{name: name} => name,
+                                                          _ => return None
+                                                      };
+                                                      Some((((*expr).clone()).into_ddvalue(), (::types::ddlog_std::tuple2((*expr).clone(), (*name).clone())).into_ddvalue()))
+                                                  }
+                                                  __f},
+                                                  next: Box::new(XFormArrangement::Join{
+                                                                     description: "InlineFuncParam[(InlineFuncParam{.expr_id=(expr: ExprId), .param=(pat: internment::Intern<Pattern>)}: InlineFuncParam)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), InlineFunc[(InlineFunc{.expr_id=(expr: ExprId), .name=(_: ddlog_std::Option<Name>), .body=(ddlog_std::Some{.x=(body: StmtId)}: ddlog_std::Option<StmtId>)}: InlineFunc)]".to_string(),
+                                                                     ffun: None,
+                                                                     arrangement: (Relations::InlineFunc as RelId,0),
+                                                                     jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,__v2: &DDValue) -> Option<DDValue>
+                                                                     {
+                                                                         let ::types::ddlog_std::tuple2(ref expr, ref name) = *unsafe {<::types::ddlog_std::tuple2<::types::ExprId, ::types::internment::Intern<String>>>::from_ddvalue_ref( __v1 ) };
+                                                                         let ref body = match *unsafe {<::types::InlineFunc>::from_ddvalue_ref(__v2) } {
+                                                                             ::types::InlineFunc{expr_id: _, name: _, body: ::types::ddlog_std::Option::Some{x: ref body}} => (*body).clone(),
+                                                                             _ => return None
+                                                                         };
+                                                                         Some((::types::ddlog_std::tuple3((*expr).clone(), (*name).clone(), (*body).clone())).into_ddvalue())
+                                                                     }
+                                                                     __f},
+                                                                     next: Box::new(Some(XFormCollection::Arrange {
+                                                                                             description: "arrange InlineFuncParam[(InlineFuncParam{.expr_id=(expr: ExprId), .param=(pat: internment::Intern<Pattern>)}: InlineFuncParam)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), InlineFunc[(InlineFunc{.expr_id=(expr: ExprId), .name=(_: ddlog_std::Option<Name>), .body=(ddlog_std::Some{.x=(body: StmtId)}: ddlog_std::Option<StmtId>)}: InlineFunc)] by (body)" .to_string(),
+                                                                                             afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
+                                                                                             {
+                                                                                                 let ::types::ddlog_std::tuple3(ref expr, ref name, ref body) = *unsafe {<::types::ddlog_std::tuple3<::types::ExprId, ::types::internment::Intern<String>, ::types::StmtId>>::from_ddvalue_ref( &__v ) };
+                                                                                                 Some((((*body).clone()).into_ddvalue(), (::types::ddlog_std::tuple2((*expr).clone(), (*name).clone())).into_ddvalue()))
+                                                                                             }
+                                                                                             __f},
+                                                                                             next: Box::new(XFormArrangement::Join{
+                                                                                                                description: "InlineFuncParam[(InlineFuncParam{.expr_id=(expr: ExprId), .param=(pat: internment::Intern<Pattern>)}: InlineFuncParam)], ((SinglePattern{.name=(var name: internment::Intern<string>)}: Pattern) = ((internment::ival: function(internment::Intern<Pattern>):Pattern)(pat))), InlineFunc[(InlineFunc{.expr_id=(expr: ExprId), .name=(_: ddlog_std::Option<Name>), .body=(ddlog_std::Some{.x=(body: StmtId)}: ddlog_std::Option<StmtId>)}: InlineFunc)], Statement[(Statement{.id=(body: StmtId), .kind=(_: StmtKind), .scope=(scope: Scope), .span=(_: Span)}: Statement)]".to_string(),
+                                                                                                                ffun: None,
+                                                                                                                arrangement: (Relations::Statement as RelId,0),
+                                                                                                                jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,__v2: &DDValue) -> Option<DDValue>
+                                                                                                                {
+                                                                                                                    let ::types::ddlog_std::tuple2(ref expr, ref name) = *unsafe {<::types::ddlog_std::tuple2<::types::ExprId, ::types::internment::Intern<String>>>::from_ddvalue_ref( __v1 ) };
+                                                                                                                    let ref scope = match *unsafe {<::types::Statement>::from_ddvalue_ref(__v2) } {
+                                                                                                                        ::types::Statement{id: _, kind: _, scope: ref scope, span: _} => (*scope).clone(),
+                                                                                                                        _ => return None
+                                                                                                                    };
+                                                                                                                    Some(((::types::NameInScope{name: (*name).clone(), scope: (*scope).clone(), declared_in: (::types::AnyId::AnyIdExpr{expr: (*expr).clone()})})).into_ddvalue())
+                                                                                                                }
+                                                                                                                __f},
+                                                                                                                next: Box::new(None)
+                                                                                                            })
+                                                                                         }))
+                                                                 })
+                                              })
+                              },
                               /* NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=declared_in}: NameInScope)] :- NameInScope[(NameInScope{.name=(name: internment::Intern<string>), .scope=(interum: Scope), .declared_in=(declared_in: AnyId)}: NameInScope)], ChildScope[(ChildScope{.parent=(interum: Scope), .child=(scope: Scope)}: ChildScope)]. */
                               Rule::ArrangementRule {
                                   description: "NameInScope[(NameInScope{.name=name, .scope=scope, .declared_in=declared_in}: NameInScope)] :- NameInScope[(NameInScope{.name=(name: internment::Intern<string>), .scope=(interum: Scope), .declared_in=(declared_in: AnyId)}: NameInScope)], ChildScope[(ChildScope{.parent=(interum: Scope), .child=(scope: Scope)}: ChildScope)].".to_string(),
@@ -4021,6 +4484,8 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
             ProgNode::Rel{rel: ArrowParam},
             ProgNode::Rel{rel: INPUT_ArrowParam},
             ProgNode::Rel{rel: __Prefix_0},
+            ProgNode::Rel{rel: Assign},
+            ProgNode::Rel{rel: INPUT_Assign},
             ProgNode::Rel{rel: Await},
             ProgNode::Rel{rel: INPUT_Await},
             ProgNode::Rel{rel: BinOp},
@@ -4029,6 +4494,10 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
             ProgNode::Rel{rel: INPUT_BracketAccess},
             ProgNode::Rel{rel: Break},
             ProgNode::Rel{rel: INPUT_Break},
+            ProgNode::Rel{rel: Call},
+            ProgNode::Rel{rel: INPUT_Call},
+            ProgNode::Rel{rel: ClassExpr},
+            ProgNode::Rel{rel: INPUT_ClassExpr},
             ProgNode::Rel{rel: ConstDecl},
             ProgNode::Rel{rel: INPUT_ConstDecl},
             ProgNode::Rel{rel: Continue},
@@ -4061,6 +4530,10 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
             ProgNode::Rel{rel: INPUT_If},
             ProgNode::Rel{rel: ImplicitGlobal},
             ProgNode::Rel{rel: INPUT_ImplicitGlobal},
+            ProgNode::Rel{rel: InlineFunc},
+            ProgNode::Rel{rel: INPUT_InlineFunc},
+            ProgNode::Rel{rel: InlineFuncParam},
+            ProgNode::Rel{rel: INPUT_InlineFuncParam},
             ProgNode::Rel{rel: InputScope},
             ProgNode::Rel{rel: ChildScope},
             ProgNode::Rel{rel: ClosestFunction},
@@ -4071,6 +4544,8 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
             ProgNode::Rel{rel: INPUT_LetDecl},
             ProgNode::Rel{rel: NameRef},
             ProgNode::Rel{rel: INPUT_NameRef},
+            ProgNode::Rel{rel: New},
+            ProgNode::Rel{rel: INPUT_New},
             ProgNode::Rel{rel: Property},
             ProgNode::Rel{rel: INPUT_Property},
             ProgNode::Rel{rel: Return},

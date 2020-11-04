@@ -1,17 +1,18 @@
 use crate::{datalog::DatalogBuilder, AnalyzerInner, Visit};
 use rslint_core::rule_prelude::{
     ast::{
-        ArrayExpr, ArrowExpr, ArrowExprParams, AstChildren, AwaitExpr, BinExpr, BracketExpr,
-        CondExpr, DotExpr, Expr, ExprOrSpread, GroupingExpr, Literal, LiteralKind, NameRef,
-        ObjectExpr, ObjectProp, ParameterList, PropName, Template, TemplateElement, ThisExpr,
-        UnaryExpr, YieldExpr,
+        ArgList, ArrayExpr, ArrowExpr, ArrowExprParams, AssignExpr, AstChildren, AwaitExpr,
+        BinExpr, BracketExpr, CallExpr, ClassElement, ClassExpr, CondExpr, DotExpr, Expr,
+        ExprOrSpread, FnExpr, GroupingExpr, ImportCall, ImportMeta, Literal, LiteralKind, NameRef,
+        NewExpr, NewTarget, ObjectExpr, ObjectProp, ParameterList, PatternOrExpr, PropName,
+        SequenceExpr, SuperCall, Template, TemplateElement, ThisExpr, UnaryExpr, YieldExpr,
     },
     AstNode, SyntaxNodeExt,
 };
 use rslint_parser::ast::ExprOrBlock;
 use types::{
-    ddlog_std::Either, internment::Intern, ArrayElement, ExprId, Pattern as DatalogPattern,
-    PropertyKey, PropertyVal,
+    ddlog_std::Either, internment::Intern, ArrayElement, ClassElement as DatalogClassElement,
+    ExprId, Pattern as DatalogPattern, PropertyKey, PropertyVal,
 };
 
 impl<'ddlog> Visit<'ddlog, Expr> for AnalyzerInner {
@@ -29,19 +30,19 @@ impl<'ddlog> Visit<'ddlog, Expr> for AnalyzerInner {
             Expr::GroupingExpr(grouping) => self.visit(scope, grouping),
             Expr::BracketExpr(bracket) => self.visit(scope, bracket),
             Expr::DotExpr(dot) => self.visit(scope, dot),
-            Expr::NewExpr(_) => ExprId::new(u32::max_value()),
-            Expr::CallExpr(_) => ExprId::new(u32::max_value()),
+            Expr::NewExpr(new) => self.visit(scope, new),
+            Expr::CallExpr(call) => self.visit(scope, call),
             Expr::UnaryExpr(unary) => self.visit(scope, unary),
             Expr::BinExpr(bin) => self.visit(scope, bin),
             Expr::CondExpr(cond) => self.visit(scope, cond),
-            Expr::AssignExpr(_) => ExprId::new(u32::max_value()),
-            Expr::SequenceExpr(_) => ExprId::new(u32::max_value()),
-            Expr::FnExpr(_) => ExprId::new(u32::max_value()),
-            Expr::ClassExpr(_) => ExprId::new(u32::max_value()),
-            Expr::NewTarget(_) => ExprId::new(u32::max_value()),
-            Expr::ImportMeta(_) => ExprId::new(u32::max_value()),
-            Expr::SuperCall(_) => ExprId::new(u32::max_value()),
-            Expr::ImportCall(_) => ExprId::new(u32::max_value()),
+            Expr::AssignExpr(assign) => self.visit(scope, assign),
+            Expr::SequenceExpr(sequence) => self.visit(scope, sequence),
+            Expr::FnExpr(fn_expr) => self.visit(scope, fn_expr),
+            Expr::ClassExpr(class) => self.visit(scope, class),
+            Expr::NewTarget(target) => self.visit(scope, target),
+            Expr::ImportMeta(import) => self.visit(scope, import),
+            Expr::SuperCall(super_call) => self.visit(scope, super_call),
+            Expr::ImportCall(import) => self.visit(scope, import),
             Expr::YieldExpr(yield_expr) => self.visit(scope, yield_expr),
             Expr::AwaitExpr(await_expr) => self.visit(scope, await_expr),
         }
@@ -362,5 +363,170 @@ impl<'ddlog> Visit<'ddlog, DotExpr> for AnalyzerInner {
         let property = self.visit(scope, dot.prop());
 
         scope.dot(object, property, dot.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, NewExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, new: NewExpr) -> Self::Output {
+        let object = self.visit(scope, new.object());
+        let args = self.visit(scope, new.arguments());
+
+        scope.new(object, args, new.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, ArgList> for AnalyzerInner {
+    type Output = Vec<ExprId>;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, args: ArgList) -> Self::Output {
+        args.args().map(|arg| self.visit(scope, arg)).collect()
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, CallExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, call: CallExpr) -> Self::Output {
+        let callee = self.visit(scope, call.callee());
+        let args = self.visit(scope, call.arguments());
+
+        scope.call(callee, args, call.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, AssignExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, assign: AssignExpr) -> Self::Output {
+        let lhs = self.visit(scope, assign.lhs());
+        let rhs = self.visit(scope, assign.rhs());
+        let op = assign.op().map(Into::into);
+
+        scope.assign(lhs, rhs, op, assign.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, PatternOrExpr> for AnalyzerInner {
+    type Output = Either<Intern<DatalogPattern>, ExprId>;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, either: PatternOrExpr) -> Self::Output {
+        match either {
+            PatternOrExpr::Pattern(pattern) => Either::Left {
+                l: self.visit(scope, pattern),
+            },
+            PatternOrExpr::Expr(expr) => Either::Right {
+                r: self.visit(scope, expr),
+            },
+        }
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, SequenceExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, sequence: SequenceExpr) -> Self::Output {
+        let exprs = self.visit(scope, sequence.exprs());
+        scope.sequence(exprs, sequence.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, AstChildren<Expr>> for AnalyzerInner {
+    type Output = Vec<ExprId>;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, exprs: AstChildren<Expr>) -> Self::Output {
+        exprs.map(|expr| self.visit(scope, expr)).collect()
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, NewTarget> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, target: NewTarget) -> Self::Output {
+        scope.new_target(target.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, ImportMeta> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, import: ImportMeta) -> Self::Output {
+        scope.import_meta(import.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, FnExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, fn_expr: FnExpr) -> Self::Output {
+        let name = self.visit(scope, fn_expr.name());
+        let params = self.visit(scope, fn_expr.parameters()).unwrap_or_default();
+        let body = self.visit(scope, fn_expr.body()).flatten();
+
+        scope.fn_expr(name, params, body, fn_expr.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, SuperCall> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, super_call: SuperCall) -> Self::Output {
+        let args = self.visit(scope, super_call.arguments());
+        scope.super_call(args, super_call.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, ImportCall> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, import: ImportCall) -> Self::Output {
+        let arg = self.visit(scope, import.argument());
+        scope.import_call(arg, import.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, ClassExpr> for AnalyzerInner {
+    type Output = ExprId;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, class: ClassExpr) -> Self::Output {
+        let element = self.visit(scope, class.body().and_then(|body| body.elements()));
+        scope.class_expr(element, class.range())
+    }
+}
+
+impl<'ddlog> Visit<'ddlog, ClassElement> for AnalyzerInner {
+    type Output = DatalogClassElement;
+
+    fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, elem: ClassElement) -> Self::Output {
+        match elem {
+            ClassElement::EmptyStmt(_empty) => DatalogClassElement::ClassEmptyElem,
+            ClassElement::Method(method) => {
+                let name = self.visit(scope, method.name()).into();
+                let params = self
+                    .visit(scope, method.parameters())
+                    .map(Into::into)
+                    .into();
+                let body = self.visit(scope, method.body()).flatten().into();
+
+                DatalogClassElement::ClassMethod { name, params, body }
+            }
+            ClassElement::StaticMethod(static_method) => {
+                let method = static_method.method();
+                let method = method.as_ref();
+
+                let name = self.visit(scope, method.and_then(|m| m.name())).into();
+                let params = self
+                    .visit(scope, method.and_then(|m| m.parameters()))
+                    .map(Into::into)
+                    .into();
+                let body = self
+                    .visit(scope, method.and_then(|m| m.body()))
+                    .flatten()
+                    .into();
+
+                DatalogClassElement::ClassStaticMethod { name, params, body }
+            }
+        }
     }
 }
