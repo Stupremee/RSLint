@@ -835,7 +835,7 @@ pub(crate) const AST_SRC: AstSrc = AstSrc {
 
         struct ClassBody {
             T!['{'],
-            elements: ClassElement,
+            elements: [ClassElement],
             T!['}']
         }
 
