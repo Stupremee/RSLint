@@ -197,7 +197,7 @@ impl TryFrom<&RelIdentifier> for Relations {
 }
 
 
-decl_update_deserializer!(UpdateSerializer,(0, ::types::Array), (1, ::types::Arrow), (2, ::types::ArrowParam), (3, ::types::Assign), (4, ::types::Await), (5, ::types::BinOp), (6, ::types::BracketAccess), (7, ::types::Break), (8, ::types::Call), (9, ::types::ChildScope), (10, ::types::Class), (11, ::types::ClassExpr), (12, ::types::ClosestFunction), (13, ::types::ConstDecl), (14, ::types::Continue), (15, ::types::DoWhile), (16, ::types::DotAccess), (17, ::types::EveryScope), (18, ::types::ExprBigInt), (19, ::types::ExprBool), (20, ::types::ExprNumber), (21, ::types::ExprString), (22, ::types::Expression), (23, ::types::For), (24, ::types::ForIn), (25, ::types::Function), (26, ::types::FunctionArg), (27, ::types::Array), (28, ::types::Arrow), (29, ::types::ArrowParam), (30, ::types::Assign), (31, ::types::Await), (32, ::types::BinOp), (33, ::types::BracketAccess), (34, ::types::Break), (35, ::types::Call), (36, ::types::Class), (37, ::types::ClassExpr), (38, ::types::ConstDecl), (39, ::types::Continue), (40, ::types::DoWhile), (41, ::types::DotAccess), (42, ::types::EveryScope), (43, ::types::ExprBigInt), (44, ::types::ExprBool), (45, ::types::ExprNumber), (46, ::types::ExprString), (47, ::types::Expression), (48, ::types::For), (49, ::types::ForIn), (50, ::types::Function), (51, ::types::FunctionArg), (52, ::types::If), (53, ::types::ImplicitGlobal), (54, ::types::InlineFunc), (55, ::types::InlineFuncParam), (56, ::types::InputScope), (57, ::types::Label), (58, ::types::LetDecl), (59, ::types::NameRef), (60, ::types::New), (61, ::types::Property), (62, ::types::Return), (63, ::types::Statement), (64, ::types::Switch), (65, ::types::SwitchCase), (66, ::types::Template), (67, ::types::Ternary), (68, ::types::Throw), (69, ::types::Try), (70, ::types::UnaryOp), (71, ::types::VarDecl), (72, ::types::While), (73, ::types::With), (74, ::types::Yield), (75, ::types::If), (76, ::types::ImplicitGlobal), (77, ::types::InlineFunc), (78, ::types::InlineFuncParam), (79, ::types::InputScope), (80, ::types::InvalidNameUse), (81, ::types::Label), (82, ::types::LetDecl), (83, ::types::NameInScope), (84, ::types::NameRef), (85, ::types::New), (86, ::types::Property), (87, ::types::Return), (88, ::types::Statement), (89, ::types::Switch), (90, ::types::SwitchCase), (91, ::types::Template), (92, ::types::Ternary), (93, ::types::Throw), (94, ::types::Try), (95, ::types::UnaryOp), (96, ::types::VarDecl), (97, ::types::VarUseBeforeDeclaration), (98, ::types::While), (99, ::types::With), (100, ::types::WithinTypeOf), (101, ::types::Yield));
+decl_update_deserializer!(UpdateSerializer,(0, ::types::Array), (1, ::types::Arrow), (2, ::types::ArrowParam), (3, ::types::Assign), (4, ::types::Await), (5, ::types::BinOp), (6, ::types::BracketAccess), (7, ::types::Break), (8, ::types::Call), (9, ::types::ChildScope), (10, ::types::Class), (11, ::types::ClassExpr), (12, ::types::ClosestFunction), (13, ::types::ConstDecl), (14, ::types::Continue), (15, ::types::DoWhile), (16, ::types::DotAccess), (17, ::types::EveryScope), (18, ::types::ExprBigInt), (19, ::types::ExprBool), (20, ::types::ExprNumber), (21, ::types::ExprString), (22, ::types::Expression), (23, ::types::For), (24, ::types::ForIn), (25, ::types::Function), (26, ::types::FunctionArg), (27, ::types::Array), (28, ::types::Arrow), (29, ::types::ArrowParam), (30, ::types::Assign), (31, ::types::Await), (32, ::types::BinOp), (33, ::types::BracketAccess), (34, ::types::Break), (35, ::types::Call), (36, ::types::Class), (37, ::types::ClassExpr), (38, ::types::ConstDecl), (39, ::types::Continue), (40, ::types::DoWhile), (41, ::types::DotAccess), (42, ::types::EveryScope), (43, ::types::ExprBigInt), (44, ::types::ExprBool), (45, ::types::ExprNumber), (46, ::types::ExprString), (47, ::types::Expression), (48, ::types::For), (49, ::types::ForIn), (50, ::types::Function), (51, ::types::FunctionArg), (52, ::types::If), (53, ::types::ImplicitGlobal), (54, ::types::InlineFunc), (55, ::types::InlineFuncParam), (56, ::types::InputScope), (57, ::types::Label), (58, ::types::LetDecl), (59, ::types::NameRef), (60, ::types::New), (61, ::types::Property), (62, ::types::Return), (63, ::types::Statement), (64, ::types::Switch), (65, ::types::SwitchCase), (66, ::types::Template), (67, ::types::Ternary), (68, ::types::Throw), (69, ::types::Try), (70, ::types::UnaryOp), (71, ::types::VarDecl), (72, ::types::While), (73, ::types::With), (74, ::types::Yield), (75, ::types::If), (76, ::types::ImplicitGlobal), (77, ::types::InlineFunc), (78, ::types::InlineFuncParam), (79, ::types::InputScope), (80, ::types::InvalidNameUse), (81, ::types::Label), (82, ::types::LetDecl), (83, ::types::NameInScope), (84, ::types::NameRef), (85, ::types::New), (86, ::types::Property), (87, ::types::Return), (88, ::types::Statement), (89, ::types::Switch), (90, ::types::SwitchCase), (91, ::types::Template), (92, ::types::Ternary), (93, ::types::Throw), (94, ::types::Try), (95, ::types::TypeofUndefinedAlwaysUndefined), (96, ::types::UnaryOp), (97, ::types::VarDecl), (98, ::types::VarUseBeforeDeclaration), (99, ::types::While), (100, ::types::With), (101, ::types::WithinTypeOf), (102, ::types::Yield));
 impl TryFrom<&str> for Relations {
     type Error = ();
     fn try_from(rname: &str) -> ::std::result::Result<Self, ()> {
@@ -297,6 +297,7 @@ impl TryFrom<&str> for Relations {
         "Ternary" => Ok(Relations::Ternary),
         "Throw" => Ok(Relations::Throw),
         "Try" => Ok(Relations::Try),
+        "TypeofUndefinedAlwaysUndefined" => Ok(Relations::TypeofUndefinedAlwaysUndefined),
         "UnaryOp" => Ok(Relations::UnaryOp),
         "VarDecl" => Ok(Relations::VarDecl),
         "VarUseBeforeDeclaration" => Ok(Relations::VarUseBeforeDeclaration),
@@ -365,6 +366,7 @@ impl Relations {
         Relations::INPUT_Yield => true,
         Relations::InvalidNameUse => true,
         Relations::NameInScope => true,
+        Relations::TypeofUndefinedAlwaysUndefined => true,
         Relations::VarUseBeforeDeclaration => true,
         Relations::WithinTypeOf => true,
             _  => false
@@ -525,15 +527,16 @@ impl TryFrom<RelId> for Relations {
         92 => Ok(Relations::Ternary),
         93 => Ok(Relations::Throw),
         94 => Ok(Relations::Try),
-        95 => Ok(Relations::UnaryOp),
-        96 => Ok(Relations::VarDecl),
-        97 => Ok(Relations::VarUseBeforeDeclaration),
-        98 => Ok(Relations::While),
-        99 => Ok(Relations::With),
-        100 => Ok(Relations::WithinTypeOf),
-        101 => Ok(Relations::Yield),
-        102 => Ok(Relations::__Prefix_0),
-        103 => Ok(Relations::__Prefix_1),
+        95 => Ok(Relations::TypeofUndefinedAlwaysUndefined),
+        96 => Ok(Relations::UnaryOp),
+        97 => Ok(Relations::VarDecl),
+        98 => Ok(Relations::VarUseBeforeDeclaration),
+        99 => Ok(Relations::While),
+        100 => Ok(Relations::With),
+        101 => Ok(Relations::WithinTypeOf),
+        102 => Ok(Relations::Yield),
+        103 => Ok(Relations::__Prefix_0),
+        104 => Ok(Relations::__Prefix_1),
              _  => Err(())
          }
     }
@@ -635,15 +638,16 @@ pub fn relid2name(rid: RelId) -> Option<&'static str> {
         92 => Some(&"Ternary"),
         93 => Some(&"Throw"),
         94 => Some(&"Try"),
-        95 => Some(&"UnaryOp"),
-        96 => Some(&"VarDecl"),
-        97 => Some(&"VarUseBeforeDeclaration"),
-        98 => Some(&"While"),
-        99 => Some(&"With"),
-        100 => Some(&"WithinTypeOf"),
-        101 => Some(&"Yield"),
-        102 => Some(&"__Prefix_0"),
-        103 => Some(&"__Prefix_1"),
+        95 => Some(&"TypeofUndefinedAlwaysUndefined"),
+        96 => Some(&"UnaryOp"),
+        97 => Some(&"VarDecl"),
+        98 => Some(&"VarUseBeforeDeclaration"),
+        99 => Some(&"While"),
+        100 => Some(&"With"),
+        101 => Some(&"WithinTypeOf"),
+        102 => Some(&"Yield"),
+        103 => Some(&"__Prefix_0"),
+        104 => Some(&"__Prefix_1"),
        _  => None
    }
 }
@@ -652,7 +656,7 @@ pub fn relid2cname(rid: RelId) -> Option<&'static ::std::ffi::CStr> {
 }   /// A map of `RelId`s to their name as an `&'static str`
 pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(104, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(105, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::Array, "Array");
         map.insert(Relations::Arrow, "Arrow");
         map.insert(Relations::ArrowParam, "ArrowParam");
@@ -748,6 +752,7 @@ pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'stat
         map.insert(Relations::Ternary, "Ternary");
         map.insert(Relations::Throw, "Throw");
         map.insert(Relations::Try, "Try");
+        map.insert(Relations::TypeofUndefinedAlwaysUndefined, "TypeofUndefinedAlwaysUndefined");
         map.insert(Relations::UnaryOp, "UnaryOp");
         map.insert(Relations::VarDecl, "VarDecl");
         map.insert(Relations::VarUseBeforeDeclaration, "VarUseBeforeDeclaration");
@@ -762,7 +767,7 @@ pub static RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'stat
     /// A map of `RelId`s to their name as an `&'static CStr`
 pub static RELIDMAPC: ::once_cell::sync::Lazy<::fnv::FnvHashMap<RelId, &'static ::std::ffi::CStr>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(104, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(105, ::fnv::FnvBuildHasher::default());
         map.insert(0, ::std::ffi::CStr::from_bytes_with_nul(b"Array\0").expect("Unreachable: A null byte was specifically inserted"));
         map.insert(1, ::std::ffi::CStr::from_bytes_with_nul(b"Arrow\0").expect("Unreachable: A null byte was specifically inserted"));
         map.insert(2, ::std::ffi::CStr::from_bytes_with_nul(b"ArrowParam\0").expect("Unreachable: A null byte was specifically inserted"));
@@ -858,15 +863,16 @@ pub static RELIDMAPC: ::once_cell::sync::Lazy<::fnv::FnvHashMap<RelId, &'static 
         map.insert(92, ::std::ffi::CStr::from_bytes_with_nul(b"Ternary\0").expect("Unreachable: A null byte was specifically inserted"));
         map.insert(93, ::std::ffi::CStr::from_bytes_with_nul(b"Throw\0").expect("Unreachable: A null byte was specifically inserted"));
         map.insert(94, ::std::ffi::CStr::from_bytes_with_nul(b"Try\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(95, ::std::ffi::CStr::from_bytes_with_nul(b"UnaryOp\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(96, ::std::ffi::CStr::from_bytes_with_nul(b"VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(97, ::std::ffi::CStr::from_bytes_with_nul(b"VarUseBeforeDeclaration\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(98, ::std::ffi::CStr::from_bytes_with_nul(b"While\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(99, ::std::ffi::CStr::from_bytes_with_nul(b"With\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(100, ::std::ffi::CStr::from_bytes_with_nul(b"WithinTypeOf\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(101, ::std::ffi::CStr::from_bytes_with_nul(b"Yield\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(102, ::std::ffi::CStr::from_bytes_with_nul(b"__Prefix_0\0").expect("Unreachable: A null byte was specifically inserted"));
-        map.insert(103, ::std::ffi::CStr::from_bytes_with_nul(b"__Prefix_1\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(95, ::std::ffi::CStr::from_bytes_with_nul(b"TypeofUndefinedAlwaysUndefined\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(96, ::std::ffi::CStr::from_bytes_with_nul(b"UnaryOp\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(97, ::std::ffi::CStr::from_bytes_with_nul(b"VarDecl\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(98, ::std::ffi::CStr::from_bytes_with_nul(b"VarUseBeforeDeclaration\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(99, ::std::ffi::CStr::from_bytes_with_nul(b"While\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(100, ::std::ffi::CStr::from_bytes_with_nul(b"With\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(101, ::std::ffi::CStr::from_bytes_with_nul(b"WithinTypeOf\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(102, ::std::ffi::CStr::from_bytes_with_nul(b"Yield\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(103, ::std::ffi::CStr::from_bytes_with_nul(b"__Prefix_0\0").expect("Unreachable: A null byte was specifically inserted"));
+        map.insert(104, ::std::ffi::CStr::from_bytes_with_nul(b"__Prefix_1\0").expect("Unreachable: A null byte was specifically inserted"));
         map
     });
     /// A map of input `Relations`s to their name as an `&'static str`
@@ -926,7 +932,7 @@ pub static INPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, 
     /// A map of output `Relations`s to their name as an `&'static str`
 pub static OUTPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations, &'static str>> =
     ::once_cell::sync::Lazy::new(|| {
-        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(54, ::fnv::FnvBuildHasher::default());
+        let mut map = ::fnv::FnvHashMap::with_capacity_and_hasher(55, ::fnv::FnvBuildHasher::default());
         map.insert(Relations::ChildScope, "ChildScope");
         map.insert(Relations::ClosestFunction, "ClosestFunction");
         map.insert(Relations::INPUT_Array, "INPUT_Array");
@@ -979,6 +985,7 @@ pub static OUTPUT_RELIDMAP: ::once_cell::sync::Lazy<::fnv::FnvHashMap<Relations,
         map.insert(Relations::INPUT_Yield, "INPUT_Yield");
         map.insert(Relations::InvalidNameUse, "InvalidNameUse");
         map.insert(Relations::NameInScope, "NameInScope");
+        map.insert(Relations::TypeofUndefinedAlwaysUndefined, "TypeofUndefinedAlwaysUndefined");
         map.insert(Relations::VarUseBeforeDeclaration, "VarUseBeforeDeclaration");
         map.insert(Relations::WithinTypeOf, "WithinTypeOf");
         map
@@ -1325,6 +1332,9 @@ pub fn relval_from_record(rel: Relations, _rec: &differential_datalog::record::R
         Relations::Try => {
             Ok(<::types::Try>::from_record(_rec)?.into_ddvalue())
         },
+        Relations::TypeofUndefinedAlwaysUndefined => {
+            Ok(<::types::TypeofUndefinedAlwaysUndefined>::from_record(_rec)?.into_ddvalue())
+        },
         Relations::UnaryOp => {
             Ok(<::types::UnaryOp>::from_record(_rec)?.into_ddvalue())
         },
@@ -1378,7 +1388,7 @@ pub fn idxkey_from_record(idx: Indexes, _rec: &differential_datalog::record::Rec
 pub fn indexes2arrid(idx: Indexes) -> ArrId {
     match idx {
         Indexes::Index_InvalidNameUse => ( 80, 0),
-        Indexes::Index_VarUseBeforeDeclaration => ( 97, 0),
+        Indexes::Index_VarUseBeforeDeclaration => ( 98, 0),
         Indexes::Index_VariableInScope => ( 83, 3),
         Indexes::Index_VariablesForScope => ( 83, 4),
     }
@@ -1480,15 +1490,16 @@ pub enum Relations {
     Ternary = 92,
     Throw = 93,
     Try = 94,
-    UnaryOp = 95,
-    VarDecl = 96,
-    VarUseBeforeDeclaration = 97,
-    While = 98,
-    With = 99,
-    WithinTypeOf = 100,
-    Yield = 101,
-    __Prefix_0 = 102,
-    __Prefix_1 = 103
+    TypeofUndefinedAlwaysUndefined = 95,
+    UnaryOp = 96,
+    VarDecl = 97,
+    VarUseBeforeDeclaration = 98,
+    While = 99,
+    With = 100,
+    WithinTypeOf = 101,
+    Yield = 102,
+    __Prefix_0 = 103,
+    __Prefix_1 = 104
 }
 #[derive(Copy,Clone,Debug,PartialEq,Eq,Hash)]
 pub enum Indexes {
@@ -4687,6 +4698,80 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
                                  }],
                              change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
                          };
+    let TypeofUndefinedAlwaysUndefined = Relation {
+                                             name:         "TypeofUndefinedAlwaysUndefined".to_string(),
+                                             input:        false,
+                                             distinct:     true,
+                                             caching_mode: CachingMode::Set,
+                                             key_func:     None,
+                                             id:           Relations::TypeofUndefinedAlwaysUndefined as RelId,
+                                             rules:        vec![
+                                                 /* TypeofUndefinedAlwaysUndefined[(TypeofUndefinedAlwaysUndefined{.whole_expr=whole_expr, .undefined_expr=undefined_expr}: TypeofUndefinedAlwaysUndefined)] :- NameRef[(NameRef{.expr_id=(undefined_expr: ExprId), .value=(name: internment::Intern<string>)}: NameRef)], Expression[(Expression{.id=(undefined_expr: ExprId), .kind=(ExprNameRef{}: ExprKind), .scope=(scope: Scope), .span=(span: Span)}: Expression)], not NameInScope[(NameInScope{.name=(name: internment::Intern<string>), .scope=(scope: Scope), .declared_in=(_: AnyId)}: NameInScope)], WithinTypeOf[(WithinTypeOf{.type_of=(whole_expr: ExprId), .expr=(undefined_expr: ExprId)}: WithinTypeOf)]. */
+                                                 Rule::ArrangementRule {
+                                                     description: "TypeofUndefinedAlwaysUndefined[(TypeofUndefinedAlwaysUndefined{.whole_expr=whole_expr, .undefined_expr=undefined_expr}: TypeofUndefinedAlwaysUndefined)] :- NameRef[(NameRef{.expr_id=(undefined_expr: ExprId), .value=(name: internment::Intern<string>)}: NameRef)], Expression[(Expression{.id=(undefined_expr: ExprId), .kind=(ExprNameRef{}: ExprKind), .scope=(scope: Scope), .span=(span: Span)}: Expression)], not NameInScope[(NameInScope{.name=(name: internment::Intern<string>), .scope=(scope: Scope), .declared_in=(_: AnyId)}: NameInScope)], WithinTypeOf[(WithinTypeOf{.type_of=(whole_expr: ExprId), .expr=(undefined_expr: ExprId)}: WithinTypeOf)].".to_string(),
+                                                     arr: ( Relations::NameRef as RelId, 0),
+                                                     xform: XFormArrangement::Join{
+                                                                description: "NameRef[(NameRef{.expr_id=(undefined_expr: ExprId), .value=(name: internment::Intern<string>)}: NameRef)], Expression[(Expression{.id=(undefined_expr: ExprId), .kind=(ExprNameRef{}: ExprKind), .scope=(scope: Scope), .span=(span: Span)}: Expression)]".to_string(),
+                                                                ffun: None,
+                                                                arrangement: (Relations::Expression as RelId,0),
+                                                                jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,__v2: &DDValue) -> Option<DDValue>
+                                                                {
+                                                                    let (ref undefined_expr, ref name) = match *unsafe {<::types::NameRef>::from_ddvalue_ref(__v1) } {
+                                                                        ::types::NameRef{expr_id: ref undefined_expr, value: ref name} => ((*undefined_expr).clone(), (*name).clone()),
+                                                                        _ => return None
+                                                                    };
+                                                                    let (ref scope, ref span) = match *unsafe {<::types::Expression>::from_ddvalue_ref(__v2) } {
+                                                                        ::types::Expression{id: _, kind: ::types::ExprKind::ExprNameRef{}, scope: ref scope, span: ref span} => ((*scope).clone(), (*span).clone()),
+                                                                        _ => return None
+                                                                    };
+                                                                    Some((::types::ddlog_std::tuple3((*undefined_expr).clone(), (*name).clone(), (*scope).clone())).into_ddvalue())
+                                                                }
+                                                                __f},
+                                                                next: Box::new(Some(XFormCollection::Arrange {
+                                                                                        description: "arrange NameRef[(NameRef{.expr_id=(undefined_expr: ExprId), .value=(name: internment::Intern<string>)}: NameRef)], Expression[(Expression{.id=(undefined_expr: ExprId), .kind=(ExprNameRef{}: ExprKind), .scope=(scope: Scope), .span=(span: Span)}: Expression)] by (name, scope)" .to_string(),
+                                                                                        afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
+                                                                                        {
+                                                                                            let ::types::ddlog_std::tuple3(ref undefined_expr, ref name, ref scope) = *unsafe {<::types::ddlog_std::tuple3<::types::ExprId, ::types::internment::Intern<String>, ::types::Scope>>::from_ddvalue_ref( &__v ) };
+                                                                                            Some(((::types::ddlog_std::tuple2((*name).clone(), (*scope).clone())).into_ddvalue(), ((*undefined_expr).clone()).into_ddvalue()))
+                                                                                        }
+                                                                                        __f},
+                                                                                        next: Box::new(XFormArrangement::Antijoin {
+                                                                                                           description: "NameRef[(NameRef{.expr_id=(undefined_expr: ExprId), .value=(name: internment::Intern<string>)}: NameRef)], Expression[(Expression{.id=(undefined_expr: ExprId), .kind=(ExprNameRef{}: ExprKind), .scope=(scope: Scope), .span=(span: Span)}: Expression)], not NameInScope[(NameInScope{.name=(name: internment::Intern<string>), .scope=(scope: Scope), .declared_in=(_: AnyId)}: NameInScope)]".to_string(),
+                                                                                                           ffun: None,
+                                                                                                           arrangement: (Relations::NameInScope as RelId,0),
+                                                                                                           next: Box::new(Some(XFormCollection::Arrange {
+                                                                                                                                   description: "arrange NameRef[(NameRef{.expr_id=(undefined_expr: ExprId), .value=(name: internment::Intern<string>)}: NameRef)], Expression[(Expression{.id=(undefined_expr: ExprId), .kind=(ExprNameRef{}: ExprKind), .scope=(scope: Scope), .span=(span: Span)}: Expression)], not NameInScope[(NameInScope{.name=(name: internment::Intern<string>), .scope=(scope: Scope), .declared_in=(_: AnyId)}: NameInScope)] by (undefined_expr)" .to_string(),
+                                                                                                                                   afun: &{fn __f(__v: DDValue) -> Option<(DDValue,DDValue)>
+                                                                                                                                   {
+                                                                                                                                       let ref undefined_expr = *unsafe {<::types::ExprId>::from_ddvalue_ref( &__v ) };
+                                                                                                                                       Some((((*undefined_expr).clone()).into_ddvalue(), ((*undefined_expr).clone()).into_ddvalue()))
+                                                                                                                                   }
+                                                                                                                                   __f},
+                                                                                                                                   next: Box::new(XFormArrangement::Join{
+                                                                                                                                                      description: "NameRef[(NameRef{.expr_id=(undefined_expr: ExprId), .value=(name: internment::Intern<string>)}: NameRef)], Expression[(Expression{.id=(undefined_expr: ExprId), .kind=(ExprNameRef{}: ExprKind), .scope=(scope: Scope), .span=(span: Span)}: Expression)], not NameInScope[(NameInScope{.name=(name: internment::Intern<string>), .scope=(scope: Scope), .declared_in=(_: AnyId)}: NameInScope)], WithinTypeOf[(WithinTypeOf{.type_of=(whole_expr: ExprId), .expr=(undefined_expr: ExprId)}: WithinTypeOf)]".to_string(),
+                                                                                                                                                      ffun: None,
+                                                                                                                                                      arrangement: (Relations::WithinTypeOf as RelId,1),
+                                                                                                                                                      jfun: &{fn __f(_: &DDValue ,__v1: &DDValue,__v2: &DDValue) -> Option<DDValue>
+                                                                                                                                                      {
+                                                                                                                                                          let ref undefined_expr = *unsafe {<::types::ExprId>::from_ddvalue_ref( __v1 ) };
+                                                                                                                                                          let ref whole_expr = match *unsafe {<::types::WithinTypeOf>::from_ddvalue_ref(__v2) } {
+                                                                                                                                                              ::types::WithinTypeOf{type_of: ref whole_expr, expr: _} => (*whole_expr).clone(),
+                                                                                                                                                              _ => return None
+                                                                                                                                                          };
+                                                                                                                                                          Some(((::types::TypeofUndefinedAlwaysUndefined{whole_expr: (*whole_expr).clone(), undefined_expr: (*undefined_expr).clone()})).into_ddvalue())
+                                                                                                                                                      }
+                                                                                                                                                      __f},
+                                                                                                                                                      next: Box::new(None)
+                                                                                                                                                  })
+                                                                                                                               }))
+                                                                                                       })
+                                                                                    }))
+                                                            }
+                                                 }],
+                                             arrangements: vec![
+                                                 ],
+                                             change_cb:    Some(sync::Arc::new(sync::Mutex::new(__update_cb.clone())))
+                                         };
     let VarUseBeforeDeclaration = Relation {
                                       name:         "VarUseBeforeDeclaration".to_string(),
                                       input:        false,
@@ -5031,6 +5116,7 @@ pub fn prog(__update_cb: Box<dyn CBFn>) -> Program {
             ProgNode::Rel{rel: __Prefix_1},
             ProgNode::SCC{rels: vec![RecursiveRelation{rel: NameInScope, distinct: true}]},
             ProgNode::Rel{rel: InvalidNameUse},
+            ProgNode::Rel{rel: TypeofUndefinedAlwaysUndefined},
             ProgNode::Rel{rel: VarUseBeforeDeclaration},
             ProgNode::Rel{rel: While},
             ProgNode::Rel{rel: INPUT_While},

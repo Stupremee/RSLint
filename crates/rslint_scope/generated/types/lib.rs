@@ -3013,6 +3013,33 @@ impl ::std::fmt::Debug for TryHandler {
     }
 }
 #[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct TypeofUndefinedAlwaysUndefined {
+    pub whole_expr: crate::ExprId,
+    pub undefined_expr: crate::ExprId
+}
+impl abomonation::Abomonation for TypeofUndefinedAlwaysUndefined{}
+::differential_datalog::decl_struct_from_record!(TypeofUndefinedAlwaysUndefined["TypeofUndefinedAlwaysUndefined"]<>, ["TypeofUndefinedAlwaysUndefined"][2]{[0]whole_expr["whole_expr"]: crate::ExprId, [1]undefined_expr["undefined_expr"]: crate::ExprId});
+::differential_datalog::decl_struct_into_record!(TypeofUndefinedAlwaysUndefined, ["TypeofUndefinedAlwaysUndefined"]<>, whole_expr, undefined_expr);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(TypeofUndefinedAlwaysUndefined, <>, whole_expr: crate::ExprId, undefined_expr: crate::ExprId);
+impl ::std::fmt::Display for TypeofUndefinedAlwaysUndefined {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::TypeofUndefinedAlwaysUndefined{whole_expr,undefined_expr} => {
+                __formatter.write_str("TypeofUndefinedAlwaysUndefined{")?;
+                ::std::fmt::Debug::fmt(whole_expr, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(undefined_expr, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for TypeofUndefinedAlwaysUndefined {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
 pub struct UnaryOp {
     pub expr_id: crate::ExprId,
     pub op: crate::ddlog_std::Option<crate::UnaryOperand>,
@@ -3404,6 +3431,7 @@ pub fn to_string(span: & crate::Span) -> String
 ::differential_datalog::decl_ddval_convert!{crate::Ternary}
 ::differential_datalog::decl_ddval_convert!{crate::Throw}
 ::differential_datalog::decl_ddval_convert!{crate::Try}
+::differential_datalog::decl_ddval_convert!{crate::TypeofUndefinedAlwaysUndefined}
 ::differential_datalog::decl_ddval_convert!{crate::UnaryOp}
 ::differential_datalog::decl_ddval_convert!{crate::VarDecl}
 ::differential_datalog::decl_ddval_convert!{crate::VarUseBeforeDeclaration}
@@ -3417,6 +3445,7 @@ pub fn to_string(span: & crate::Span) -> String
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<crate::internment::Intern<String>, crate::FuncId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<crate::internment::Intern<String>, crate::Scope>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<crate::internment::Intern<String>, crate::StmtId>}
+::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple3<crate::ExprId, crate::internment::Intern<String>, crate::Scope>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple3<crate::internment::Intern<String>, crate::ExprId, crate::ExprId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple3<crate::internment::Intern<String>, crate::ExprId, crate::StmtId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple3<crate::internment::Intern<String>, crate::ExprId, crate::internment::Intern<crate::Pattern>>}

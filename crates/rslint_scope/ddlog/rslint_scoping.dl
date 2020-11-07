@@ -3,12 +3,9 @@ import vec
 #[has_side_effects]
 extern function debug(message: string)
 
+// TODO: Put in ddlog std
 function last(vec: Vec<'T>): Option<'T> {
-    if (vec.is_empty()) {
-        None
-    } else {
-        vec.nth(vec.len() - 1)
-    }
+    vec.nth(vec.len() - 1)
 }
 
 typedef Scope = Scope { id: u32 }
@@ -504,20 +501,29 @@ NameInScope(name, scope, declared_in) :-
     NameInScope(name, interum, declared_in),
     ChildScope(interum, scope).
 
-relation WithinTypeOf(type_of: ExprId, expr: ExprId)
+relation WithinTypeofExpr(type_of: ExprId, expr: ExprId)
 // `typeof not_defined`
-WithinTypeOf(type_of, expr) :- UnaryOp(type_of, Some { UnaryTypeof }, Some { expr }).
+WithinTypeofExpr(type_of, expr) :- UnaryOp(type_of, Some { UnaryTypeof }, Some { expr }).
 
 // `typeof (not_defined)`
-WithinTypeOf(type_of, grouped) :-
-    WithinTypeOf(type_of, expr),
+WithinTypeofExpr(type_of, grouped) :-
+    WithinTypeofExpr(type_of, expr),
     Expression(expr, ExprGrouping { Some { grouped }}, _, _).
 
 // `typeof (defined, not_defined)`
-WithinTypeOf(type_of, last) :-
-    WithinTypeOf(type_of, expr),
+WithinTypeofExpr(type_of, last) :-
+    WithinTypeofExpr(type_of, expr),
     Expression(expr, ExprSequence { sequence }, _, _),
     Some { var last } = sequence.last().
+
+output relation TypeofUndefinedAlwaysUndefined(whole_expr: ExprId, undefined_expr: ExprId)
+TypeofUndefinedAlwaysUndefined(whole_expr, undefined_expr) :-
+    NameRef(undefined_expr, name),
+    Expression(undefined_expr, ExprNameRef, scope, span),
+    not NameInScope(name, scope, _),
+    // Expressions like `typeof not_undefined` are allowed under InvalidNameUse
+    // and are instead output through TypeofUndefinedAlwaysUndefined
+    WithinTypeofExpr(whole_expr, undefined_expr).
 
 // Variable usages (`let` and `const` predecls or undefined symbols) that don't
 // have an accompanying variable in scope are reported
@@ -528,6 +534,8 @@ InvalidNameUse(name, scope, span) :-
     NameRef(expr, name),
     Expression(expr, ExprNameRef, scope, span),
     not NameInScope(name, scope, _),
+    // Expressions like `typeof not_undefined` are allowed under InvalidNameUse
+    // and are instead output through TypeofUndefinedAlwaysUndefined
     not WithinTypeOf(_, expr).
 
 index Index_InvalidNameUse(name: Name) on InvalidNameUse(name, _, _)

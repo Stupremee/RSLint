@@ -64,6 +64,9 @@ rule_test! {
     { "var b = typeof a" },
     { "typeof a === 'undefined'" },
     { "if (typeof a === 'undefined') {}" },
+    { "typeof ((((((a))))))" },
+    { "typeof (1, 2, 3, a)" },
+    { "typeof (1, 2, 3, (((1, 2, 3, a))))" },
     { "function foo() { var [a, b=4] = [1, 2]; return {a, b}; }" },
     { "var toString = 1;" },
     // FIXME: Requires JSX
