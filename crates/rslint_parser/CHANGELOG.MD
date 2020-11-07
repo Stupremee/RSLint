@@ -27,6 +27,7 @@ finally{}
 
 - Made "redundant strict mode declaration" have a primary label instead of a single secondary label
 - Changed `ClassBody.elements` to return an `AstChildren<ClassElement>` instead of an `Option<ClassElement>`
+- Made `Specifier::name()` return a `Name`
 
 ## [0.2.1] - 2020-10-20
 
