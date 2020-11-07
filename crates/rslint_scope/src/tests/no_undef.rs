@@ -72,9 +72,9 @@ rule_test! {
     // FIXME: Requires JSX
     // { "var React, App, a=1; React.render(<App attr={a} />);" },
     { "function myFunc(...foo) {  return foo; }" },
-    { "var console; [1,2,3].forEach(obj => { console.log(obj); });" },
+    { "var console; [1,2,3].forEach(obj => { console.log(obj); });", node: true },
     { "var Foo; class Bar extends Foo { constructor() { super(); }}" },
-    { "import Warning from '../lib/warning'; var warn = new Warning('text');" },
+    { "import Warning from '../lib/warning'; var warn = new Warning('text');", module: true },
     { "import * as Warning from '../lib/warning'; var warn = new Warning('text');", module: true },
     { "var a; [a] = [0];" },
     { "var a; ({a} = {});" },
