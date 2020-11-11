@@ -1850,7 +1850,6 @@ version = "0.1.0"
 dependencies = [
  "dashmap",
  "differential_datalog",
- "rslint_core",
  "rslint_parser",
  "rslint_scoping",
  "serde",
