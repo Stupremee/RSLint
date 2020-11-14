@@ -65,7 +65,7 @@ rule_test! {
     },
     {
         "new A(); var A = class {};",
-        errors: [DatalogLint::use_before_def("A", 4..5, 9..26)],
+        errors: [DatalogLint::use_before_def("A", 0..7, 17..25)],
     },
     {
         "function foo() { new A(); } var A = class {};",

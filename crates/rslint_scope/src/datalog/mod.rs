@@ -302,7 +302,7 @@ impl Datalog {
             })
         }));
 
-        lints.extend(self.outputs().use_before_decl.iter().filter_map(|used| {
+        lints.extend(self.outputs().use_before_def.iter().filter_map(|used| {
             if used.key().file == file {
                 Some(DatalogLint::UseBeforeDef {
                     name: used.key().name.clone(),
