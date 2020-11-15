@@ -93,3 +93,33 @@ impl ::std::fmt::Debug for FunctionLevelScope {
         ::std::fmt::Display::fmt(&self, f)
     }
 }
+#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
+pub struct ScopeOfId {
+    pub id: crate::ast::AnyId,
+    pub file: crate::ast::FileId,
+    pub scope: crate::ast::ScopeId
+}
+impl abomonation::Abomonation for ScopeOfId{}
+::differential_datalog::decl_struct_from_record!(ScopeOfId["scopes::ScopeOfId"]<>, ["scopes::ScopeOfId"][3]{[0]id["id"]: crate::ast::AnyId, [1]file["file"]: crate::ast::FileId, [2]scope["scope"]: crate::ast::ScopeId});
+::differential_datalog::decl_struct_into_record!(ScopeOfId, ["scopes::ScopeOfId"]<>, id, file, scope);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(ScopeOfId, <>, id: crate::ast::AnyId, file: crate::ast::FileId, scope: crate::ast::ScopeId);
+impl ::std::fmt::Display for ScopeOfId {
+    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        match self {
+            crate::scopes::ScopeOfId{id,file,scope} => {
+                __formatter.write_str("scopes::ScopeOfId{")?;
+                ::std::fmt::Debug::fmt(id, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(file, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(scope, __formatter)?;
+                __formatter.write_str("}")
+            }
+        }
+    }
+}
+impl ::std::fmt::Debug for ScopeOfId {
+    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+        ::std::fmt::Display::fmt(&self, f)
+    }
+}

@@ -11,7 +11,7 @@ output relation NoUndef(name: Name, scope: ScopeId, span: Span, file: FileId)
 NoUndef(name, scope, span, file) :-
     NameRef(expr, file, name),
     Expression(expr, file, ExprNameRef, scope, span),
-    not NameInScope(file, name, scope, _, _, _),
+    not NameInScope(file, name, scope, _, _, _, _),
     // Expressions like `typeof not_undefined` are allowed under NoUndef
     // and are instead output through TypeofUndef
     not WithinTypeofExpr(_, expr, file),
@@ -25,7 +25,7 @@ NoUndef(name, scope, span, file) :-
     // FIXME: Waiting on https://github.com/vmware/differential-datalog/issues/784
     var bound_var = FlatMap(pat.bound_vars()),
     Spanned { var name, var span } = bound_var,
-    not NameInScope(file, name, scope, _, _, _).
+    not NameInScope(file, name, scope, _, _, _, _).
 
 // The successors of an expression, property accesses or method calls
 relation ChainedWith(object: ExprId, property: ExprId, file: FileId)

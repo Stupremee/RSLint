@@ -31,7 +31,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     // Make sure this NameRef isn't the name within a `new` clause,
     // ex. `new Foo(); var Foo;`
     not New(_, file, Some { expr }, _),
-    NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { stmt }, _),
+    NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { stmt }, _, _),
     Statement(stmt, file, StmtVarDecl, declared_scope, declared_in),
     declared_scope != used_scope,
     not ChildScope(declared_scope, used_scope, file).
@@ -40,7 +40,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(callee, file, name),
-    NameInScope(file, name, used_scope, _, declared @ AnyIdClass { class }, _),
+    NameInScope(file, name, used_scope, _, declared @ AnyIdClass { class }, _, _),
     Class(class, file, Some { Spanned { _, declared_in }}, _, _, decl_scope, _),
     decl_scope != used_scope,
     not ChildScope(decl_scope, used_scope, file).
@@ -50,7 +50,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     Call(expr, file, Some { callee }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(callee, file, name),
-    NameInScope(file, name, used_scope, _, declared @ AnyIdFunc { func }, _),
+    NameInScope(file, name, used_scope, _, declared @ AnyIdFunc { func }, _, _),
     Function(func, file, Some { Spanned { _, declared_in }}, decl_scope, _, _),
     decl_scope != used_scope,
     not ChildScope(decl_scope, used_scope, file).
@@ -59,7 +59,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(object, file, name),
-    NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { decl }, _),
+    NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { decl }, _, _),
     VarDecl(decl, file, _, Some { class }, _),
     ClassExpr(class, file, _),
     Expression(class, file, _, decl_scope, declared_in),
@@ -70,7 +70,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(object, file, name),
-    NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { decl }, _),
+    NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { decl }, _, _),
     LetDecl(decl, file, _, Some { class }, _),
     ClassExpr(class, file, _),
     Expression(class, file, _, decl_scope, declared_in),
@@ -81,7 +81,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(object, file, name),
-    NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { decl }, _),
+    NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { decl }, _, _),
     ConstDecl(decl, file, _, Some { class }, _),
     ClassExpr(class, file, _),
     Expression(class, file, _, decl_scope, declared_in),

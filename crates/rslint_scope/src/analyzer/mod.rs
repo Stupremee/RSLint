@@ -32,7 +32,7 @@ impl<'ddlog> Visit<'ddlog, Pattern> for AnalyzerInner {
     type Output = IPattern;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, pattern: Pattern) -> Self::Output {
-        Intern::new(match dbg!(pattern) {
+        Intern::new(match pattern {
             Pattern::SinglePattern(single) => DatalogPattern::SinglePattern {
                 name: self.visit(scope, single.name()).into(),
             },

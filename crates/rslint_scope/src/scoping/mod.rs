@@ -90,7 +90,7 @@ impl<'a> ScopeInfo<'a> {
             Some(tuple3(self.file, self.scope, Intern::new(name.to_owned())).into_ddvalue()),
         );
 
-        query.map_or(false, |query| !dbg!(query).is_empty())
+        query.map_or(false, |query| !query.is_empty())
     }
 }
 

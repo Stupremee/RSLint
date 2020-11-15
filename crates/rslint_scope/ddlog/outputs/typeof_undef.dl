@@ -7,7 +7,7 @@ output relation TypeofUndef(whole_expr: ExprId, undefined_expr: ExprId, file: Fi
 TypeofUndef(whole_expr, undefined_expr, file) :-
     NameRef(undefined_expr, file, name),
     Expression(undefined_expr, file, ExprNameRef, scope, span),
-    not NameInScope(file, name, scope, _, _, _),
+    not NameInScope(file, name, scope, _, _, _, _),
     // Expressions like `typeof not_undefined` are allowed under NoUndef
     // and are instead output through TypeofUndef
     WithinTypeofExpr(whole_expr, undefined_expr, file).

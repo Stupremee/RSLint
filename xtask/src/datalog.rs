@@ -4,11 +4,7 @@ use crate::{
 };
 use anyhow::{Context, Result};
 use cargo_toml::Manifest;
-use std::{
-    fs,
-    path::Path,
-    process::{Command, Stdio},
-};
+use std::{fs, path::Path, process::Command};
 use toml::Value;
 
 const DDLOG_INPUT_FILE: &str = "ddlog/rslint_scoping.dl";
@@ -49,25 +45,26 @@ pub fn trim_datalog(skip_trim: bool, debug: bool) -> Result<()> {
     println!("running ddlog...");
     let mut ddlog = Command::new("ddlog");
 
-    ddlog
-        .args(&[
-            "-i",
-            DDLOG_INPUT_FILE,
-            "-L",
-            DDLOG_LIBRARY_DIR,
-            "--action",
-            "compile",
-            &format!("--output-dir={}", DDLOG_OUTPUT_DIR),
-            "--omit-profile",
-            "--omit-workspace",
-        ])
-        .stdout(Stdio::piped())
-        .stderr(Stdio::piped());
+    ddlog.args(&[
+        "-i",
+        DDLOG_INPUT_FILE,
+        "-L",
+        DDLOG_LIBRARY_DIR,
+        "--action",
+        "compile",
+        &format!("--output-dir={}", DDLOG_OUTPUT_DIR),
+        "--omit-profile",
+        "--omit-workspace",
+    ]);
 
     if debug {
         ddlog.arg("--output-internal-relations");
     }
-    ddlog.spawn()?.wait()?;
+
+    if !ddlog.spawn()?.wait()?.success() {
+        println!("ddlog returned with an error");
+        return Ok(());
+    }
 
     if generated_dir.exists() {
         fs2::remove_dir_all(&generated_dir)?;

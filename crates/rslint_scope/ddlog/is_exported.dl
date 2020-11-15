@@ -12,4 +12,4 @@ IsExported(file, AnyIdStmt { id }) :- ConstDecl(id, file, _, _, true).
 IsExported(file, id) :-
     FileExport(file, NamedExport { export_name, export_alias }, export_scope),
     Some { Spanned { var name, _ }} = export_alias.or_else(export_name),
-    NameInScope(file, name, export_scope, _, id, false).
+    NameInScope(file, name, export_scope, _, id, _, _).

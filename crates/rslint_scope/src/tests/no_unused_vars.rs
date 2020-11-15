@@ -96,7 +96,7 @@ rule_test! {
         "var unregisterFooWatcher;",
         "unregisterFooWatcher = $scope.$watch( \"foo\", function() {",
         "    unregisterFooWatcher();",
-        "});"
+        "});",
     },
     {
         "var ref;",
@@ -345,14 +345,14 @@ rule_test! {
         "    console.log(x);",
         "};",
         module: true,
-        errors: [DatalogLint::no_unused_vars("y", 12..15)],
+        errors: [DatalogLint::no_unused_vars("y", 25..26)],
     },
     {
         "export function fn2(x, y) {",
         "    console.log(x);",
         "};",
         module: true,
-        errors: [DatalogLint::no_unused_vars("y", 12..15)],
+        errors: [DatalogLint::no_unused_vars("y", 23..24)],
     },
 
 }

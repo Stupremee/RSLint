@@ -1,0 +1,41 @@
+import ast
+import vec
+import utils
+import scopes
+import name_in_scope
+
+output relation NoShadow(
+    variable: Name,
+    original: (AnyId, Span),
+    shadow: (AnyId, Span),
+    implicit: bool,
+    file: FileId,
+)
+
+NoShadow(
+    original_name,
+    (original_id, original_span),
+    (shadow_id, shadow_span),
+    original_implicit,
+    file,
+) :-
+    NameInScope(file, name, scope, Some { span }, declared, is_implicit, _),
+    // Group<(FileId, ScopeId), Vec<(Name, Span, AnyId, bool)>>
+    var vars = (name, span, declared, is_implicit).group_by((file, scope)),
+
+    // Get the original var's info
+    // FIXME: Waiting on https://github.com/vmware/differential-datalog/issues/784
+    var original = FlatMap(vars.to_vec()),
+    (var original_name, var original_span, var original_id, var original_implicit) = original,
+    ScopeOfId(original_id, file, original_scope),
+
+    // Get the shadowing var's info
+    // FIXME: Waiting on https://github.com/vmware/differential-datalog/issues/784
+    var shadow = FlatMap(vars.to_vec().filter(|shadow| shadow == original)),
+    (var shadow_name, var shadow_span, var shadow_id, var shadow_implicit) = shadow,
+    ScopeOfId(shadow_id, file, shadow_scope),
+
+    // Make sure both have the same name, aren't from the same node and don't have the same span
+    original_name == shadow_name and original_id != shadow_id and original_span != shadow_span,
+    // Make sure the shadowing variable is a child of the original
+    ChildScope(original_scope, shadow_scope, file).

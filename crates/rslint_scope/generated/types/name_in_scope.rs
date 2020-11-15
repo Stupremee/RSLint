@@ -37,16 +37,17 @@ pub struct NameInScope {
     pub scope: crate::ast::ScopeId,
     pub span: crate::ddlog_std::Option<crate::ast::Span>,
     pub declared_in: crate::ast::AnyId,
-    pub implicit: bool
+    pub implicit: bool,
+    pub is_arg: bool
 }
 impl abomonation::Abomonation for NameInScope{}
-::differential_datalog::decl_struct_from_record!(NameInScope["name_in_scope::NameInScope"]<>, ["name_in_scope::NameInScope"][6]{[0]file["file"]: crate::ast::FileId, [1]name["name"]: crate::ast::Name, [2]scope["scope"]: crate::ast::ScopeId, [3]span["span"]: crate::ddlog_std::Option<crate::ast::Span>, [4]declared_in["declared_in"]: crate::ast::AnyId, [5]implicit["implicit"]: bool});
-::differential_datalog::decl_struct_into_record!(NameInScope, ["name_in_scope::NameInScope"]<>, file, name, scope, span, declared_in, implicit);
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(NameInScope, <>, file: crate::ast::FileId, name: crate::ast::Name, scope: crate::ast::ScopeId, span: crate::ddlog_std::Option<crate::ast::Span>, declared_in: crate::ast::AnyId, implicit: bool);
+::differential_datalog::decl_struct_from_record!(NameInScope["name_in_scope::NameInScope"]<>, ["name_in_scope::NameInScope"][7]{[0]file["file"]: crate::ast::FileId, [1]name["name"]: crate::ast::Name, [2]scope["scope"]: crate::ast::ScopeId, [3]span["span"]: crate::ddlog_std::Option<crate::ast::Span>, [4]declared_in["declared_in"]: crate::ast::AnyId, [5]implicit["implicit"]: bool, [6]is_arg["is_arg"]: bool});
+::differential_datalog::decl_struct_into_record!(NameInScope, ["name_in_scope::NameInScope"]<>, file, name, scope, span, declared_in, implicit, is_arg);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(NameInScope, <>, file: crate::ast::FileId, name: crate::ast::Name, scope: crate::ast::ScopeId, span: crate::ddlog_std::Option<crate::ast::Span>, declared_in: crate::ast::AnyId, implicit: bool, is_arg: bool);
 impl ::std::fmt::Display for NameInScope {
     fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
-            crate::name_in_scope::NameInScope{file,name,scope,span,declared_in,implicit} => {
+            crate::name_in_scope::NameInScope{file,name,scope,span,declared_in,implicit,is_arg} => {
                 __formatter.write_str("name_in_scope::NameInScope{")?;
                 ::std::fmt::Debug::fmt(file, __formatter)?;
                 __formatter.write_str(",")?;
@@ -59,6 +60,8 @@ impl ::std::fmt::Display for NameInScope {
                 ::std::fmt::Debug::fmt(declared_in, __formatter)?;
                 __formatter.write_str(",")?;
                 ::std::fmt::Debug::fmt(implicit, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(is_arg, __formatter)?;
                 __formatter.write_str("}")
             }
         }

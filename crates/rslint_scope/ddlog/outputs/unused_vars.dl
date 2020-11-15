@@ -4,19 +4,28 @@ import is_exported
 import name_in_scope
 
 output relation UnusedVariables(name: Name, declared: AnyId, span: Span, file: FileId)
+// Only hit non-function arguments and non-globals
 UnusedVariables(name, declared, span, file) :-
-    NameInScope(file, name, _, Some { span }, declared, false),
+    NameInScope(file, name, _, Some { span }, declared, false, false),
     not declared.is_global(),
     not IsExported(file, declared),
     not VariableUsages(file, name, _, declared).
 
+// For names that are function arguments, it doesn't matter if the parent
+// function is exported or not
 UnusedVariables(name, declared, span, file) :-
-    NameInScope(file, name, _, Some { span }, declared @ AnyIdGlobal { global }, false),
+    NameInScope(file, name, _, Some { span }, declared, false, true),
+    not declared.is_global(),
+    not VariableUsages(file, name, _, declared).
+
+// Handle globals
+UnusedVariables(name, declared, span, file) :-
+    NameInScope(file, name, _, Some { span }, declared @ AnyIdGlobal { global }, false, false),
     not IsExported(file, declared),
     not VariableUsages(file, name, _, declared).
 
 relation VariableUsages(file: FileId, name: Name, scope: ScopeId, declared_in: AnyId)
 VariableUsages(file, name, scope, declared) :-
-    NameInScope(file, name, scope, _, declared, _),
+    NameInScope(file, name, scope, _, declared, _, _),
     NameRef(expr, file, name),
     Expression(expr, file, _, scope, _).
