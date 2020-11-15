@@ -386,7 +386,8 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     not New(_, file, Some { expr }, _),
     NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { stmt }, _),
     Statement(stmt, file, StmtVarDecl, declared_scope, declared_in),
-    ChildScope(used_scope, declared_scope, file).
+    declared_scope != used_scope,
+    not ChildScope(declared_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     New(expr, file, Some { object }, _),
@@ -394,7 +395,8 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     NameRef(callee, file, name),
     NameInScope(file, name, used_scope, _, declared @ AnyIdClass { class }, _),
     Class(class, file, Some { Spanned { _, declared_in }}, _, _, decl_scope, _),
-    ChildScope(used_scope, decl_scope, file).
+    decl_scope != used_scope,
+    not ChildScope(decl_scope, used_scope, file).
 
 // TODO: Integrate with directives to ignore functions if the user wants it
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
@@ -403,7 +405,8 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     NameRef(callee, file, name),
     NameInScope(file, name, used_scope, _, declared @ AnyIdFunc { func }, _),
     Function(func, file, Some { Spanned { _, declared_in }}, decl_scope, _, _),
-    ChildScope(used_scope, decl_scope, file).
+    decl_scope != used_scope,
+    not ChildScope(decl_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     New(expr, file, Some { object }, _),
@@ -413,7 +416,8 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     VarDecl(decl, file, _, Some { class }, _),
     ClassExpr(class, file, _),
     Expression(class, file, _, decl_scope, declared_in),
-    ChildScope(used_scope, decl_scope, file).
+    decl_scope != used_scope,
+    not ChildScope(decl_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     New(expr, file, Some { object }, _),
@@ -423,7 +427,8 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     LetDecl(decl, file, _, Some { class }, _),
     ClassExpr(class, file, _),
     Expression(class, file, _, decl_scope, declared_in),
-    ChildScope(used_scope, decl_scope, file).
+    decl_scope != used_scope,
+    not ChildScope(decl_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     New(expr, file, Some { object }, _),
@@ -433,16 +438,16 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     ConstDecl(decl, file, _, Some { class }, _),
     ClassExpr(class, file, _),
     Expression(class, file, _, decl_scope, declared_in),
-    ChildScope(used_scope, decl_scope, file).
+    decl_scope != used_scope,
+    not ChildScope(decl_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, AnyIdClass { class }, declared_in, file) :-
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(object, file, name),
-    // TODO: Maybe some sort of distance thing is needed here, or
-    //       maybe check each directly dependent FunctionLevelScope
-    ChildScope(used_scope, declared_scope, file),
-    Class(class, file, Some { Spanned { name, declared_in }}, _, _, declared_scope, _).
+    Class(class, file, Some { Spanned { name, declared_in }}, _, _, declared_scope, _),
+    declared_scope != used_scope,
+    not ChildScope(declared_scope, used_scope, file).
 
 
 relation IsExported(file: FileId, id: AnyId)
