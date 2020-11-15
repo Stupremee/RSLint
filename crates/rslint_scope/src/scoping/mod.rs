@@ -8,7 +8,7 @@ use types::{
     ddlog_std::{tuple2, tuple3},
     inputs::{Expression, InputScope},
     internment::Intern,
-    ChildScope,
+    scopes::ChildScope,
 };
 
 pub use types::ast::{ExprId, FileId, ScopeId};
@@ -71,7 +71,7 @@ impl<'a> ScopeInfo<'a> {
     pub fn children(&self) -> Option<Vec<ScopeId>> {
         // TODO: Log errors if they occur
         let query = self.handle.datalog.query(
-            Indexes::ChildScopeByParent,
+            Indexes::scopes_ChildScopeByParent,
             Some(tuple2(self.scope, self.file).into_ddvalue()),
         );
 
@@ -86,7 +86,7 @@ impl<'a> ScopeInfo<'a> {
     pub fn contains(&self, name: &str) -> bool {
         // TODO: Log errors if they occur
         let query = self.handle.datalog.query(
-            Indexes::Index_VariableInScope,
+            Indexes::name_in_scope_Index_VariableInScope,
             Some(tuple3(self.file, self.scope, Intern::new(name.to_owned())).into_ddvalue()),
         );
 

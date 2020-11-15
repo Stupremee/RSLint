@@ -1,0 +1,52 @@
+import ast
+import scopes
+import inputs
+
+// Build the scope graph, unrolling the parent<-child relationships to full trees
+//
+// Given
+// ```
+// a<-b
+// b<-c
+// b<-d
+// ```
+// It will produce
+// ```
+// a
+// ├-b
+// │ └┐  
+// │  ├╴c
+// │  └╴d 
+// ├╴c
+// └╴d
+// ```
+//
+relation ChildScope(parent: ScopeId, child: ScopeId, file: FileId)
+index ChildScopeByParent(parent: ScopeId, file: FileId) on ChildScope(parent, _, file)
+
+ChildScope(parent, child, file) :- InputScope(parent, child, file), parent != child.
+ChildScope(parent, child, file) :-
+    InputScope(parent, interum, file),
+    ChildScope(interum, child, file),
+    parent != child.
+
+// Function-level scoping, the scope of the nearest getter, setter,
+// method, function, arrow function or file/module
+relation FunctionLevelScope(
+    scope: ScopeId,
+    nearest: ScopeId,
+    file: FileId,
+    id: AnyId,
+)
+
+// Functions are nearest to their bodies
+FunctionLevelScope(body, body, file, AnyIdFunc { func }) :-
+    Function(func, file, _, _, body, _).
+
+FunctionLevelScope(scope, scope, file, AnyIdFile { file }) :-
+    File(file, _, scope).
+
+// Walk the scopes down children
+FunctionLevelScope(from, to, file, id) :-
+    FunctionLevelScope(from, interum, file, id),
+    ChildScope(interum, to, file).

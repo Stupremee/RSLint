@@ -5,6 +5,7 @@ pub mod scoping;
 mod tests;
 
 pub use datalog::{Datalog, DatalogLint, DatalogResult};
+pub use types::ast::FileId;
 
 use analyzer::{AnalyzerInner, Visit};
 use rslint_parser::{
@@ -13,9 +14,9 @@ use rslint_parser::{
 };
 use serde::{Deserialize, Serialize};
 use std::{ops::Deref, sync::Arc};
-use types::ast::{FileId, FileKind, JSFlavor};
+use types::ast::{FileKind, JSFlavor};
 
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Default, Deserialize, Serialize)]
 pub struct ScopeAnalyzer {
     #[serde(skip)]
     datalog: Arc<Datalog>,

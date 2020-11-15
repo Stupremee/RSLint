@@ -46,3 +46,82 @@ impl CstRuleStore {
             .cloned()
     }
 }
+
+use crate::rule_prelude::*;
+use rslint_scope::{DatalogLint, FileId, ScopeAnalyzer};
+
+declare_lint! {
+    /**
+    Disallow undefined variables
+    */
+    #[derive(Default)]
+    Scoper,
+    errors,
+    "scoper",
+
+    pub analyzer: ScopeAnalyzer,
+}
+
+#[typetag::serde]
+impl CstRule for Scoper {
+    fn check_root(&self, _root: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
+        for lint in self
+            .analyzer
+            .get_lints(FileId::new(ctx.file_id as u32))
+            .unwrap()
+        {
+            let err = match lint {
+                DatalogLint::NoUndef { var, span, .. } => ctx
+                    .err("no-undef", "a variable was used, but never defined")
+                    .label(
+                        Severity::Error,
+                        span,
+                        format!("`{}` was used, but never defined", *var),
+                    ),
+
+                DatalogLint::NoUnusedVars { var, declared, .. } => {
+                    ctx.err("no-unused-vars", "a variable is never used").label(
+                        Severity::Warning,
+                        declared,
+                        format!("`{}` is never used", *var),
+                    )
+                }
+
+                DatalogLint::TypeofUndef {
+                    whole_expr,
+                    undefined_portion,
+                    ..
+                } => ctx
+                    .err(
+                        "typeof-undef",
+                        "calling `typeof` un an undefined variable will always result in `undefined`",
+                    )
+                    .primary(whole_expr, "`typeof` is called here")
+                    .secondary(undefined_portion, "this expression is undefined")
+                    .suggestion(
+                        whole_expr,
+                        "if this is intentional, replace this expression with `undefined`",
+                        "undefined",
+                        Applicability::MaybeIncorrect,
+                    ),
+
+                DatalogLint::UseBeforeDef {
+                    name,
+                    used,
+                    declared,
+                    ..
+                } => ctx
+                    .err(
+                        "no-use-before-def",
+                        format!("`{}` was used before it was defined", *name),
+                    )
+                    .primary(declared, format!("`{}` was defined here", *name))
+                    .secondary(used, "but used here"),
+            };
+
+            ctx.add_err(err);
+        }
+
+        None
+    }
+}

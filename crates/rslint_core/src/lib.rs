@@ -38,7 +38,7 @@ pub mod util;
 
 pub use self::{
     rule::{CstRule, Inferable, Outcome, Rule, RuleCtx, RuleLevel, RuleResult},
-    store::CstRuleStore,
+    store::{CstRuleStore, Scoper},
 };
 pub use rslint_errors::{Diagnostic, Severity, Span};
 
@@ -50,6 +50,10 @@ pub use crate::directives::{
 use dyn_clone::clone_box;
 use rayon::prelude::*;
 use rslint_parser::{parse_module, parse_text, util::SyntaxNodeExt, SyntaxKind, SyntaxNode};
+use rslint_scope::{
+    globals::{BUILTIN, ES2021, NODE},
+    FileId, ScopeAnalyzer,
+};
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -109,13 +113,14 @@ impl LintResult<'_> {
 }
 
 /// Lint a file with a specific rule store.
-pub fn lint_file(
+pub fn lint_file<'a>(
     file_id: usize,
     file_source: impl AsRef<str>,
     module: bool,
-    store: &CstRuleStore,
+    store: &'a CstRuleStore,
     verbose: bool,
-) -> Result<LintResult, Diagnostic> {
+    analyzer: &ScopeAnalyzer,
+) -> Result<LintResult<'a>, Diagnostic> {
     let (parser_diagnostics, green) = if module {
         let parse = parse_module(file_source.as_ref(), file_id);
         (parse.errors().to_owned(), parse.green())
@@ -123,13 +128,15 @@ pub fn lint_file(
         let parse = parse_text(file_source.as_ref(), file_id);
         (parse.errors().to_owned(), parse.green())
     };
-    lint_file_inner(
-        SyntaxNode::new_root(green),
-        parser_diagnostics,
-        file_id,
-        store,
-        verbose,
-    )
+    let node = SyntaxNode::new_root(green);
+
+    let file = FileId::new(file_id as u32);
+    analyzer.inject_globals(file, BUILTIN).unwrap();
+    analyzer.inject_globals(file, ES2021).unwrap();
+    analyzer.inject_globals(file, NODE).unwrap();
+    analyzer.analyze(file, &node).unwrap();
+
+    lint_file_inner(node, parser_diagnostics, file_id, store, verbose)
 }
 
 /// used by lint_file and incrementally_relint to not duplicate code
@@ -139,7 +146,7 @@ pub(crate) fn lint_file_inner(
     file_id: usize,
     store: &CstRuleStore,
     verbose: bool,
-) -> Result<LintResult, Diagnostic> {
+) -> Result<LintResult<'_>, Diagnostic> {
     let mut new_store = store.clone();
     let directives::DirectiveResult {
         directives,

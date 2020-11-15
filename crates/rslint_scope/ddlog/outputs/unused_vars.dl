@@ -1,0 +1,22 @@
+import ast
+import inputs
+import is_exported
+import name_in_scope
+
+output relation UnusedVariables(name: Name, declared: AnyId, span: Span, file: FileId)
+UnusedVariables(name, declared, span, file) :-
+    NameInScope(file, name, _, Some { span }, declared, false),
+    not declared.is_global(),
+    not IsExported(file, declared),
+    not VariableUsages(file, name, _, declared).
+
+UnusedVariables(name, declared, span, file) :-
+    NameInScope(file, name, _, Some { span }, declared @ AnyIdGlobal { global }, false),
+    not IsExported(file, declared),
+    not VariableUsages(file, name, _, declared).
+
+relation VariableUsages(file: FileId, name: Name, scope: ScopeId, declared_in: AnyId)
+VariableUsages(file, name, scope, declared) :-
+    NameInScope(file, name, scope, _, declared, _),
+    NameRef(expr, file, name),
+    Expression(expr, file, _, scope, _).

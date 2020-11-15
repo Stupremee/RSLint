@@ -24,7 +24,7 @@ impl<'ddlog> Visit<'ddlog, Stmt> for AnalyzerInner {
         let stmt_range = stmt.range();
 
         match stmt {
-            Stmt::BlockStmt(block) => (self.visit(scope, block), scope.scope()),
+            Stmt::BlockStmt(block) => (Some(self.visit(scope, block)), scope.scope()),
             Stmt::EmptyStmt(empty) => (Some(scope.empty(empty.range())), scope.scope()),
             Stmt::ExprStmt(expr) => {
                 let expr = expr.expr().map(|expr| self.visit(scope, expr));
@@ -146,7 +146,7 @@ impl<'ddlog> Visit<'ddlog, (VarDecl, bool)> for AnalyzerInner {
             } else if var.is_var() {
                 new_scope.decl_var(pattern, value, span, exported)
             } else {
-                unreachable!("a variable declaration was neither `let`, `const` or `var`");
+                continue;
             };
 
             last_scope = new_scope;
@@ -355,18 +355,13 @@ impl<'ddlog> Visit<'ddlog, TryStmt> for AnalyzerInner {
     type Output = StmtId;
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, try_stmt: TryStmt) -> Self::Output {
-        let body = try_stmt.test().and_then(|block| self.visit(scope, block));
+        let body = try_stmt.test().map(|block| self.visit(scope, block));
 
         let handler = try_stmt
             .handler()
             .map(|handler| {
                 let pattern = handler.error().map(|pat| self.visit(scope, pat));
-                let body = handler.cons().map(|handler| {
-                    let range = handler.range();
-
-                    self.visit(scope, handler)
-                        .unwrap_or_else(|| scope.empty(range))
-                });
+                let body = handler.cons().map(|handler| self.visit(scope, handler));
 
                 (pattern.into(), body.into())
             })
@@ -381,12 +376,7 @@ impl<'ddlog> Visit<'ddlog, TryStmt> for AnalyzerInner {
         let finalizer = try_stmt
             .finalizer()
             .and_then(|finalizer| finalizer.cons())
-            .map(|finalizer| {
-                let range = finalizer.range();
-
-                self.visit(scope, finalizer)
-                    .unwrap_or_else(|| scope.empty(range))
-            });
+            .map(|finalizer| self.visit(scope, finalizer));
 
         scope.try_stmt(body, handler, finalizer, try_stmt.range())
     }
@@ -401,11 +391,12 @@ impl<'ddlog> Visit<'ddlog, DebuggerStmt> for AnalyzerInner {
 }
 
 impl<'ddlog> Visit<'ddlog, BlockStmt> for AnalyzerInner {
-    type Output = Option<StmtId>;
+    type Output = StmtId;
 
     // TODO: Should blocks get their own statement type along with the scope's span?
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, block: BlockStmt) -> Self::Output {
         self.visit(scope, block.stmts())
+            .unwrap_or_else(|| scope.empty(block.range()))
     }
 }
 

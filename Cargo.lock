@@ -1746,6 +1746,7 @@ dependencies = [
  "rslint_lexer",
  "rslint_macros",
  "rslint_parser",
+ "rslint_scope",
  "rslint_text_edit",
  "schemars",
  "serde",
