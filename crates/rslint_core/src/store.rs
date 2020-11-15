@@ -117,6 +117,16 @@ impl CstRule for Scoper {
                     )
                     .primary(declared, format!("`{}` was defined here", *name))
                     .secondary(used, "but used here"),
+
+                DatalogLint::NoShadow { variable, original, shadow, implicit, .. } => {
+                    ctx
+                        .err(
+                            "no-shadow",
+                            if implicit { "an implicit variable was shadowed" } else { "a variable was shadowed" },
+                        )
+                        .primary(original, format!("`{}` was originally declared here", *variable))
+                        .secondary(shadow, "and shadowed here")
+                }
             };
 
             ctx.add_err(err);

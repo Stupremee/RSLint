@@ -213,6 +213,20 @@ impl Datalog {
             }
         }));
 
+        lints.extend(self.outputs().no_shadow.iter().filter_map(|shadow| {
+            if shadow.key().file == file {
+                Some(DatalogLint::NoShadow {
+                    variable: shadow.key().variable.clone(),
+                    original: shadow.key().original.1,
+                    shadow: shadow.key().shadow.1,
+                    implicit: shadow.key().implicit,
+                    file: shadow.key().file,
+                })
+            } else {
+                None
+            }
+        }));
+
         Ok(lints)
     }
 }
@@ -399,7 +413,7 @@ impl<'ddlog> DatalogTransaction<'ddlog> {
 pub struct DatalogFunction<'ddlog> {
     datalog: &'ddlog DatalogInner,
     func_id: FuncId,
-    scope_id: ScopeId,
+    body_scope: ScopeId,
 }
 
 impl<'ddlog> DatalogFunction<'ddlog> {
@@ -426,7 +440,7 @@ impl<'ddlog> DatalogBuilder<'ddlog> for DatalogFunction<'ddlog> {
     }
 
     fn scope_id(&self) -> ScopeId {
-        self.scope_id
+        self.body_scope
     }
 }
 

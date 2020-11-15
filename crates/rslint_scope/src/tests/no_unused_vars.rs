@@ -6,7 +6,6 @@ rule_test! {
     { "var foo = 5;\nwhile (true) {\n  console.log(foo);\n  break;\n}", node: true },
     { "let box;\nfor (let prop in box) {\n  box[prop] = parseInt(box[prop]);\n}" },
     { "var box = { a: 2 };\nfor (var prop in box) {\n  box[prop] = parseInt(box[prop]);\n}" },
-    // FIXME: Var hoisting
     { "a;\nvar a;" },
     { "var a = 10;\nalert(a);" },
     { "var a = 10;\n(function() { alert(a); })();" },

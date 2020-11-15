@@ -110,7 +110,7 @@ pub trait DatalogBuilder<'ddlog> {
             DatalogFunction {
                 datalog: self.datalog(),
                 func_id: id,
-                scope_id: body.scope_id(),
+                body_scope: body.scope_id(),
             },
             body,
         )

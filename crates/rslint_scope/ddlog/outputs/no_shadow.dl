@@ -31,11 +31,9 @@ NoShadow(
 
     // Get the shadowing var's info
     // FIXME: Waiting on https://github.com/vmware/differential-datalog/issues/784
-    var shadow = FlatMap(vars.to_vec().filter(|shadow| shadow == original)),
+    var shadow = FlatMap(vars.to_vec().filter(|shadow| shadow != original and shadow.0 == original_name and original_span != shadow.1 and not shadow.3)),
     (var shadow_name, var shadow_span, var shadow_id, var shadow_implicit) = shadow,
     ScopeOfId(shadow_id, file, shadow_scope),
 
-    // Make sure both have the same name, aren't from the same node and don't have the same span
-    original_name == shadow_name and original_id != shadow_id and original_span != shadow_span,
     // Make sure the shadowing variable is a child of the original
     ChildScope(original_scope, shadow_scope, file).

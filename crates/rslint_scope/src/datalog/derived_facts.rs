@@ -18,8 +18,8 @@ use types::{
     ddlog_std::tuple2,
     name_in_scope::NameInScope,
     outputs::{
-        no_undef::NoUndef, typeof_undef::TypeofUndef, unused_vars::UnusedVariables,
-        use_before_def::UseBeforeDef,
+        no_shadow::NoShadow, no_undef::NoUndef, typeof_undef::TypeofUndef,
+        unused_vars::UnusedVariables, use_before_def::UseBeforeDef,
     },
 };
 
@@ -186,6 +186,7 @@ outputs! {
     no_undef: NoUndef, outputs_no_undef_NoUndef,
     use_before_def: UseBeforeDef, outputs_use_before_def_UseBeforeDef,
     unused_variables: UnusedVariables, outputs_unused_vars_UnusedVariables,
+    no_shadow: NoShadow, outputs_no_shadow_NoShadow,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -211,6 +212,13 @@ pub enum DatalogLint {
         declared: Span,
         file: FileId,
     },
+    NoShadow {
+        variable: Name,
+        original: Span,
+        shadow: Span,
+        implicit: bool,
+        file: FileId,
+    },
 }
 
 impl DatalogLint {
@@ -228,6 +236,10 @@ impl DatalogLint {
 
     pub fn is_use_before_def(&self) -> bool {
         matches!(self, Self::UseBeforeDef { .. })
+    }
+
+    pub fn is_no_shadow(&self) -> bool {
+        matches!(self, Self::NoShadow { .. })
     }
 
     #[cfg(test)]
@@ -275,12 +287,29 @@ impl DatalogLint {
     }
 
     #[cfg(test)]
+    pub(crate) fn no_shadow(
+        variable: impl Into<Name>,
+        original: std::ops::Range<u32>,
+        shadow: std::ops::Range<u32>,
+        implicit: bool,
+    ) -> Self {
+        Self::NoShadow {
+            variable: variable.into(),
+            original: original.into(),
+            shadow: shadow.into(),
+            implicit,
+            file: FileId::new(0),
+        }
+    }
+
+    #[cfg(test)]
     pub(crate) fn file_id_mut(&mut self) -> &mut FileId {
         match self {
             Self::NoUndef { file, .. } => file,
             Self::NoUnusedVars { file, .. } => file,
             Self::TypeofUndef { file, .. } => file,
             Self::UseBeforeDef { file, .. } => file,
+            Self::NoShadow { file, .. } => file,
         }
     }
 }
