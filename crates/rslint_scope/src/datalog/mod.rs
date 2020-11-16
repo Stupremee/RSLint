@@ -218,7 +218,7 @@ impl Datalog {
                 Some(DatalogLint::NoShadow {
                     variable: shadow.key().variable.clone(),
                     original: shadow.key().original.1,
-                    shadow: shadow.key().shadow.1,
+                    shadow: shadow.key().shadower.1,
                     implicit: shadow.key().implicit,
                     file: shadow.key().file,
                 })

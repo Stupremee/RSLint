@@ -7,18 +7,40 @@ import name_in_scope
 output relation NoShadow(
     variable: Name,
     original: (AnyId, Span),
-    shadow: (AnyId, Span),
+    shadower: (AnyId, Span),
     implicit: bool,
     file: FileId,
 )
 
-NoShadow(
-    original_name,
-    (original_id, original_span),
-    (shadow_id, shadow_span),
-    original_implicit,
-    file,
-) :-
+// NoShadow() :-
+//     // for (shadowed_name, shadowed_id) in names_in_scope {
+//     NameInScope(file, name, scope, Some { span }, declared_in, _implicit, _is_arg),
+// 
+//     //     for (shadower_name, shadower_id) in names_in_scope.filter(|(name, _)| name == shadowed_name) {
+//     //         let shadowed_scope = get_declaration_scope(shadowed_id);
+//     //         let shadower_scope = get_declaration_scope(shadower_id);
+//     // 
+//     //         if shadowed_scope.is_parent_of(shadower_scope) {
+//     //             errors.push(...);
+//     //         }
+//     //     }
+//     // }
+//     // 
+//     // if count_hoisted_shadows {
+//     //     for (shadowed_name, shadowed_id) in names_in_scope {
+//     //         for (shadower_name, shadower_id) in names_in_scope.filter(|(name, _)| name == shadowed_name) {
+//     //             let shadowed_scope = get_hoisted_scope(shadowed_id);
+//     //             let shadower_scope = get_declaration_scope(shadower_id);
+//     // 
+//     //             if shadowed_scope.is_parent_of(shadower_scope) {
+//     //                 errors.push(...);
+//     //             }
+//     //         }
+//     //     }
+//     // }
+
+// Unhoisted variables
+NoShadow(original_name, (original_id, original_span), (shadower_id, shadower_span), original_implicit, file) :-
     NameInScope(file, name, scope, Some { span }, declared, is_implicit, _),
     // Group<(FileId, ScopeId), Vec<(Name, Span, AnyId, bool)>>
     var vars = (name, span, declared, is_implicit).group_by((file, scope)),
@@ -29,11 +51,38 @@ NoShadow(
     (var original_name, var original_span, var original_id, var original_implicit) = original,
     ScopeOfId(original_id, file, original_scope),
 
-    // Get the shadowing var's info
+    // Get the shadower's info
     // FIXME: Waiting on https://github.com/vmware/differential-datalog/issues/784
-    var shadow = FlatMap(vars.to_vec().filter(|shadow| shadow != original and shadow.0 == original_name and original_span != shadow.1 and not shadow.3)),
-    (var shadow_name, var shadow_span, var shadow_id, var shadow_implicit) = shadow,
-    ScopeOfId(shadow_id, file, shadow_scope),
+    var shadower = FlatMap(vars.to_vec().filter(|shadower| shadower != original and shadower.0 == original_name and original_span != shadower.1 and not shadower.3)),
+    (var shadower_name, var shadower_span, var shadower_id, var shadower_implicit) = shadower,
+    ScopeOfId(shadower_id, file, shadower_scope),
 
     // Make sure the shadowing variable is a child of the original
-    ChildScope(original_scope, shadow_scope, file).
+    ChildScope(original_scope, shadower_scope, file).
+
+// Hoisted variables
+NoShadow(original_name, (original_id, original_span), (shadower_id, shadower_span), original_implicit, file) :-
+    NameInScope(file, name, scope, Some { span }, declared, is_implicit, _),
+    // Group<(FileId, ScopeId), Vec<(Name, Span, AnyId, bool)>>
+    var vars = (name, span, declared, is_implicit).group_by((file, scope)),
+
+    // Get the original var's info
+    // FIXME: Waiting on https://github.com/vmware/differential-datalog/issues/784
+    var original = FlatMap(vars.to_vec()),
+    (var original_name, var original_span, var original_id, var original_implicit) = original,
+    ScopeOfId(original_id, file, original_scope),
+
+    // Get the shadower's info
+    // FIXME: Waiting on https://github.com/vmware/differential-datalog/issues/784
+    var shadower = FlatMap(vars.to_vec().filter(|shadower| shadower != original and shadower.0 == original_name and original_span != shadower.1 and not shadower.3)),
+    (var shadower_name, var shadower_span, var shadower_id, var shadower_implicit) = shadower,
+    ScopeOfId(shadower_id, file, shadower_scope),
+
+    // See if the original variable is hoistable
+    IsHoistable(original_id, file, true),
+    Inspect debug("${original_name}, ${original_id}, ${file.id}, true"),
+    // Get the hoisted scope
+    FunctionLevelScope(hoisted_scope, original_scope, file, _),
+    Inspect debug("${original_name}, ${original_id}, ${file.id}, ${original_scope} hoisted to ${hoisted_scope}"),
+    // See if the hoisted scope is a parent to the shadower's
+    ChildScope(hoisted_scope, shadower_scope, file).

@@ -34,24 +34,24 @@ use crate::closure;
 pub struct NoShadow {
     pub variable: crate::ast::Name,
     pub original: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>,
-    pub shadow: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>,
+    pub shadower: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>,
     pub implicit: bool,
     pub file: crate::ast::FileId
 }
 impl abomonation::Abomonation for NoShadow{}
-::differential_datalog::decl_struct_from_record!(NoShadow["outputs::no_shadow::NoShadow"]<>, ["outputs::no_shadow::NoShadow"][5]{[0]variable["variable"]: crate::ast::Name, [1]original["original"]: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>, [2]shadow["shadow"]: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>, [3]implicit["implicit"]: bool, [4]file["file"]: crate::ast::FileId});
-::differential_datalog::decl_struct_into_record!(NoShadow, ["outputs::no_shadow::NoShadow"]<>, variable, original, shadow, implicit, file);
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(NoShadow, <>, variable: crate::ast::Name, original: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>, shadow: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>, implicit: bool, file: crate::ast::FileId);
+::differential_datalog::decl_struct_from_record!(NoShadow["outputs::no_shadow::NoShadow"]<>, ["outputs::no_shadow::NoShadow"][5]{[0]variable["variable"]: crate::ast::Name, [1]original["original"]: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>, [2]shadower["shadower"]: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>, [3]implicit["implicit"]: bool, [4]file["file"]: crate::ast::FileId});
+::differential_datalog::decl_struct_into_record!(NoShadow, ["outputs::no_shadow::NoShadow"]<>, variable, original, shadower, implicit, file);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(NoShadow, <>, variable: crate::ast::Name, original: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>, shadower: crate::ddlog_std::tuple2<crate::ast::AnyId, crate::ast::Span>, implicit: bool, file: crate::ast::FileId);
 impl ::std::fmt::Display for NoShadow {
     fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
-            crate::outputs::no_shadow::NoShadow{variable,original,shadow,implicit,file} => {
+            crate::outputs::no_shadow::NoShadow{variable,original,shadower,implicit,file} => {
                 __formatter.write_str("outputs::no_shadow::NoShadow{")?;
                 ::std::fmt::Debug::fmt(variable, __formatter)?;
                 __formatter.write_str(",")?;
                 ::std::fmt::Debug::fmt(original, __formatter)?;
                 __formatter.write_str(",")?;
-                ::std::fmt::Debug::fmt(shadow, __formatter)?;
+                ::std::fmt::Debug::fmt(shadower, __formatter)?;
                 __formatter.write_str(",")?;
                 ::std::fmt::Debug::fmt(implicit, __formatter)?;
                 __formatter.write_str(",")?;

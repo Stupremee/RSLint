@@ -30,6 +30,11 @@ ChildScope(parent, child, file) :-
     ChildScope(interum, child, file),
     parent != child.
 
+// TODO: Are other things hoistable?
+relation IsHoistable(id: AnyId, file: FileId, hoistable: bool)
+IsHoistable(AnyIdFunc { id }, file, true) :- Function(id, file, _, _, _, _).
+IsHoistable(AnyIdStmt { id }, file, true) :- VarDecl(id, file, _, _, _).
+
 // Function-level scoping, the scope of the nearest getter, setter,
 // method, function, arrow function or file/module
 relation FunctionLevelScope(

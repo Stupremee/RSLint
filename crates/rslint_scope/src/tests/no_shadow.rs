@@ -46,12 +46,38 @@ rule_test! {
         "var a = (x) => { var b = () => { var x = 'foo'; }; }",
         errors: [DatalogLint::no_shadow("x", 9..10, 37..38, false)],
     },
-
-    // TODO: eslint says these are fine but devsnek says they ain't, decide
-    //       and maybe add lexical constraints to shadowing
-    { "function foo(a) { } var a;", errors: [DatalogLint::no_shadow("a", 13..14, 24..25, false)] },
+    // TODO: Options for configuring shadowing
+    {
+        "function foo(a) { } var a;",
+        errors: [DatalogLint::no_shadow("a", 13..14, 24..25, false)],
+    },
+    // TODO: Options for configuring shadowing
     {
         "function foo(a) { } function a() {}",
         errors: [DatalogLint::no_shadow("a", 13..14, 29..30, false)],
+    },
+    {
+        "var x = 1; { let x = 2; }",
+        errors: [DatalogLint::no_shadow("x", 4..5, 17..18, false)],
+    },
+    {
+        "let x = 1; { const x = 2; }",
+        errors: [DatalogLint::no_shadow("x", 4..5, 19..20, false)],
+    },
+    {
+        "{ let a; } function a() {}",
+        errors: [DatalogLint::no_shadow("a", 4..5, 19..20, false)],
+    },
+    {
+        "{ const a = 0; } function a() {}",
+        errors: [DatalogLint::no_shadow("a", 4..5, 19..20, false)],
+    },
+    {
+        "function foo() { let a; } function a() {}",
+        errors: [DatalogLint::no_shadow("a", 4..5, 19..20, false)],
+    },
+    {
+        "function foo() { var a; } function a() {}",
+        errors: [DatalogLint::no_shadow("a", 4..5, 19..20, false)],
     },
 }

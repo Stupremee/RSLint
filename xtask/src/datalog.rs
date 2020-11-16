@@ -63,7 +63,7 @@ pub fn trim_datalog(skip_trim: bool, debug: bool) -> Result<()> {
 
     if !ddlog.spawn()?.wait()?.success() {
         println!("ddlog returned with an error");
-        return Ok(());
+        anyhow::bail!("ddlog returned with an error");
     }
 
     if generated_dir.exists() {
