@@ -58,6 +58,7 @@ rule_test! {
     { "export * as ns from \"source\"", module: true },
     { "import.meta", module: true },
     { "let x; x.y" },
+    { "let x = 10; while (true) { x += 1; }" },
 
     // Should fail
     { "a = 1;", errors: [DatalogLint::no_undef("a", 0..1)] },

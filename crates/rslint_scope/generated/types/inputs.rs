@@ -709,22 +709,25 @@ impl ::std::fmt::Debug for Expression {
 pub struct File {
     pub id: crate::ast::FileId,
     pub kind: crate::ast::FileKind,
-    pub top_level_scope: crate::ast::ScopeId
+    pub top_level_scope: crate::ast::ScopeId,
+    pub config: crate::config::Config
 }
 impl abomonation::Abomonation for File{}
-::differential_datalog::decl_struct_from_record!(File["inputs::File"]<>, ["inputs::File"][3]{[0]id["id"]: crate::ast::FileId, [1]kind["kind"]: crate::ast::FileKind, [2]top_level_scope["top_level_scope"]: crate::ast::ScopeId});
-::differential_datalog::decl_struct_into_record!(File, ["inputs::File"]<>, id, kind, top_level_scope);
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(File, <>, id: crate::ast::FileId, kind: crate::ast::FileKind, top_level_scope: crate::ast::ScopeId);
+::differential_datalog::decl_struct_from_record!(File["inputs::File"]<>, ["inputs::File"][4]{[0]id["id"]: crate::ast::FileId, [1]kind["kind"]: crate::ast::FileKind, [2]top_level_scope["top_level_scope"]: crate::ast::ScopeId, [3]config["config"]: crate::config::Config});
+::differential_datalog::decl_struct_into_record!(File, ["inputs::File"]<>, id, kind, top_level_scope, config);
+#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(File, <>, id: crate::ast::FileId, kind: crate::ast::FileKind, top_level_scope: crate::ast::ScopeId, config: crate::config::Config);
 impl ::std::fmt::Display for File {
     fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
         match self {
-            crate::inputs::File{id,kind,top_level_scope} => {
+            crate::inputs::File{id,kind,top_level_scope,config} => {
                 __formatter.write_str("inputs::File{")?;
                 ::std::fmt::Debug::fmt(id, __formatter)?;
                 __formatter.write_str(",")?;
                 ::std::fmt::Debug::fmt(kind, __formatter)?;
                 __formatter.write_str(",")?;
                 ::std::fmt::Debug::fmt(top_level_scope, __formatter)?;
+                __formatter.write_str(",")?;
+                ::std::fmt::Debug::fmt(config, __formatter)?;
                 __formatter.write_str("}")
             }
         }

@@ -58,7 +58,10 @@ pub fn trim_datalog(skip_trim: bool, debug: bool) -> Result<()> {
     ]);
 
     if debug {
-        ddlog.arg("--output-internal-relations");
+        ddlog.args(&[
+            "--output-internal-relations",
+            "--output-input-relations=INPUT_",
+        ]);
     }
 
     if !ddlog.spawn()?.wait()?.success() {
@@ -98,13 +101,13 @@ fn trim_generated_code(scopes_dir: &Path, generated_dir: &Path) -> Result<()> {
 
     // Remove extra libraries
     for lib in EXTRA_LIBS.iter().copied() {
-        println!("deleting {}...", lib);
+        println!("deleting {}/{}/*...", GENERATED_DIR, lib);
         fs2::remove_dir_all(generated_dir.join(lib)).ok();
     }
 
     // Remove extra files
     for file in EXTRA_FILES.iter().copied() {
-        println!("removing {}...", file);
+        println!("removing {}/{}...", GENERATED_DIR, file);
         fs2::remove_file(generated_dir.join(file)).ok();
     }
 

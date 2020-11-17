@@ -13,14 +13,21 @@ macro_rules! rule_test {
             $(, module: $module:literal)?
             $(, es2021: $es2021:literal)?
             $(, errors: [$($error:expr),* $(,)?])?
+            $(, config: { $($config:tt)* })?
             $(,)?
         }),* $(,)?
     ) => {
         #[test]
-        #[allow(unused_imports)]
+        #[allow(unused_imports, clippy::needless_update)]
         fn $rule_name() {
-            use crate::{tests::DatalogTestHarness, datalog::DatalogLint::{self, *}};
-            use types::ast::Span;
+            use crate::{
+                tests::DatalogTestHarness,
+                datalog::DatalogLint::{self, *},
+            };
+            use types::{
+                ast::Span,
+                config::{Config, NoShadowHoisting::{self, *}},
+            };
             use std::borrow::Cow;
             use rayon::iter::{ParallelIterator, IntoParallelIterator};
 
@@ -36,7 +43,8 @@ macro_rules! rule_test {
                     $(.with_ecma($ecma))?
                     $(.is_module($module))?
                     $(.with_es2021($es2021))?
-                    $(.with_errors(vec![$($error),*]))?,
+                    $(.with_errors(vec![$($error),*]))?
+                    $(.with_config(Config { $($config)* ..Default::default() }))?,
             )?]
             .into_par_iter()
             .for_each(|test| test.run());
@@ -65,7 +73,7 @@ use std::{
     path::Path,
     sync::atomic::{AtomicUsize, Ordering},
 };
-use types::ast::FileId;
+use types::{ast::FileId, config::Config};
 
 struct DatalogTestHarness {
     datalog: ScopeAnalyzer,
@@ -128,6 +136,7 @@ struct TestCase<'a> {
     errors: Vec<DatalogLint>,
     harness: &'a DatalogTestHarness,
     id: usize,
+    config: Config,
 }
 
 impl<'a> TestCase<'a> {
@@ -163,6 +172,7 @@ impl<'a> TestCase<'a> {
             errors: Vec::new(),
             harness,
             id,
+            config: Config::default(),
         }
     }
 
@@ -199,6 +209,11 @@ impl<'a> TestCase<'a> {
 
     pub fn with_errors(mut self, errors: Vec<DatalogLint>) -> Self {
         self.errors.extend(errors);
+        self
+    }
+
+    pub fn with_config(mut self, config: Config) -> Self {
+        self.config = config;
         self
     }
 
@@ -264,7 +279,7 @@ impl<'a> TestCase<'a> {
 
         self.harness
             .datalog
-            .analyze(file_id, &ast)
+            .analyze(file_id, &ast, self.config)
             .expect("failed datalog transaction");
 
         for err in self.errors.iter_mut() {

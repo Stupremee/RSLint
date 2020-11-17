@@ -2005,6 +2005,21 @@ impl ::std::default::Default for UnaryOperand {
         crate::ast::UnaryOperand::UnaryIncrement{}
     }
 }
+pub fn body_ast_PropertyVal_ddlog_std_Option__ast_StmtId(prop: & crate::ast::PropertyVal) -> crate::ddlog_std::Option<crate::ast::StmtId>
+{   match (*prop) {
+        crate::ast::PropertyVal::PropGetter{body: crate::ddlog_std::Option::Some{x: ref body}} => (crate::ddlog_std::Option::Some{x: (*body).clone()}),
+        crate::ast::PropertyVal::PropSetter{params: _, body: crate::ddlog_std::Option::Some{x: ref body}} => (crate::ddlog_std::Option::Some{x: (*body).clone()}),
+        crate::ast::PropertyVal::PropMethod{params: _, body: crate::ddlog_std::Option::Some{x: ref body}} => (crate::ddlog_std::Option::Some{x: (*body).clone()}),
+        _ => (crate::ddlog_std::Option::None{})
+    }
+}
+pub fn body_ast_ClassElement_ddlog_std_Option__ast_StmtId(elem: & crate::ast::ClassElement) -> crate::ddlog_std::Option<crate::ast::StmtId>
+{   match (*elem) {
+        crate::ast::ClassElement::ClassMethod{name: _, params: _, body: crate::ddlog_std::Option::Some{x: ref body}} => (crate::ddlog_std::Option::Some{x: (*body).clone()}),
+        crate::ast::ClassElement::ClassStaticMethod{name: _, params: _, body: crate::ddlog_std::Option::Some{x: ref body}} => (crate::ddlog_std::Option::Some{x: (*body).clone()}),
+        _ => (crate::ddlog_std::Option::None{})
+    }
+}
 pub fn bound_vars_internment_Intern__ast_Pattern_ddlog_std_Vec__ast_Spanned__internment_Intern____Stringval(pat: & crate::ast::IPattern) -> crate::ddlog_std::Vec<crate::ast::Spanned<crate::ast::Name>>
 {   match (*crate::internment::ival(pat)) {
         crate::ast::Pattern::SinglePattern{name: crate::ddlog_std::Option::Some{x: ref name}} => {

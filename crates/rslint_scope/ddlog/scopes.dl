@@ -1,4 +1,5 @@
 import ast
+import vec
 import scopes
 import inputs
 
@@ -38,28 +39,68 @@ IsHoistable(AnyIdStmt { id }, file, true) :- VarDecl(id, file, _, _, _).
 // Function-level scoping, the scope of the nearest getter, setter,
 // method, function, arrow function or file/module
 relation FunctionLevelScope(
+    // An arbitrary scope to get the closest function-level scope
     scope: ScopeId,
+    // The nearest function-level scope
     nearest: ScopeId,
+    // The file this occurs in
     file: FileId,
+    // The id of the function/file/etc the scope belongs to
     id: AnyId,
 )
 
-// Functions are nearest to their bodies
-FunctionLevelScope(body, body, file, AnyIdFunc { func }) :-
-    Function(func, file, _, _, body, _).
+// Files
+FunctionLevelScope(child, scope, file, AnyIdFile { file }) :-
+    File(file, _, scope, _),
+    ChildScope(scope, child, file).
 
-FunctionLevelScope(scope, scope, file, AnyIdFile { file }) :-
-    File(file, _, scope).
+// Functions
+FunctionLevelScope(child, body, file, AnyIdFunc { func }) :-
+    Function(func, file, _, _, body, _),
+    ChildScope(body, child, file).
+
+// Class methods
+FunctionLevelScope(child, scope, file, AnyIdClass { class }) :-
+    Class(class, file, _, _, Some { elements }, _, _),
+    var body = FlatMap(elements.filter_map(|elem| elem.ival().body())),
+    Statement(body, file, _, scope, _),
+    ChildScope(scope, child, file).
+
+// Class expression methods
+FunctionLevelScope(child, scope, file, AnyIdExpr { expr }) :-
+    ClassExpr(expr, file, Some { elements }),
+    var body = FlatMap(elements.filter_map(|elem| elem.ival().body())),
+    Statement(body, file, _, scope, _),
+    ChildScope(scope, child, file).
+
+// Function expressions
+FunctionLevelScope(child, scope, file, AnyIdExpr { expr }) :-
+    InlineFunc(expr, file, _, Some { body }),
+    Statement(body, file, _, scope, _),
+    ChildScope(scope, child, file).
+
+// Getters & setters
+FunctionLevelScope(child, scope, file, AnyIdExpr { expr }) :-
+    Property(expr, file, _, Some { val }),
+    Some { var body } = val.body(),
+    Statement(body, file, _, scope, _),
+    ChildScope(scope, child, file).
+
+// Arrow functions
+FunctionLevelScope(child, scope, file, AnyIdExpr { expr }) :-
+    Arrow(expr, file, Some { Right { body }}),
+    Statement(body, file, _, scope, _),
+    ChildScope(scope, child, file).
 
 // Walk the scopes down children
-FunctionLevelScope(from, to, file, id) :-
-    FunctionLevelScope(from, interum, file, id),
-    ChildScope(interum, to, file).
+FunctionLevelScope(child, nearest, file, id) :-
+    FunctionLevelScope(parent, nearest, file, id),
+    ChildScope(parent, child, file).
 
 relation ScopeOfId(id: AnyId, file: FileId, scope: ScopeId)
-ScopeOfId(AnyIdFile { id }, id, scope) :- File(id, _, scope).
+ScopeOfId(AnyIdFile { id }, id, scope) :- File(id, _, scope, _).
 ScopeOfId(AnyIdFunc { id }, file, scope) :- Function(id, file, _, scope, _, _).
 ScopeOfId(AnyIdClass { id }, file, scope) :- Class(id, file, _, _, _, scope, _).
 ScopeOfId(AnyIdStmt { id }, file, scope) :- Statement(id, file, _, scope, _).
 ScopeOfId(AnyIdExpr { id }, file, scope) :- Expression(id, file, _, scope, _).
-ScopeOfId(AnyIdImport { id }, file, scope) :- ImportDecl(id, file, _), File(file, _, scope).
+ScopeOfId(AnyIdImport { id }, file, scope) :- ImportDecl(id, file, _), File(file, _, scope, _).

@@ -3,11 +3,12 @@ import ast
 import utils
 import group
 import inputs
-import name_in_scope
 import scopes
+import config
 import is_exported
+import name_in_scope
 import outputs::no_undef
-import outputs::typeof_undef
-import outputs::unused_vars
-import outputs::use_before_def
 import outputs::no_shadow
+import outputs::unused_vars
+import outputs::typeof_undef
+import outputs::use_before_def

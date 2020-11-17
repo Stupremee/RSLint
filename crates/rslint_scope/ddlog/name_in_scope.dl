@@ -125,7 +125,7 @@ NameInScope(file, name, nearest, Some { span }, AnyIdStmt { stmt }, false, false
     VarDecl(stmt, file, Some { pat }, _, _),
     Statement(stmt, file, _, scope, _),
     // Bubble `var` up to the nearest function-level scope
-    FunctionLevelScope(nearest, scope, file, _),
+    FunctionLevelScope(scope, nearest, file, _),
     // FIXME: Waiting on https://github.com/vmware/differential-datalog/issues/784
     var bound_var = FlatMap(pat.bound_vars()),
     Spanned { var name, var span } = bound_var.
@@ -143,7 +143,7 @@ NameInScope(file, name, nearest, Some { span }, AnyIdStmt { stmt }, false, false
 NameInScope(file, name, nearest, Some { span }, AnyIdFunc { func }, false, false) :-
     Function(func, file, Some { Spanned { name, span }}, scope, _, _),
     // Bubble functions up to the nearest function-level scope
-    FunctionLevelScope(nearest, scope, file, _).
+    FunctionLevelScope(scope, nearest, file, _).
 
 // Introduce function arguments within the body of their enclosing function
 //

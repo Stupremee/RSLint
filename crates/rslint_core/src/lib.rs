@@ -134,7 +134,9 @@ pub fn lint_file<'a>(
     analyzer.inject_globals(file, BUILTIN).unwrap();
     analyzer.inject_globals(file, ES2021).unwrap();
     analyzer.inject_globals(file, NODE).unwrap();
-    analyzer.analyze(file, &node).unwrap();
+    analyzer
+        .analyze(file, &node, rslint_scope::Config::default())
+        .unwrap();
 
     lint_file_inner(node, parser_diagnostics, file_id, store, verbose)
 }

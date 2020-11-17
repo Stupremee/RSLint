@@ -244,13 +244,13 @@ typedef PropertyVal =
         body: Option<StmtId>
     }
 
-typedef FuncParam = FuncParam {
-    pattern: IPattern,
-    implicit: bool,
-}
-
-function bound_vars(param: FuncParam): Vec<(Spanned<Name>, bool)> {
-    param.pattern.bound_vars().map(|v| (v, param.implicit))
+function body(prop: PropertyVal): Option<StmtId> {
+    match (prop) {
+        PropGetter { Some { body }} -> Some { body },
+        PropSetter { _, Some { body }} -> Some { body },
+        PropMethod { _, Some { body }} -> Some { body },
+        _ -> None,
+    }
 }
 
 function method_comps(prop: PropertyVal): Option<(Vec<FuncParam>, StmtId)> {
@@ -259,6 +259,15 @@ function method_comps(prop: PropertyVal): Option<(Vec<FuncParam>, StmtId)> {
         PropMethod { Some { params }, Some { body }} -> Some { (params, body) },
         _ -> None,
     }
+}
+
+typedef FuncParam = FuncParam {
+    pattern: IPattern,
+    implicit: bool,
+}
+
+function bound_vars(param: FuncParam): Vec<(Spanned<Name>, bool)> {
+    param.pattern.bound_vars().map(|v| (v, param.implicit))
 }
 
 // TODO: This needs to be structured better w/more metadata
@@ -274,6 +283,14 @@ typedef ClassElement =
         params: Option<Vec<FuncParam>>,
         body: Option<StmtId>
     }
+
+function body(elem: ClassElement): Option<StmtId> {
+    match (elem) {
+        ClassMethod { _, _, Some { body }} -> Some { body },
+        ClassStaticMethod { _, _, Some { body }} -> Some { body },
+        _ -> None,
+    }
+}
 
 function method_comps(elem: ClassElement): Option<(Vec<FuncParam>, StmtId)> {
     match (elem) {

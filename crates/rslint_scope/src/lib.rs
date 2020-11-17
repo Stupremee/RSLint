@@ -5,7 +5,10 @@ pub mod scoping;
 mod tests;
 
 pub use datalog::{Datalog, DatalogLint, DatalogResult};
-pub use types::ast::FileId;
+pub use types::{
+    ast::FileId,
+    config::{Config, NoShadowHoisting},
+};
 
 use analyzer::{AnalyzerInner, Visit};
 use rslint_parser::{
@@ -29,7 +32,7 @@ impl ScopeAnalyzer {
         })
     }
 
-    pub fn analyze(&self, file: FileId, syntax: &SyntaxNode) -> DatalogResult<()> {
+    pub fn analyze(&self, file: FileId, syntax: &SyntaxNode, config: Config) -> DatalogResult<()> {
         let analyzer = AnalyzerInner;
 
         self.datalog.transaction(|trans| {
@@ -52,7 +55,7 @@ impl ScopeAnalyzer {
                 }
             };
 
-            let mut scope = trans.file(file, file_kind);
+            let mut scope = trans.file(file, file_kind, config);
             for item in syntax.children().filter_map(|x| x.try_to::<ModuleItem>()) {
                 if let Some(new_scope) = analyzer.visit(&scope, item) {
                     scope = new_scope;

@@ -1,11 +1,14 @@
 // All datalog input relations, derived from the program's ast
 import ast
+import config
 
 input relation File(
     id: FileId,
     kind: FileKind,
     top_level_scope: ScopeId,
+    config: Config,
 )
+primary key (f) (f.id)
 
 input relation FileExport(
     file: FileId,
@@ -34,6 +37,7 @@ input relation Function(
     body: ScopeId,
     exported: bool,
 )
+primary key (f) (f.id, f.file)
 
 input relation FunctionArg(
     parent_func: FuncId,
@@ -52,6 +56,7 @@ input relation Class(
     scope: ScopeId,
     exported: bool,
 )
+primary key (c) (c.id, c.file)
 
 // Imports
 input relation ImportDecl(
@@ -76,6 +81,7 @@ input relation Statement(
     scope: ScopeId,
     span: Span,
 )
+primary key (stmt) (stmt.id, stmt.file)
 
 input relation VarDecl(
     stmt_id: StmtId,
@@ -210,6 +216,7 @@ typedef Expression = Expression {
     span: Span,
 }
 input relation Expression[Expression]
+primary key (e) (e.id, e.file)
 
 index ExpressionById(id: ExprId, file: FileId) on Expression[Expression { .id = id, .file = file }]
 

@@ -1,0 +1,5 @@
+typedef Config = Config {
+    no_shadow_hoisting: NoShadowHoisting,
+}
+
+typedef NoShadowHoisting = HoistingNever | HoistingAlways

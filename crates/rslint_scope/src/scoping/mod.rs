@@ -115,7 +115,10 @@ mod tests {
     use super::*;
     use crate::{datalog::DatalogBuilder, AnalyzerInner, ScopeAnalyzer, Visit};
     use rslint_parser::{ast::Stmt, parse_expr, parse_text, SyntaxNodeExt};
-    use types::ast::{FileKind, JSFlavor, LitKind};
+    use types::{
+        ast::{FileKind, JSFlavor, LitKind},
+        config::Config,
+    };
 
     #[test]
     fn get_expr() {
@@ -192,6 +195,7 @@ mod tests {
                     FileKind::JavaScript {
                         flavor: JSFlavor::Vanilla,
                     },
+                    Config::default(),
                 );
 
                 // let foo;

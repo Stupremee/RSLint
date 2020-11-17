@@ -201,7 +201,7 @@ impl<'ddlog> Visit<'ddlog, DoWhileStmt> for AnalyzerInner {
         let body = do_while.cons().and_then(|stmt| self.visit(scope, stmt).0);
         let cond = do_while
             .condition()
-            .and_then(|cond| self.visit(scope, cond.condition()));
+            .and_then(|cond| self.visit(&scope.scope(), cond.condition()));
 
         scope.do_while(body, cond, do_while.range())
     }
@@ -214,7 +214,9 @@ impl<'ddlog> Visit<'ddlog, WhileStmt> for AnalyzerInner {
         let cond = while_stmt
             .condition()
             .and_then(|cond| self.visit(scope, cond.condition()));
-        let body = while_stmt.cons().and_then(|stmt| self.visit(scope, stmt).0);
+        let body = while_stmt
+            .cons()
+            .and_then(|stmt| self.visit(&scope.scope(), stmt).0);
 
         scope.while_stmt(cond, body, while_stmt.range())
     }
@@ -395,7 +397,8 @@ impl<'ddlog> Visit<'ddlog, BlockStmt> for AnalyzerInner {
 
     // TODO: Should blocks get their own statement type along with the scope's span?
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, block: BlockStmt) -> Self::Output {
-        self.visit(scope, block.stmts())
+        let scope = scope.scope();
+        self.visit(&scope, block.stmts())
             .unwrap_or_else(|| scope.empty(block.range()))
     }
 }
