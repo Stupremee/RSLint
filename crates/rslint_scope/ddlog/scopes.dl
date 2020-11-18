@@ -1,5 +1,6 @@
 import ast
 import vec
+import utils
 import scopes
 import inputs
 
@@ -49,52 +50,43 @@ relation FunctionLevelScope(
     id: AnyId,
 )
 
-// Files
-FunctionLevelScope(child, scope, file, AnyIdFile { file }) :-
-    File(file, _, scope, _),
-    ChildScope(scope, child, file).
+FunctionLevelScope(scope, scope, file, AnyIdFile { file }) :-
+    File(file, _, scope, _).
 
 // Functions
-FunctionLevelScope(child, body, file, AnyIdFunc { func }) :-
-    Function(func, file, _, _, body, _),
-    ChildScope(body, child, file).
+FunctionLevelScope(body, body, file, AnyIdFunc { func }) :-
+    Function(func, file, _, _, body, _).
 
 // Class methods
-FunctionLevelScope(child, scope, file, AnyIdClass { class }) :-
+FunctionLevelScope(scope, scope, file, AnyIdClass { class }) :-
     Class(class, file, _, _, Some { elements }, _, _),
     var body = FlatMap(elements.filter_map(|elem| elem.ival().body())),
-    Statement(body, file, _, scope, _),
-    ChildScope(scope, child, file).
+    Statement(body, file, _, scope, _).
 
 // Class expression methods
-FunctionLevelScope(child, scope, file, AnyIdExpr { expr }) :-
+FunctionLevelScope(scope, scope, file, AnyIdExpr { expr }) :-
     ClassExpr(expr, file, Some { elements }),
     var body = FlatMap(elements.filter_map(|elem| elem.ival().body())),
-    Statement(body, file, _, scope, _),
-    ChildScope(scope, child, file).
+    Statement(body, file, _, scope, _).
 
 // Function expressions
-FunctionLevelScope(child, scope, file, AnyIdExpr { expr }) :-
+FunctionLevelScope(scope, scope, file, AnyIdExpr { expr }) :-
     InlineFunc(expr, file, _, Some { body }),
-    Statement(body, file, _, scope, _),
-    ChildScope(scope, child, file).
+    Statement(body, file, _, scope, _).
 
 // Getters & setters
-FunctionLevelScope(child, scope, file, AnyIdExpr { expr }) :-
+FunctionLevelScope(scope, scope, file, AnyIdExpr { expr }) :-
     Property(expr, file, _, Some { val }),
     Some { var body } = val.body(),
-    Statement(body, file, _, scope, _),
-    ChildScope(scope, child, file).
+    Statement(body, file, _, scope, _).
 
 // Arrow functions
-FunctionLevelScope(child, scope, file, AnyIdExpr { expr }) :-
+FunctionLevelScope(scope, scope, file, AnyIdExpr { expr }) :-
     Arrow(expr, file, Some { Right { body }}),
-    Statement(body, file, _, scope, _),
-    ChildScope(scope, child, file).
+    Statement(body, file, _, scope, _).
 
-// Walk the scopes down children
-FunctionLevelScope(child, nearest, file, id) :-
-    FunctionLevelScope(parent, nearest, file, id),
+FunctionLevelScope(child, scope, file, id) :-
+    FunctionLevelScope(parent, scope, file, id),
     ChildScope(parent, child, file).
 
 relation ScopeOfId(id: AnyId, file: FileId, scope: ScopeId)

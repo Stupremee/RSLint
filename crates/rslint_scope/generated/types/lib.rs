@@ -176,7 +176,6 @@ pub static IMPLICIT_ARGUMENTS: Lazy<Intern<Pattern>> = Lazy::new(|| {
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<crate::ast::ScopeId, crate::ast::FileId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<crate::ast::Span, crate::ast::FileId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple2<crate::ast::StmtId, crate::ast::FileId>}
-::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple3<crate::ast::ClassId, crate::ast::FileId, crate::ast::ScopeId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple3<crate::ast::ClassId, crate::ast::FileId, crate::ddlog_std::Vec<crate::ast::FuncParam>>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple3<crate::ast::ExprId, crate::ast::FileId, crate::ast::ScopeId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple3<crate::ast::ExprId, crate::ast::FileId, crate::ddlog_std::Vec<crate::ast::FuncParam>>}
