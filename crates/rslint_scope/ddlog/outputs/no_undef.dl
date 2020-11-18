@@ -1,4 +1,5 @@
 import ast
+import utils
 import inputs
 import name_in_scope
 import outputs::typeof_undef
@@ -10,13 +11,18 @@ import outputs::typeof_undef
 output relation NoUndef(name: Name, scope: ScopeId, span: Span, file: FileId)
 NoUndef(name, scope, span, file) :-
     NameRef(expr, file, name),
+    //Inspect dbg(("NameRef", expr, file, name)),
     Expression(expr, file, ExprNameRef, scope, span),
+    //Inspect dbg(("Expression", expr, ExprNameRef, scope, span)),
     not NameInScope(file, name, scope, _, _, _, _),
+    //Inspect dbg(("not NameInScope", file, name, scope)),
     // Expressions like `typeof not_undefined` are allowed under NoUndef
     // and are instead output through TypeofUndef
     not WithinTypeofExpr(_, expr, file),
+    //Inspect dbg(("not WithinTypeofExpr", expr, file)),
     // TODO: This looks wrong
     not ChainedWith(_, expr, file).
+    //Inspect dbg(("not ChainedWith", expr, file)).
 
 // Assignments
 NoUndef(name, scope, span, file) :-

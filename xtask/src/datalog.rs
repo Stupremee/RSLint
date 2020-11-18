@@ -84,7 +84,7 @@ pub fn trim_datalog(skip_trim: bool, debug: bool) -> Result<()> {
 
 fn trim_generated_code(scopes_dir: &Path, generated_dir: &Path) -> Result<()> {
     // Edit generated/Cargo.toml
-    println!("editing {}...", LIBRARY_TOML);
+    println!("editing  {}...", LIBRARY_TOML);
     let library_path = scopes_dir.join(LIBRARY_TOML);
     let mut library_toml = edit_toml(LIBRARY_TOML, &library_path, LIBRARY_DEPS, LIBRARY_FEATURES)?;
 
@@ -94,7 +94,7 @@ fn trim_generated_code(scopes_dir: &Path, generated_dir: &Path) -> Result<()> {
     write_toml(LIBRARY_TOML, &library_path, &library_toml)?;
 
     // Edit generated/types/Cargo.toml
-    println!("editing {}...", TYPES_TOML);
+    println!("editing  {}...", TYPES_TOML);
     let types_path = scopes_dir.join(TYPES_TOML);
     let types_toml = edit_toml(TYPES_TOML, &types_path, TYPES_DEPS, TYPES_FEATURES)?;
     write_toml(TYPES_TOML, &types_path, &types_toml)?;

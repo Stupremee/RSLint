@@ -5,6 +5,7 @@ import group
 import inputs
 import scopes
 import name_in_scope
+import variable_decl
 
 // TODO: Strip extra info and give fields better names,
 //       lint consumers can get needed info via queries
@@ -22,8 +23,8 @@ typedef UseBeforeDef = UseBeforeDef {
 output relation UseBeforeDef[UseBeforeDef]
 
 // ```js
-// foo(bar);
-// var bar = 10; // used before def
+// foo(bar); // used before definition
+// var bar = 10;
 // ```
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     NameRef(expr, file, name),
@@ -33,7 +34,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     not New(_, file, Some { expr }, _),
     NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { stmt }, _, _),
     Statement(stmt, file, StmtVarDecl, declared_scope, declared_in),
-    declared_scope != used_scope,
+    declared_scope != used_scope and used_in < declared_in,
     not ChildScope(declared_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
@@ -42,7 +43,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     NameRef(callee, file, name),
     NameInScope(file, name, used_scope, _, declared @ AnyIdClass { class }, _, _),
     Class(class, file, Some { Spanned { _, declared_in }}, _, _, decl_scope, _),
-    decl_scope != used_scope,
+    decl_scope != used_scope and used_in < declared_in,
     not ChildScope(decl_scope, used_scope, file).
 
 // TODO: Integrate with directives to ignore functions if the user wants it
@@ -52,7 +53,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     NameRef(callee, file, name),
     NameInScope(file, name, used_scope, _, declared @ AnyIdFunc { func }, _, _),
     Function(func, file, Some { Spanned { _, declared_in }}, decl_scope, _, _),
-    decl_scope != used_scope,
+    decl_scope != used_scope and used_in < declared_in,
     not ChildScope(decl_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
@@ -60,32 +61,10 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     Expression(expr, file, _, used_scope, used_in),
     NameRef(object, file, name),
     NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { decl }, _, _),
-    VarDecl(decl, file, _, Some { class }, _),
+    VariableDecl(decl, file, _, _, Some { class }, _),
     ClassExpr(class, file, _),
     Expression(class, file, _, decl_scope, declared_in),
-    decl_scope != used_scope,
-    not ChildScope(decl_scope, used_scope, file).
-
-UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
-    New(expr, file, Some { object }, _),
-    Expression(expr, file, _, used_scope, used_in),
-    NameRef(object, file, name),
-    NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { decl }, _, _),
-    LetDecl(decl, file, _, Some { class }, _),
-    ClassExpr(class, file, _),
-    Expression(class, file, _, decl_scope, declared_in),
-    decl_scope != used_scope,
-    not ChildScope(decl_scope, used_scope, file).
-
-UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
-    New(expr, file, Some { object }, _),
-    Expression(expr, file, _, used_scope, used_in),
-    NameRef(object, file, name),
-    NameInScope(file, name, used_scope, _, declared @ AnyIdStmt { decl }, _, _),
-    ConstDecl(decl, file, _, Some { class }, _),
-    ClassExpr(class, file, _),
-    Expression(class, file, _, decl_scope, declared_in),
-    decl_scope != used_scope,
+    decl_scope != used_scope and used_in < declared_in,
     not ChildScope(decl_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, AnyIdClass { class }, declared_in, file) :-
@@ -93,5 +72,5 @@ UseBeforeDef(name, expr, used_in, AnyIdClass { class }, declared_in, file) :-
     Expression(expr, file, _, used_scope, used_in),
     NameRef(object, file, name),
     Class(class, file, Some { Spanned { name, declared_in }}, _, _, declared_scope, _),
-    declared_scope != used_scope,
+    declared_scope != used_scope and used_in < declared_in,
     not ChildScope(declared_scope, used_scope, file).

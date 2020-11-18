@@ -56,6 +56,7 @@ macro_rules! rule_test {
 
 mod no_shadow;
 mod no_undef;
+mod no_unused_labels;
 mod no_unused_vars;
 mod typeof_undef;
 mod use_before_def;

@@ -35,3 +35,4 @@ pub mod typeof_undef;
 pub mod no_shadow;
 pub mod unused_vars;
 pub mod use_before_def;
+pub mod no_unused_labels;

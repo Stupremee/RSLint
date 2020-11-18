@@ -11,7 +11,7 @@ use rslint_parser::{
     AstNode, SyntaxNodeExt,
 };
 use types::{
-    ast::{ClassId, ForInit, FuncId, StmtId, SwitchClause, TryHandler},
+    ast::{ClassId, ForInit, FuncId, Spanned, StmtId, SwitchClause, TryHandler},
     internment::Intern,
     IMPLICIT_ARGUMENTS,
 };
@@ -79,11 +79,11 @@ impl<'ddlog> Visit<'ddlog, (FnDecl, bool)> for AnalyzerInner {
         scope: &dyn DatalogBuilder<'ddlog>,
         (func, exported): (FnDecl, bool),
     ) -> Self::Output {
-        let scope = scope.scope();
-        let function_id = scope.next_function_id();
-        let name = self.visit(&scope, func.name());
+        let s = scope.scope();
+        let function_id = s.next_function_id();
+        let name = self.visit(&s, func.name());
 
-        let (function, mut body_scope) = scope.decl_function(function_id, name, exported);
+        let (function, mut body_scope) = s.decl_function(function_id, name, exported);
 
         // Implicitly introduce `arguments` into the function scope
         function.argument(IMPLICIT_ARGUMENTS.clone(), true);
@@ -173,8 +173,8 @@ impl<'ddlog> Visit<'ddlog, BreakStmt> for AnalyzerInner {
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, brk: BreakStmt) -> Self::Output {
         let label = brk
-            .ident_token()
-            .map(|label| Intern::new(label.to_string()));
+            .name()
+            .map(|name| Spanned::new(Intern::new(name.to_string()), name.syntax().trimmed_range()));
 
         scope.brk(label, brk.range())
     }
@@ -280,8 +280,8 @@ impl<'ddlog> Visit<'ddlog, ContinueStmt> for AnalyzerInner {
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, cont: ContinueStmt) -> Self::Output {
         let label = cont
-            .ident_token()
-            .map(|label| Intern::new(label.to_string()));
+            .name()
+            .map(|name| Spanned::new(Intern::new(name.to_string()), name.syntax().trimmed_range()));
 
         scope.cont(label, cont.range())
     }
@@ -305,9 +305,15 @@ impl<'ddlog> Visit<'ddlog, LabelledStmt> for AnalyzerInner {
 
     fn visit(&self, scope: &dyn DatalogBuilder<'ddlog>, label: LabelledStmt) -> Self::Output {
         let name = self.visit(scope, label.label());
-        let body = label.stmt().and_then(|stmt| self.visit(scope, stmt).0);
+        let body_scope = scope.scope();
+        let body = label.stmt().map(|stmt| {
+            let range = stmt.range();
+            self.visit(&body_scope, stmt)
+                .0
+                .unwrap_or_else(|| body_scope.empty(range))
+        });
 
-        scope.label(name, body, label.range())
+        scope.label(name, body, body_scope.scope_id(), label.range())
     }
 }
 

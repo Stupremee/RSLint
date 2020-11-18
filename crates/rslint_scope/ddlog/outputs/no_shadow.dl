@@ -53,11 +53,14 @@ NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span)
 
 // Hoisted variables
 NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span), false, file) :-
+    // Only do hoisted scopes when hoisting is enabled
+    File(file, _, _, Config { .no_shadow_hoisting = HoistingAlways }),
+
     // Get the inital variable, the one that is being shadowed
     NameInScope(
         file,
         variable_name,
-        initial_name_scop,
+        name_scope,
         Some { initial_span },
         initial_id,
         false,
@@ -67,11 +70,10 @@ NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span)
     ScopeOfId(initial_id, file, initial_scope),
 
     // Get the shadowing variable
-    ChildScope(shadower_name_scope, initial_name_scope, file),
     NameInScope(
         file,
         variable_name,
-        shadower_name_scope,
+        name_scope,
         Some { shadower_span },
         shadower_id,
         // Implicit variables cannot shadow things
@@ -79,8 +81,7 @@ NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span)
         shadower_is_arg,
     ),
     // Get the declaration scope of the shadower
-    ScopeOfId(shadower_id, file, shadower_id_scope),
-    var shadower_scope = if shadower_is_arg { shadower_name_scope } else { shadower_id_scope },
+    ScopeOfId(shadower_id, file, shadower_scope),
 
     // Make sure the shadower and shadowed aren't the same variables and that
     // the shadowed variable is lexically behind of the shadower
@@ -91,7 +92,4 @@ NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span)
     // Get the hoisted scope of the initial variable
     FunctionLevelScope(initial_scope, hoisted_scope, file, _),
     // Make sure the hoisted variable is a direct parent of the shadower
-    ChildScope(hoisted_scope, shadower_scope, file),
-
-    // Only do hoisted scopes when hoisting is enabled
-    File(file, _, _, Config { .no_shadow_hoisting = HoistingAlways }).
+    ChildScope(hoisted_scope, shadower_scope, file).

@@ -22,8 +22,8 @@ use types::{
         ClassId, ExprId, FileId, FileKind, FuncId, GlobalId, GlobalPriv, IPattern, ImportId,
         Increment, ScopeId, StmtId,
     },
-    ddlog_std::tuple2,
     config::Config,
+    ddlog_std::tuple2,
     inputs::{EveryScope, Expression, File as InputFile, FunctionArg, ImplicitGlobal, InputScope},
     internment::Intern,
 };
@@ -222,6 +222,18 @@ impl Datalog {
                     shadow: shadow.key().shadower.1,
                     implicit: shadow.key().implicit,
                     file: shadow.key().file,
+                })
+            } else {
+                None
+            }
+        }));
+
+        lints.extend(self.outputs().no_unused_labels.iter().filter_map(|label| {
+            if label.key().file == file {
+                Some(DatalogLint::NoUnusedLabels {
+                    label: label.key().label_name.data.clone(),
+                    span: label.key().label_name.span,
+                    file: label.key().file,
                 })
             } else {
                 None

@@ -18,8 +18,8 @@ use types::{
     ddlog_std::tuple2,
     name_in_scope::NameInScope,
     outputs::{
-        no_shadow::NoShadow, no_undef::NoUndef, typeof_undef::TypeofUndef,
-        unused_vars::UnusedVariables, use_before_def::UseBeforeDef,
+        no_shadow::NoShadow, no_undef::NoUndef, no_unused_labels::NoUnusedLabels,
+        typeof_undef::TypeofUndef, unused_vars::UnusedVariables, use_before_def::UseBeforeDef,
     },
 };
 
@@ -187,6 +187,7 @@ outputs! {
     use_before_def: UseBeforeDef, outputs_use_before_def_UseBeforeDef,
     unused_variables: UnusedVariables, outputs_unused_vars_UnusedVariables,
     no_shadow: NoShadow, outputs_no_shadow_NoShadow,
+    no_unused_labels: NoUnusedLabels, outputs_no_unused_labels_NoUnusedLabels,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -219,6 +220,11 @@ pub enum DatalogLint {
         implicit: bool,
         file: FileId,
     },
+    NoUnusedLabels {
+        label: Name,
+        span: Span,
+        file: FileId,
+    },
 }
 
 impl DatalogLint {
@@ -240,6 +246,10 @@ impl DatalogLint {
 
     pub fn is_no_shadow(&self) -> bool {
         matches!(self, Self::NoShadow { .. })
+    }
+
+    pub fn is_no_unused_labels(&self) -> bool {
+        matches!(self, Self::NoUnusedLabels { .. })
     }
 
     #[cfg(test)]
@@ -303,6 +313,15 @@ impl DatalogLint {
     }
 
     #[cfg(test)]
+    pub(crate) fn unused_label(label: impl Into<Name>, span: std::ops::Range<u32>) -> Self {
+        Self::NoUnusedLabels {
+            label: label.into(),
+            span: span.into(),
+            file: FileId::new(0),
+        }
+    }
+
+    #[cfg(test)]
     pub(crate) fn file_id_mut(&mut self) -> &mut FileId {
         match self {
             Self::NoUndef { file, .. } => file,
@@ -310,6 +329,7 @@ impl DatalogLint {
             Self::TypeofUndef { file, .. } => file,
             Self::UseBeforeDef { file, .. } => file,
             Self::NoShadow { file, .. } => file,
+            Self::NoUnusedLabels { file, .. } => file,
         }
     }
 }

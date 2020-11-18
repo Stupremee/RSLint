@@ -124,7 +124,7 @@ input relation If(
 input relation Break(
     stmt_id: StmtId,
     file: FileId,
-    label: Option<Name>,
+    label: Option<Spanned<Name>>,
 )
 
 input relation DoWhile(
@@ -161,7 +161,7 @@ input relation ForIn(
 input relation Continue(
     stmt_id: StmtId,
     file: FileId,
-    label: Option<Name>,
+    label: Option<Spanned<Name>>,
 )
 
 input relation With(
@@ -176,6 +176,7 @@ input relation Label(
     file: FileId,
     name: Option<Spanned<Name>>,
     body: Option<StmtId>,
+    body_scope: ScopeId,
 )
 
 // Switch statements & cases
