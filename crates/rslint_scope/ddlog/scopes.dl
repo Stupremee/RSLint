@@ -1,6 +1,7 @@
 import ast
 import vec
 import utils
+import group
 import scopes
 import inputs
 
@@ -85,9 +86,12 @@ FunctionLevelScope(scope, scope, file, AnyIdExpr { expr }) :-
     Arrow(expr, file, Some { Right { body }}),
     Statement(body, file, _, scope, _).
 
+// FIXME: This still causes duplication because `parent` isn't included in
+//        the aggregate, but I can't be fucked right now
 FunctionLevelScope(child, scope, file, id) :-
     FunctionLevelScope(parent, scope, file, id),
-    ChildScope(parent, child, file).
+    ChildScope(parent, child, file),
+    (var scope, var id) = (scope, id).group_by((child, file)).arg_max(|scope| scope.0).
 
 relation ScopeOfId(id: AnyId, file: FileId, scope: ScopeId)
 ScopeOfId(AnyIdFile { id }, id, scope) :- File(id, _, scope, _).

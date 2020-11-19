@@ -204,6 +204,7 @@ pub static IMPLICIT_ARGUMENTS: Lazy<Intern<Pattern>> = Lazy::new(|| {
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple4<crate::ast::FileId, crate::internment::Intern<String>, crate::ast::Span, crate::ast::AnyId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple4<crate::ast::FileId, crate::internment::Intern<crate::ast::Pattern>, crate::ast::StmtId, crate::ast::ScopeId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple4<crate::ast::ImportId, crate::ast::FileId, crate::ast::ImportClause, crate::ast::ScopeId>}
+::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple4<crate::ast::ScopeId, crate::ast::FileId, crate::ast::ScopeId, crate::ast::AnyId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple4<crate::ast::Spanned<crate::internment::Intern<String>>, crate::ast::ExprId, crate::ast::FileId, crate::ast::ScopeId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple4<crate::ast::Spanned<crate::internment::Intern<String>>, crate::ast::FileId, crate::ast::StmtId, crate::ast::ScopeId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple4<crate::ast::Spanned<crate::internment::Intern<String>>, crate::ast::ImportId, crate::ast::FileId, crate::ast::ScopeId>}
@@ -218,6 +219,7 @@ pub static IMPLICIT_ARGUMENTS: Lazy<Intern<Pattern>> = Lazy::new(|| {
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple5<crate::ast::FileId, crate::internment::Intern<String>, crate::ast::ScopeId, crate::ast::Span, crate::ast::AnyId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple5<crate::ast::FileId, crate::internment::Intern<String>, crate::ast::Span, crate::ast::AnyId, crate::ast::ScopeId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple5<crate::ast::FuncId, crate::ast::FileId, crate::internment::Intern<crate::ast::Pattern>, bool, crate::ast::ScopeId>}
+::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple5<crate::ast::ScopeId, crate::ast::ScopeId, crate::ast::FileId, crate::ast::AnyId, crate::ast::ScopeId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple5<crate::ast::Spanned<crate::internment::Intern<String>>, crate::ast::FuncId, crate::ast::FileId, bool, crate::ast::ScopeId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple5<crate::ast::StmtId, crate::ast::FileId, crate::ast::Spanned<crate::internment::Intern<String>>, crate::internment::Intern<String>, crate::ast::ScopeId>}
 ::differential_datalog::decl_ddval_convert!{crate::ddlog_std::tuple6<crate::ast::ExprId, crate::ast::FileId, crate::ast::ExprId, crate::ast::ScopeId, crate::ast::Span, crate::internment::Intern<String>>}
