@@ -127,6 +127,15 @@ impl CstRule for Scoper {
                         .primary(original, format!("`{}` was originally declared here", *variable))
                         .secondary(shadow, "and shadowed here")
                 }
+
+                DatalogLint::NoUnusedLabels { label, span, .. } => {
+                     ctx
+                        .err(
+                            "no-unused-labels",
+                            "a label was created, but never used"
+                        )
+                        .primary(span, format!("`{}` was created here and never used", *label))
+                }
             };
 
             ctx.add_err(err);
