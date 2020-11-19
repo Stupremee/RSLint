@@ -27,7 +27,8 @@ output relation UseBeforeDef[UseBeforeDef]
 // var bar = 10;
 // ```
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
-    File(file, _, _, Config { .use_before_def = true }),
+    File(file, _, _, config),
+    config.no_use_before_def_enabled(),
     NameRef(expr, file, name),
     Expression(expr, file, ExprNameRef, used_scope, used_in),
     // Make sure this NameRef isn't the name within a `new` clause,
@@ -39,7 +40,8 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     not ChildScope(declared_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
-    File(file, _, _, Config { .use_before_def = true }),
+    File(file, _, _, config),
+    config.no_use_before_def_enabled(),
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(callee, file, name),
@@ -50,7 +52,8 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
 
 // TODO: Integrate with directives to ignore functions if the user wants it
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
-    File(file, _, _, Config { .use_before_def = true }),
+    File(file, _, _, config),
+    config.no_use_before_def_enabled(),
     Call(expr, file, Some { callee }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(callee, file, name),
@@ -60,7 +63,8 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     not ChildScope(decl_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
-    File(file, _, _, Config { .use_before_def = true }),
+    File(file, _, _, config),
+    config.no_use_before_def_enabled(),
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(object, file, name),
@@ -72,7 +76,8 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     not ChildScope(decl_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, AnyIdClass { class }, declared_in, file) :-
-    File(file, _, _, Config { .use_before_def = true }),
+    File(file, _, _, config),
+    config.no_use_before_def_enabled(),
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(object, file, name),

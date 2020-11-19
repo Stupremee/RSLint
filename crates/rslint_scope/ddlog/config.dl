@@ -1,18 +1,10 @@
-typedef Config = Config {
-    no_shadow: NoShadowConf,
-    no_undef: bool,
-    no_unused_labels: bool,
-    typeof_undef: bool,
-    unused_vars: bool,
-    use_before_def: bool,
-}
+extern type Config
 
-typedef NoShadowConf = NoShadowConf {
-    enabled: bool,
-    hoisting: NoShadowHoisting,
-}
-
-typedef NoShadowHoisting =
-    HoistingNever
-    | HoistingAlways
-    | HoistingFunctions
+extern function no_shadow_enabled(config: Config): bool
+extern function no_shadow_hoisting(config: Config): bool
+extern function no_shadow_hoist_functions(config: Config): bool
+extern function no_undef_enabled(config: Config): bool
+extern function no_unused_labels_enabled(config: Config): bool
+extern function no_typeof_undef_enabled(config: Config): bool
+extern function no_unused_vars_enabled(config: Config): bool
+extern function no_use_before_def_enabled(config: Config): bool

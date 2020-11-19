@@ -30,123 +30,232 @@ use crate::closure;
 //
 // use crate::ddlog_std;
 
+use differential_datalog::{
+    decl_enum_into_record, decl_record_mutator_enum, decl_record_mutator_struct,
+    decl_struct_from_record, decl_struct_into_record, record::Record,
+};
+use schemars::JsonSchema;
+use std::fmt::{self, Debug, Display, Formatter};
+
+#[cfg_attr(feature = "schema", derive(JsonSchema))]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
+pub struct Config {
+    pub no_shadow: bool,
+    pub no_shadow_hoisting: NoShadowHoisting,
+    pub no_undef: bool,
+    pub no_unused_labels: bool,
+    pub no_typeof_undef: bool,
+    pub no_unused_vars: bool,
+    pub no_use_before_def: bool,
+}
+
 impl Config {
-    pub const fn preset() -> Self {
+    pub fn empty() -> Self {
         Self {
-            no_shadow: NoShadowConf {
-                enabled: true,
-                hoisting: NoShadowHoisting::HoistingNever,
-            },
+            no_shadow: false,
+            no_shadow_hoisting: NoShadowHoisting::Never,
+            no_undef: false,
+            no_unused_labels: false,
+            no_typeof_undef: false,
+            no_unused_vars: false,
+            no_use_before_def: false,
+        }
+    }
+
+    pub fn no_shadow(mut self, no_shadow: bool) -> Self {
+        self.no_shadow = no_shadow;
+        self
+    }
+
+    pub fn no_shadow_hoisting(mut self, no_shadow_hoisting: NoShadowHoisting) -> Self {
+        self.no_shadow_hoisting = no_shadow_hoisting;
+        self
+    }
+
+    pub fn no_undef(mut self, no_undef: bool) -> Self {
+        self.no_undef = no_undef;
+        self
+    }
+
+    pub fn no_unused_labels(mut self, no_unused_labels: bool) -> Self {
+        self.no_unused_labels = no_unused_labels;
+        self
+    }
+
+    pub fn no_typeof_undef(mut self, no_typeof_undef: bool) -> Self {
+        self.no_typeof_undef = no_typeof_undef;
+        self
+    }
+
+    pub fn no_unused_vars(mut self, no_unused_vars: bool) -> Self {
+        self.no_unused_vars = no_unused_vars;
+        self
+    }
+
+    pub fn no_use_before_def(mut self, no_use_before_def: bool) -> Self {
+        self.no_use_before_def = no_use_before_def;
+        self
+    }
+}
+
+impl Default for Config {
+    fn default() -> Self {
+        Self {
+            no_shadow: true,
+            no_shadow_hoisting: NoShadowHoisting::default(),
             no_undef: true,
             no_unused_labels: true,
-            typeof_undef: true,
-            unused_vars: true,
-            use_before_def: true,
+            no_typeof_undef: true,
+            no_unused_vars: true,
+            no_use_before_def: true,
         }
     }
 }
 
-#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
-pub struct Config {
-    pub no_shadow: crate::config::NoShadowConf,
-    pub no_undef: bool,
-    pub no_unused_labels: bool,
-    pub typeof_undef: bool,
-    pub unused_vars: bool,
-    pub use_before_def: bool
-}
-impl abomonation::Abomonation for Config{}
-::differential_datalog::decl_struct_from_record!(Config["config::Config"]<>, ["config::Config"][6]{[0]no_shadow["no_shadow"]: crate::config::NoShadowConf, [1]no_undef["no_undef"]: bool, [2]no_unused_labels["no_unused_labels"]: bool, [3]typeof_undef["typeof_undef"]: bool, [4]unused_vars["unused_vars"]: bool, [5]use_before_def["use_before_def"]: bool});
-::differential_datalog::decl_struct_into_record!(Config, ["config::Config"]<>, no_shadow, no_undef, no_unused_labels, typeof_undef, unused_vars, use_before_def);
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(Config, <>, no_shadow: crate::config::NoShadowConf, no_undef: bool, no_unused_labels: bool, typeof_undef: bool, unused_vars: bool, use_before_def: bool);
-impl ::std::fmt::Display for Config {
-    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        match self {
-            crate::config::Config{no_shadow,no_undef,no_unused_labels,typeof_undef,unused_vars,use_before_def} => {
-                __formatter.write_str("config::Config{")?;
-                ::std::fmt::Debug::fmt(no_shadow, __formatter)?;
-                __formatter.write_str(",")?;
-                ::std::fmt::Debug::fmt(no_undef, __formatter)?;
-                __formatter.write_str(",")?;
-                ::std::fmt::Debug::fmt(no_unused_labels, __formatter)?;
-                __formatter.write_str(",")?;
-                ::std::fmt::Debug::fmt(typeof_undef, __formatter)?;
-                __formatter.write_str(",")?;
-                ::std::fmt::Debug::fmt(unused_vars, __formatter)?;
-                __formatter.write_str(",")?;
-                ::std::fmt::Debug::fmt(use_before_def, __formatter)?;
-                __formatter.write_str("}")
-            }
-        }
+impl Display for Config {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        Debug::fmt(self, f)
     }
 }
-impl ::std::fmt::Debug for Config {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        ::std::fmt::Display::fmt(&self, f)
+
+decl_struct_into_record!(
+    Config,
+    ["Config"]<>,
+    no_shadow,
+    no_shadow_hoisting,
+    no_undef,
+    no_unused_labels,
+    no_typeof_undef,
+    no_unused_vars,
+    no_use_before_def
+);
+
+decl_struct_from_record!(
+    Config["Config"]<>,
+    ["Config"][7]{
+        [0] no_shadow["no_shadow"]: bool,
+        [1] no_shadow_hoisting["no_shadow_hoisting"]: NoShadowHoisting,
+        [2] no_undef["no_undef"]: bool,
+        [3] no_unused_labels["no_unused_labels"]: bool,
+        [4] no_typeof_undef["no_typeof_undef"]: bool,
+        [5] no_unused_vars["no_unused_vars"]: bool,
+        [6] no_use_before_def["no_use_before_def"]: bool
     }
-}
-#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Default, Serialize, Deserialize)]
-pub struct NoShadowConf {
-    pub enabled: bool,
-    pub hoisting: crate::config::NoShadowHoisting
-}
-impl abomonation::Abomonation for NoShadowConf{}
-::differential_datalog::decl_struct_from_record!(NoShadowConf["config::NoShadowConf"]<>, ["config::NoShadowConf"][2]{[0]enabled["enabled"]: bool, [1]hoisting["hoisting"]: crate::config::NoShadowHoisting});
-::differential_datalog::decl_struct_into_record!(NoShadowConf, ["config::NoShadowConf"]<>, enabled, hoisting);
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_struct!(NoShadowConf, <>, enabled: bool, hoisting: crate::config::NoShadowHoisting);
-impl ::std::fmt::Display for NoShadowConf {
-    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        match self {
-            crate::config::NoShadowConf{enabled,hoisting} => {
-                __formatter.write_str("config::NoShadowConf{")?;
-                ::std::fmt::Debug::fmt(enabled, __formatter)?;
-                __formatter.write_str(",")?;
-                ::std::fmt::Debug::fmt(hoisting, __formatter)?;
-                __formatter.write_str("}")
-            }
-        }
-    }
-}
-impl ::std::fmt::Debug for NoShadowConf {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        ::std::fmt::Display::fmt(&self, f)
-    }
-}
-#[derive(Eq, Ord, Clone, Hash, PartialEq, PartialOrd, Serialize, Deserialize)]
+);
+
+decl_record_mutator_struct!(
+    Config, <>,
+    no_shadow: bool,
+    no_shadow_hoisting: NoShadowHoisting,
+    no_undef: bool,
+    no_unused_labels: bool,
+    no_typeof_undef: bool,
+    no_unused_vars: bool,
+    no_use_before_def: bool
+);
+
+#[cfg_attr(feature = "schema", derive(JsonSchema))]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub enum NoShadowHoisting {
-    HoistingNever,
-    HoistingAlways,
-    HoistingFunctions
+    Never,
+    Always,
+    Functions,
 }
-impl abomonation::Abomonation for NoShadowHoisting{}
-::differential_datalog::decl_enum_from_record!(NoShadowHoisting["config::NoShadowHoisting"]<>, HoistingNever["config::HoistingNever"][0]{}, HoistingAlways["config::HoistingAlways"][0]{}, HoistingFunctions["config::HoistingFunctions"][0]{});
-::differential_datalog::decl_enum_into_record!(NoShadowHoisting<>, HoistingNever["config::HoistingNever"]{}, HoistingAlways["config::HoistingAlways"]{}, HoistingFunctions["config::HoistingFunctions"]{});
-#[rustfmt::skip] ::differential_datalog::decl_record_mutator_enum!(NoShadowHoisting<>, HoistingNever{}, HoistingAlways{}, HoistingFunctions{});
-impl ::std::fmt::Display for NoShadowHoisting {
-    fn fmt(&self, __formatter: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+
+impl Default for NoShadowHoisting {
+    fn default() -> Self {
+        Self::Functions
+    }
+}
+
+impl Display for NoShadowHoisting {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         match self {
-            crate::config::NoShadowHoisting::HoistingNever{} => {
-                __formatter.write_str("config::HoistingNever{")?;
-                __formatter.write_str("}")
-            },
-            crate::config::NoShadowHoisting::HoistingAlways{} => {
-                __formatter.write_str("config::HoistingAlways{")?;
-                __formatter.write_str("}")
-            },
-            crate::config::NoShadowHoisting::HoistingFunctions{} => {
-                __formatter.write_str("config::HoistingFunctions{")?;
-                __formatter.write_str("}")
-            }
+            Self::Never => f.write_str("never"),
+            Self::Always => f.write_str("always"),
+            Self::Functions => f.write_str("functions"),
         }
     }
 }
-impl ::std::fmt::Debug for NoShadowHoisting {
-    fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
-        ::std::fmt::Display::fmt(&self, f)
+
+impl FromRecord for NoShadowHoisting {
+    fn from_record(val: &Record) -> Result<Self, String> {
+        match val {
+            Record::PosStruct(constr, args) if args.len() == 0 => match constr.as_ref() {
+                "Never" => Ok(Self::Never),
+                "Always" => Ok(Self::Always),
+                "Functions" => Ok(Self::Functions),
+                c => Result::Err(format!(
+                    "unknown constructor {} of type `NoShadowHoisting` in {:?}",
+                    c, *val,
+                )),
+            },
+            Record::NamedStruct(constr, args) if args.len() == 0 => match constr.as_ref() {
+                "Never" => Ok(Self::Never),
+                "Always" => Ok(Self::Always),
+                "Functions" => Ok(Self::Functions),
+                c => Result::Err(format!(
+                    "unknown constructor {} of type `NoShadowHoisting` in {:?}",
+                    c, *val,
+                )),
+            },
+
+            v => Err(format!("not an instance of `NoShadowHoisting` {:?}", *v)),
+        }
     }
 }
-impl ::std::default::Default for NoShadowHoisting {
-    fn default() -> Self {
-        crate::config::NoShadowHoisting::HoistingNever{}
-    }
+
+decl_enum_into_record!(
+    NoShadowHoisting<>,
+    Never["Never"]{},
+    Always["Always"]{},
+    Functions["Functions"]{}
+);
+
+#[rustfmt::skip]
+decl_record_mutator_enum!(NoShadowHoisting<>, Never {}, Always {}, Functions {});
+
+// DDlog bridge functions
+pub fn no_shadow_enabled(config: &Config) -> bool {
+    config.no_shadow
 }
+
+pub fn no_shadow_hoisting(config: &Config) -> bool {
+    matches!(
+        config.no_shadow_hoisting,
+        NoShadowHoisting::Always | NoShadowHoisting::Functions
+    )
+}
+
+pub fn no_shadow_hoist_functions(config: &Config) -> bool {
+    matches!(config.no_shadow_hoisting, NoShadowHoisting::Functions)
+}
+
+pub fn no_undef_enabled(config: &Config) -> bool {
+    config.no_undef
+}
+
+pub fn no_unused_labels_enabled(config: &Config) -> bool {
+    config.no_unused_labels
+}
+
+pub fn no_typeof_undef_enabled(config: &Config) -> bool {
+    config.no_typeof_undef
+}
+
+pub fn no_unused_vars_enabled(config: &Config) -> bool {
+    config.no_unused_vars
+}
+
+pub fn no_use_before_def_enabled(config: &Config) -> bool {
+    config.no_use_before_def
+}
+
+/* fn no_shadow_enabled(config: & crate::config::Config) -> bool */
+/* fn no_shadow_hoist_functions(config: & crate::config::Config) -> bool */
+/* fn no_shadow_hoisting(config: & crate::config::Config) -> bool */
+/* fn no_typeof_undef_enabled(config: & crate::config::Config) -> bool */
+/* fn no_undef_enabled(config: & crate::config::Config) -> bool */
+/* fn no_unused_labels_enabled(config: & crate::config::Config) -> bool */
+/* fn no_unused_vars_enabled(config: & crate::config::Config) -> bool */
+/* fn no_use_before_def_enabled(config: & crate::config::Config) -> bool */

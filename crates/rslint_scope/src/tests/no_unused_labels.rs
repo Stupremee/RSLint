@@ -1,5 +1,6 @@
 rule_test! {
     no_unused_labels,
+    rule_conf: |conf| conf.no_unused_labels(true),
     filter: DatalogLint::is_no_unused_labels,
     // Should pass
     { "A: break A;" },

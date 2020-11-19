@@ -47,6 +47,7 @@ impl CstRuleStore {
     }
 }
 
+/*
 use crate::rule_prelude::*;
 use rslint_scope::{DatalogLint, FileId, ScopeAnalyzer};
 
@@ -144,3 +145,4 @@ impl CstRule for Scoper {
         None
     }
 }
+*/

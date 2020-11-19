@@ -57,7 +57,7 @@ fn run_inner(
 
     let mut formatter = formatter.unwrap_or_else(|| config.formatter());
 
-    let mut store = config.rules_store();
+    let store = config.rules_store();
     verify_formatter(&mut formatter);
 
     if walker.files.is_empty() {
@@ -66,9 +66,9 @@ fn run_inner(
     }
 
     let analyzer = ScopeAnalyzer::new().unwrap();
-    store.load_rule(Box::new(rslint_core::Scoper {
-        analyzer: analyzer.clone(),
-    }));
+    // store.load_rule(Box::new(rslint_core::Scoper {
+    //     analyzer: analyzer.clone(),
+    // }));
 
     let mut results = walker
         .files

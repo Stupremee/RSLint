@@ -1,5 +1,6 @@
 rule_test! {
     no_shadow,
+    rule_conf: |conf| conf.no_shadow(true).no_shadow_hoisting(Never),
     filter: DatalogLint::is_no_shadow,
     // Should pass
     { "var a = 3; function b(x) { a++; return x + a; }; setTimeout(function() { b(a); }, 0);" },
@@ -29,7 +30,6 @@ rule_test! {
     { "function foo() { let a; } let a;" },
     { "function foo() { var a; } let a;" },
     { "{ const a = 0; } const a = 1;" },
-    // TODO: hoist: never
     { "{ const a = 0; } var a;" },
     { "{ let a; } var a;" },
     { "{ let a; } function a() {}" },
@@ -44,7 +44,7 @@ rule_test! {
     {
         "{ var a; } var a;",
         errors: [DatalogLint::no_shadow("a", 15..16, 6..7, false)],
-        config: { no_shadow: NoShadowConf { enabled: true, hoisting: HoistingAlways }, },
+        config: |conf| conf.no_shadow_hoisting(Always),
     },
     {
         "function a(x) { var b = function c() { var x = 'foo'; }; }",
@@ -65,41 +65,41 @@ rule_test! {
     {
         "function foo(a) { } var a;",
         errors: [DatalogLint::no_shadow("a", 24..25, 13..14, false)],
-        config: { no_shadow: NoShadowConf { enabled: true, hoisting: HoistingAlways }, },
+        config: |conf| conf.no_shadow_hoisting(Always),
     },
     {
         "function foo(a) { } function a() {}",
         errors: [DatalogLint::no_shadow("a", 29..30, 13..14, false)],
-        config: { no_shadow: NoShadowConf { enabled: true, hoisting: HoistingAlways }, },
+        config: |conf| conf.no_shadow_hoisting(Always),
     },
     {
         "{ let a; } function a() {}",
         errors: [DatalogLint::no_shadow("a", 20..21, 6..7, false)],
-        config: { no_shadow: NoShadowConf { enabled: true, hoisting: HoistingAlways }, },
+        config: |conf| conf.no_shadow_hoisting(Always),
     },
     {
         "{ const a = 0; } function a() {}",
         errors: [DatalogLint::no_shadow("a", 26..27, 8..9, false)],
-        config: { no_shadow: NoShadowConf { enabled: true, hoisting: HoistingAlways }, },
+        config: |conf| conf.no_shadow_hoisting(Always),
     },
     {
         "function foo() { let a; } function a() {}",
         errors: [DatalogLint::no_shadow("a", 35..36, 21..22, false)],
-        config: { no_shadow: NoShadowConf { enabled: true, hoisting: HoistingAlways }, },
+        config: |conf| conf.no_shadow_hoisting(Always),
     },
     {
         "function foo() { var a; } function a() {}",
         errors: [DatalogLint::no_shadow("a", 35..36, 21..22, false)],
-        config: { no_shadow: NoShadowConf { enabled: true, hoisting: HoistingAlways }, },
+        config: |conf| conf.no_shadow_hoisting(Always),
     },
     {
         "function foo() { let a; } var a;",
         errors: [DatalogLint::no_shadow("a", 30..31, 21..22, false)],
-        config: { no_shadow: NoShadowConf { enabled: true, hoisting: HoistingAlways }, },
+        config: |conf| conf.no_shadow_hoisting(Always),
     },
     {
         "function foo() { var a; } var a;",
         errors: [DatalogLint::no_shadow("a", 30..31, 21..22, false)],
-        config: { no_shadow: NoShadowConf { enabled: true, hoisting: HoistingAlways }, },
+        config: |conf| conf.no_shadow_hoisting(Always),
     },
 }

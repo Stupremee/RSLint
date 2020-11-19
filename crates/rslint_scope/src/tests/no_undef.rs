@@ -2,6 +2,7 @@
 
 rule_test! {
     no_undef,
+    rule_conf: |conf| conf.no_undef(true),
     filter: DatalogLint::is_no_undef,
     // Should pass
     { "var a = 1, b = 2; a + b;" },

@@ -17,7 +17,8 @@ output relation NoShadow(
 // Unhoisted variables
 NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span), false, file) :-
     // Only analyze a file if NoShadow is enabled
-    File(file, _, _, Config { .no_shadow = NoShadowConf { .enabled = true }}),
+    File(file, _, _, config),
+    config.no_shadow_enabled(),
 
     NameInScope(
         file,
@@ -57,8 +58,8 @@ NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span)
 // Hoisted variables
 NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span), false, file) :-
     // Only do hoisted scopes when hoisting is enabled
-    File(file, _, _, Config { .no_shadow = NoShadowConf { true, hoisting }}),
-    hoisting == HoistingAlways or hoisting == HoistingFunctions,
+    File(file, _, _, config),
+    config.no_shadow_enabled() and config.no_shadow_hoisting(),
 
     // Get the inital variable, the one that is being shadowed
     NameInScope(
@@ -71,7 +72,7 @@ NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span)
         false,
     ),
     // If only function hoisting is enabled, only hoist functions
-    if (hoisting == HoistingFunctions) { initial_id.is_function() } else { true },
+    if (config.no_shadow_hoist_functions()) { initial_id.is_function() } else { true },
     // Get the declaration scope of the shadowed
     ScopeOfId(initial_id, file, initial_scope),
 

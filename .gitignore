@@ -9,5 +9,5 @@ flamegraph.svg
 **/node_modules
 package-lock.json
 **/dist
-**/output.log/
+**/output.log/**
 yarn.lock

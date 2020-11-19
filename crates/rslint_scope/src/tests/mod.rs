@@ -3,6 +3,7 @@
 macro_rules! rule_test {
     (
         $rule_name:ident,
+        rule_conf: $rule_conf:expr,
         $(filter: $filter:expr,)?
         $({
             $($code:literal),+
@@ -13,12 +14,12 @@ macro_rules! rule_test {
             $(, module: $module:literal)?
             $(, es2021: $es2021:literal)?
             $(, errors: [$($error:expr),* $(,)?])?
-            $(, config: { $($config:tt)* })?
+            $(, config: $config:expr)?
             $(,)?
         }),* $(,)?
     ) => {
         #[test]
-        #[allow(unused_imports, clippy::needless_update)]
+        #[allow(unused_imports, clippy::needless_update, clippy::redundant_closure_call)]
         fn $rule_name() {
             use crate::{
                 tests::DatalogTestHarness,
@@ -26,11 +27,12 @@ macro_rules! rule_test {
             };
             use types::{
                 ast::Span,
-                config::{Config, NoShadowConf, NoShadowHoisting::{self, *}},
+                config::{Config, NoShadowHoisting::{self, *}},
             };
             use std::borrow::Cow;
             use rayon::iter::{ParallelIterator, IntoParallelIterator};
 
+            let config = ($rule_conf as fn(Config) -> Config)(Config::empty());
             let analyzer = DatalogTestHarness::new()
                 $(.with_filter($filter as fn(&DatalogLint) -> bool))?;
 
@@ -44,7 +46,7 @@ macro_rules! rule_test {
                     $(.is_module($module))?
                     $(.with_es2021($es2021))?
                     $(.with_errors(vec![$($error),*]))?
-                    $(.with_config(Config { $($config)* ..Config::preset() }))?,
+                    .with_config($(($config as fn(Config) -> Config))?(config.clone())),
             )?]
             .into_par_iter()
             .for_each(|test| test.run());
@@ -173,7 +175,7 @@ impl<'a> TestCase<'a> {
             errors: Vec::new(),
             harness,
             id,
-            config: Config::preset(),
+            config: Config::default(),
         }
     }
 

@@ -1,5 +1,6 @@
 rule_test! {
     no_unused_vars,
+    rule_conf: |conf| conf.no_unused_vars(true),
     filter: DatalogLint::is_no_unused_vars,
     // Should pass
     { "var foo = 5;\nlabel: while (true) {\n  console.log(foo);\n  break label;\n}", node: true },
