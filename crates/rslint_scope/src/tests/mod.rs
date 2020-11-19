@@ -26,7 +26,7 @@ macro_rules! rule_test {
             };
             use types::{
                 ast::Span,
-                config::{Config, NoShadowHoisting::{self, *}},
+                config::{Config, NoShadowConf, NoShadowHoisting::{self, *}},
             };
             use std::borrow::Cow;
             use rayon::iter::{ParallelIterator, IntoParallelIterator};
@@ -44,7 +44,7 @@ macro_rules! rule_test {
                     $(.is_module($module))?
                     $(.with_es2021($es2021))?
                     $(.with_errors(vec![$($error),*]))?
-                    $(.with_config(Config { $($config)* ..Default::default() }))?,
+                    $(.with_config(Config { $($config)* ..Config::preset() }))?,
             )?]
             .into_par_iter()
             .for_each(|test| test.run());
@@ -173,7 +173,7 @@ impl<'a> TestCase<'a> {
             errors: Vec::new(),
             harness,
             id,
-            config: Config::default(),
+            config: Config::preset(),
         }
     }
 

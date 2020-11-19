@@ -4,6 +4,7 @@ import utils
 import group
 import inputs
 import scopes
+import config
 import name_in_scope
 import variable_decl
 
@@ -18,7 +19,6 @@ typedef UseBeforeDef = UseBeforeDef {
     file: FileId,
 }
 
-
 // Using variables, classes and functions before they're defined
 output relation UseBeforeDef[UseBeforeDef]
 
@@ -27,6 +27,7 @@ output relation UseBeforeDef[UseBeforeDef]
 // var bar = 10;
 // ```
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
+    File(file, _, _, Config { .use_before_def = true }),
     NameRef(expr, file, name),
     Expression(expr, file, ExprNameRef, used_scope, used_in),
     // Make sure this NameRef isn't the name within a `new` clause,
@@ -38,6 +39,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     not ChildScope(declared_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
+    File(file, _, _, Config { .use_before_def = true }),
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(callee, file, name),
@@ -48,6 +50,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
 
 // TODO: Integrate with directives to ignore functions if the user wants it
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
+    File(file, _, _, Config { .use_before_def = true }),
     Call(expr, file, Some { callee }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(callee, file, name),
@@ -57,6 +60,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     not ChildScope(decl_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
+    File(file, _, _, Config { .use_before_def = true }),
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(object, file, name),
@@ -68,6 +72,7 @@ UseBeforeDef(name, expr, used_in, declared, declared_in, file) :-
     not ChildScope(decl_scope, used_scope, file).
 
 UseBeforeDef(name, expr, used_in, AnyIdClass { class }, declared_in, file) :-
+    File(file, _, _, Config { .use_before_def = true }),
     New(expr, file, Some { object }, _),
     Expression(expr, file, _, used_scope, used_in),
     NameRef(object, file, name),

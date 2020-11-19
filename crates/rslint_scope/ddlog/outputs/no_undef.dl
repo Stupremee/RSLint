@@ -1,6 +1,7 @@
 import ast
 import utils
 import inputs
+import config
 import name_in_scope
 import outputs::typeof_undef
 
@@ -10,6 +11,7 @@ import outputs::typeof_undef
 //       scopes for a declaration
 output relation NoUndef(name: Name, scope: ScopeId, span: Span, file: FileId)
 NoUndef(name, scope, span, file) :-
+    File(file, _, _, Config { .no_undef = true }),
     NameRef(expr, file, name),
     //Inspect dbg(("NameRef", expr, file, name)),
     Expression(expr, file, ExprNameRef, scope, span),
@@ -26,6 +28,7 @@ NoUndef(name, scope, span, file) :-
 
 // Assignments
 NoUndef(name, scope, span, file) :-
+    File(file, _, _, Config { .no_undef = true }),
     Assign(expr, file, Some { Left { pat }}, _, _),
     Expression(expr, file, _, scope, _),
     // FIXME: Waiting on https://github.com/vmware/differential-datalog/issues/784
@@ -35,6 +38,14 @@ NoUndef(name, scope, span, file) :-
 
 // The successors of an expression, property accesses or method calls
 relation ChainedWith(object: ExprId, property: ExprId, file: FileId)
-ChainedWith(object, property, file) :- BracketAccess(_, file, Some { object }, Some { property }).
-ChainedWith(object, property, file) :- DotAccess(property, file, Some { object }, _).
-ChainedWith(object, property, file) :- ChainedWith(object, interum, file), ChainedWith(interum, property, file).
+ChainedWith(object, property, file) :-
+    File(file, _, _, Config { .no_undef = true }),
+    BracketAccess(_, file, Some { object }, Some { property }).
+
+ChainedWith(object, property, file) :-
+    File(file, _, _, Config { .no_undef = true }),
+    DotAccess(property, file, Some { object }, _).
+
+ChainedWith(object, property, file) :-
+    File(file, _, _, Config { .no_undef = true }),
+    ChainedWith(object, interum, file), ChainedWith(interum, property, file).

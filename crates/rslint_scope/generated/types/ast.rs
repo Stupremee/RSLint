@@ -2128,6 +2128,12 @@ pub fn is_expr(id: & crate::ast::AnyId) -> bool
         _ => false
     }
 }
+pub fn is_function(id: & crate::ast::AnyId) -> bool
+{   match (*id) {
+        crate::ast::AnyId::AnyIdFunc{func: _} => true,
+        _ => false
+    }
+}
 pub fn is_global(id: & crate::ast::AnyId) -> bool
 {   match (*id) {
         crate::ast::AnyId::AnyIdGlobal{global: _} => true,

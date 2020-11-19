@@ -1,5 +1,18 @@
 typedef Config = Config {
-    no_shadow_hoisting: NoShadowHoisting,
+    no_shadow: NoShadowConf,
+    no_undef: bool,
+    no_unused_labels: bool,
+    typeof_undef: bool,
+    unused_vars: bool,
+    use_before_def: bool,
 }
 
-typedef NoShadowHoisting = HoistingNever | HoistingAlways
+typedef NoShadowConf = NoShadowConf {
+    enabled: bool,
+    hoisting: NoShadowHoisting,
+}
+
+typedef NoShadowHoisting =
+    HoistingNever
+    | HoistingAlways
+    | HoistingFunctions

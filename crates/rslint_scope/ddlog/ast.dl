@@ -45,6 +45,13 @@ function is_global(id: AnyId): bool {
     }
 }
 
+function is_function(id: AnyId): bool {
+    match (id) {
+        AnyIdFunc {} -> true,
+        _ -> false,
+    }
+}
+
 function is_expr(id: AnyId): bool {
     match (id) {
         AnyIdExpr {} -> true,
