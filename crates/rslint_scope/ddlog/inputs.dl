@@ -83,6 +83,10 @@ input relation Statement(
 )
 primary key (stmt) (stmt.id, stmt.file)
 
+index StatementById(id: StmtId, file: FileId) on Statement(id, file, _, _, _)
+
+index StatementBySpan(span: Span, file: FileId) on Statement(_, file, _, _, span)
+
 input relation VarDecl(
     stmt_id: StmtId,
     file: FileId,

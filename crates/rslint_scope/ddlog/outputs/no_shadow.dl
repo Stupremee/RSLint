@@ -28,6 +28,7 @@ NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span)
         initial_id,
         false,
         inital_is_arg,
+        _,
     ),
     // Get the declaration scope of the shadowed
     ScopeOfId(initial_id, file, initial_id_scope),
@@ -43,6 +44,7 @@ NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span)
         // Implicit variables cannot shadow things
         false,
         shadower_is_arg,
+        _,
     ),
     // Get the declaration scope of the shadower
     ScopeOfId(shadower_id, file, shadower_id_scope),
@@ -70,6 +72,7 @@ NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span)
         initial_id,
         false,
         false,
+        _,
     ),
     // If only function hoisting is enabled, only hoist functions
     if (config.no_shadow_hoist_functions()) { initial_id.is_function() } else { true },
@@ -86,6 +89,7 @@ NoShadow(variable_name, (initial_id, initial_span), (shadower_id, shadower_span)
         // Implicit variables cannot shadow things
         false,
         shadower_is_arg,
+        _,
     ),
     // Get the declaration scope of the shadower
     ScopeOfId(shadower_id, file, shadower_scope),

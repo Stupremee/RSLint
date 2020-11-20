@@ -9,7 +9,7 @@ output relation UnusedVariables(name: Name, declared: AnyId, span: Span, file: F
 UnusedVariables(name, declared, span, file) :-
     File(file, _, _, config),
     config.no_unused_vars_enabled(),
-    NameInScope(file, name, _, Some { span }, declared, false, false),
+    NameInScope(file, name, _, Some { span }, declared, false, false, _),
     not declared.is_global(),
     not IsExported(file, declared),
     not VariableUsages(file, name, _, declared).
@@ -19,7 +19,7 @@ UnusedVariables(name, declared, span, file) :-
 UnusedVariables(name, declared, span, file) :-
     File(file, _, _, config),
     config.no_unused_vars_enabled(),
-    NameInScope(file, name, _, Some { span }, declared, false, true),
+    NameInScope(file, name, _, Some { span }, declared, false, true, _),
     not declared.is_global(),
     not VariableUsages(file, name, _, declared).
 
@@ -27,7 +27,7 @@ UnusedVariables(name, declared, span, file) :-
 UnusedVariables(name, declared, span, file) :-
     File(file, _, _, config),
     config.no_unused_vars_enabled(),
-    NameInScope(file, name, _, Some { span }, declared @ AnyIdGlobal { global }, false, false),
+    NameInScope(file, name, _, Some { span }, declared @ AnyIdGlobal { global }, false, false, _),
     not IsExported(file, declared),
     not VariableUsages(file, name, _, declared).
 
@@ -35,6 +35,6 @@ relation VariableUsages(file: FileId, name: Name, scope: ScopeId, declared_in: A
 VariableUsages(file, name, scope, declared) :-
     File(file, _, _, config),
     config.no_unused_vars_enabled(),
-    NameInScope(file, name, scope, _, declared, _, _),
+    NameInScope(file, name, scope, _, declared, _, _, _),
     NameRef(expr, file, name),
     Expression(expr, file, _, scope, _).
