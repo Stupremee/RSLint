@@ -66,7 +66,15 @@ pub async fn publish_diagnostics(session: &Session, uri: Url) -> anyhow::Result<
             let root = SyntaxNode::new_root(document.parse.green());
             (
                 rule.name(),
-                run_rule(&**rule, file_id, root, verbose, &directives, src.clone()),
+                run_rule(
+                    &**rule,
+                    file_id,
+                    root,
+                    verbose,
+                    &directives,
+                    src.clone(),
+                    Some(session.analyzer.clone()),
+                ),
             )
         })
         .collect();

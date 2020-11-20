@@ -14,7 +14,7 @@ fn tokenize(source: &str) {
     Lexer::from_str(source, 0).for_each(drop);
 }
 
-fn lint(analyzer: &ScopeAnalyzer, source: &str) {
+fn lint(analyzer: ScopeAnalyzer, source: &str) {
     let _ = rslint_core::lint_file(
         0,
         source,
@@ -34,7 +34,9 @@ fn bench_source(c: &mut Criterion, name: &str, source: &str) {
         .throughput(Throughput::Bytes(source.len() as u64))
         .bench_function("tokenize", |b| b.iter(|| tokenize(black_box(&source))))
         .bench_function("parse", |b| b.iter(|| parse(black_box(&source))))
-        .bench_function("lint", |b| b.iter(|| lint(&analyzer, black_box(&source))));
+        .bench_function("lint", |b| {
+            b.iter(|| lint(analyzer.clone(), black_box(&source)))
+        });
 
     group.finish();
 }

@@ -66,9 +66,6 @@ fn run_inner(
     }
 
     let analyzer = ScopeAnalyzer::new().unwrap();
-    // store.load_rule(Box::new(rslint_core::Scoper {
-    //     analyzer: analyzer.clone(),
-    // }));
 
     let mut results = walker
         .files
@@ -81,7 +78,7 @@ fn run_inner(
                 file.kind == JsFileKind::Module,
                 &store,
                 verbose,
-                &analyzer,
+                analyzer.clone(),
             )
         })
         .filter_map(|res| {

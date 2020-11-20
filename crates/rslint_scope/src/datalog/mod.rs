@@ -129,6 +129,19 @@ impl Datalog {
         Ok(result)
     }
 
+    pub fn get_expr(&self, expr: ExprId, file: FileId) -> Option<Expression> {
+        let query = self.query(
+            Indexes::inputs_ExpressionById,
+            Some(tuple2(expr, file).into_ddvalue()),
+        );
+
+        query
+            .ok()
+            // TODO: Log error if there's more than one value
+            .and_then(|query| query.into_iter().next())
+            .map(|expr| unsafe { Expression::from_ddvalue(expr) })
+    }
+
     pub(crate) fn query(
         &self,
         index: Indexes,
@@ -156,7 +169,7 @@ impl Datalog {
             }
         }));
 
-        lints.extend(self.outputs().unused_variables.iter().filter_map(|unused| {
+        lints.extend(self.outputs().no_unused_vars.iter().filter_map(|unused| {
             if unused.key().file == file {
                 Some(DatalogLint::NoUnusedVars {
                     var: unused.key().name.clone(),
@@ -168,7 +181,7 @@ impl Datalog {
             }
         }));
 
-        lints.extend(self.outputs().typeof_undef.iter().filter_map(|undef| {
+        lints.extend(self.outputs().no_typeof_undef.iter().filter_map(|undef| {
             if undef.key().file != file {
                 return None;
             }

@@ -65,6 +65,7 @@ pub fn recursively_apply_fixes(result: &mut LintResult) -> String {
             file_id,
             result.store,
             result.verbose,
+            None,
         );
         if let Ok(res) = res {
             cur_results = res.rule_results;

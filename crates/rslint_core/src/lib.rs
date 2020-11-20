@@ -36,23 +36,23 @@ pub mod groups;
 pub mod rule_prelude;
 pub mod util;
 
-pub use self::{
+pub use crate::{
+    directives::{
+        apply_top_level_directives, skip_node, Directive, DirectiveError, DirectiveErrorKind,
+        DirectiveParser,
+    },
     rule::{CstRule, Inferable, Outcome, Rule, RuleCtx, RuleLevel, RuleResult},
     store::CstRuleStore,
 };
 pub use rslint_errors::{Diagnostic, Severity, Span};
-
-pub use crate::directives::{
-    apply_top_level_directives, skip_node, Directive, DirectiveError, DirectiveErrorKind,
-    DirectiveParser,
-};
+pub use rslint_scope::ScopeAnalyzer;
 
 use dyn_clone::clone_box;
 use rayon::prelude::*;
 use rslint_parser::{parse_module, parse_text, util::SyntaxNodeExt, SyntaxKind, SyntaxNode};
 use rslint_scope::{
     globals::{BUILTIN, ES2021, NODE},
-    FileId, ScopeAnalyzer,
+    FileId,
 };
 use std::collections::HashMap;
 use std::sync::Arc;
@@ -113,14 +113,14 @@ impl LintResult<'_> {
 }
 
 /// Lint a file with a specific rule store.
-pub fn lint_file<'a>(
+pub fn lint_file(
     file_id: usize,
     file_source: impl AsRef<str>,
     module: bool,
-    store: &'a CstRuleStore,
+    store: &CstRuleStore,
     verbose: bool,
-    analyzer: &ScopeAnalyzer,
-) -> Result<LintResult<'a>, Diagnostic> {
+    analyzer: ScopeAnalyzer,
+) -> Result<LintResult, Diagnostic> {
     let (parser_diagnostics, green) = if module {
         let parse = parse_module(file_source.as_ref(), file_id);
         (parse.errors().to_owned(), parse.green())
@@ -134,11 +134,19 @@ pub fn lint_file<'a>(
     analyzer.inject_globals(file, BUILTIN).unwrap();
     analyzer.inject_globals(file, ES2021).unwrap();
     analyzer.inject_globals(file, NODE).unwrap();
+    println!("analyzing {:?}", file);
     analyzer
         .analyze(file, &node, rslint_scope::Config::default())
         .unwrap();
 
-    lint_file_inner(node, parser_diagnostics, file_id, store, verbose)
+    lint_file_inner(
+        node,
+        parser_diagnostics,
+        file_id,
+        store,
+        verbose,
+        Some(analyzer),
+    )
 }
 
 /// used by lint_file and incrementally_relint to not duplicate code
@@ -148,6 +156,7 @@ pub(crate) fn lint_file_inner(
     file_id: usize,
     store: &CstRuleStore,
     verbose: bool,
+    analyzer: Option<ScopeAnalyzer>,
 ) -> Result<LintResult<'_>, Diagnostic> {
     let mut new_store = store.clone();
     let directives::DirectiveResult {
@@ -176,6 +185,7 @@ pub(crate) fn lint_file_inner(
                     verbose,
                     &directives,
                     src.clone(),
+                    analyzer.clone(),
                 ),
             )
         })
@@ -204,6 +214,7 @@ pub fn run_rule(
     verbose: bool,
     directives: &[Directive],
     src: Arc<String>,
+    analyzer: Option<ScopeAnalyzer>,
 ) -> RuleResult {
     assert!(root.kind() == SyntaxKind::SCRIPT || root.kind() == SyntaxKind::MODULE);
     let line_starts = rslint_errors::file::line_starts(&src).collect::<Vec<_>>();
@@ -213,6 +224,7 @@ pub fn run_rule(
         diagnostics: vec![],
         fixer: None,
         src,
+        analyzer,
     };
 
     rule.check_root(&root, &mut ctx);
