@@ -13,7 +13,7 @@ declare_lint! {
 
 #[typetag::serde]
 impl CstRule for NoTypeofUndef {
-    fn check_node(&self, _node: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
+    fn check_root(&self, _root: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
         let analyzer = ctx.analyzer.as_ref()?.clone();
         let file = FileId::new(ctx.file_id as u32);
 

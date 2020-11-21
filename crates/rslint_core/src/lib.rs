@@ -52,10 +52,9 @@ use rayon::prelude::*;
 use rslint_parser::{parse_module, parse_text, util::SyntaxNodeExt, SyntaxKind, SyntaxNode};
 use rslint_scope::{
     globals::{BUILTIN, ES2021, NODE},
-    FileId,
+    FileId, NoShadowHoisting,
 };
-use std::collections::HashMap;
-use std::sync::Arc;
+use std::{collections::HashMap, sync::Arc, thread};
 
 /// The result of linting a file.
 // TODO: A lot of this stuff can be shoved behind a "linter options" struct
@@ -134,19 +133,36 @@ pub fn lint_file(
     analyzer.inject_globals(file, BUILTIN).unwrap();
     analyzer.inject_globals(file, ES2021).unwrap();
     analyzer.inject_globals(file, NODE).unwrap();
-    println!("analyzing {:?}", file);
     analyzer
-        .analyze(file, &node, rslint_scope::Config::default())
+        .analyze(
+            file,
+            &node,
+            rslint_scope::Config {
+                no_shadow: store.contains("no-shadow"),
+                no_shadow_hoisting: NoShadowHoisting::Always,
+                no_undef: store.contains("no-undef"),
+                no_unused_labels: store.contains("no-unused-labels"),
+                no_typeof_undef: store.contains("no-typeof-undef"),
+                no_unused_vars: store.contains("no-unused-vars"),
+                no_use_before_def: store.contains("no-use-before-def"),
+            },
+        )
         .unwrap();
 
-    lint_file_inner(
+    let res = lint_file_inner(
         node,
         parser_diagnostics,
         file_id,
         store,
         verbose,
-        Some(analyzer),
-    )
+        Some(analyzer.clone()),
+    );
+
+    thread::spawn(move || {
+        let _ = analyzer.purge_file(file);
+    });
+
+    res
 }
 
 /// used by lint_file and incrementally_relint to not duplicate code

@@ -13,7 +13,7 @@ declare_lint! {
 
 #[typetag::serde]
 impl CstRule for NoShadow {
-    fn check_node(&self, _node: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
+    fn check_root(&self, _root: &SyntaxNode, ctx: &mut RuleCtx) -> Option<()> {
         let outputs = ctx.analyzer.as_ref()?.outputs();
         let file = FileId::new(ctx.file_id as u32);
 
