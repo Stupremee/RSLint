@@ -34,7 +34,6 @@ group! {
     no_confusing_arrow::NoConfusingArrow,
     no_undef::NoUndef,
     no_unused_vars::NoUnusedVars,
-    no_typeof_undef::NoTypeofUndef,
     no_use_before_def::NoUseBeforeDef,
     no_shadow::NoShadow,
     no_unused_labels::NoUnusedLabels,

@@ -24,6 +24,7 @@ use types::{
     },
     config::Config,
     ddlog_std::tuple2,
+    inputs::Statement,
     inputs::{EveryScope, Expression, File as InputFile, FunctionArg, ImplicitGlobal, InputScope},
     internment::Intern,
 };
@@ -127,6 +128,19 @@ impl Datalog {
             // TODO: Log error if there's more than one value
             .and_then(|query| query.into_iter().next())
             .map(Expression::from_ddvalue)
+    }
+
+    pub fn get_stmt(&self, stmt: StmtId, file: FileId) -> Option<Statement> {
+        let query = self.query(
+            Indexes::inputs_StatementById,
+            Some(tuple2(stmt, file).into_ddvalue()),
+        );
+
+        query
+            .ok()
+            // TODO: Log error if there's more than one value
+            .and_then(|query| query.into_iter().next())
+            .map(|expr| unsafe { Statement::from_ddvalue(expr) })
     }
 
     pub(crate) fn query(
