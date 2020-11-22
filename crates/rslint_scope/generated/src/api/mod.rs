@@ -298,7 +298,12 @@ impl DDlog for HDDlog {
 
             if let Some(value) = update.get_value() {
                 if relation.type_id() != value.type_id() {
-                    return Err("attempted to insert the incorrect type into a relation".to_owned());
+                    dbg!(value, relation.type_id(), value.type_id());
+                    return Err(format!(
+                        "attempted to insert {} into {:?}",
+                        value.type_name(),
+                        relation,
+                    ));
                 }
             }
 

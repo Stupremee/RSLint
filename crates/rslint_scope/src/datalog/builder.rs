@@ -766,7 +766,7 @@ pub trait DatalogBuilder<'ddlog> {
 
         datalog
             .insert(
-                Relations::inputs_ExprNumber,
+                Relations::inputs_ExprBigInt,
                 ExprBigInt {
                     expr_id,
                     file: self.file_id(),
